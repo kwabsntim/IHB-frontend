@@ -2,18 +2,36 @@
 const navbar = document.getElementById('navbar');
 const logoImg = document.querySelector('.logo-img');
 
+// Preload logos for smoother transition
+const logo1 = new Image();
+const logo2 = new Image();
+logo1.src = 'static/newLogo.png';
+logo2.src = 'static/logo2.jpeg';
+
+let isScrolled = false;
+
 window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) {
+    if (window.scrollY > 50 && !isScrolled) {
+        isScrolled = true;
         navbar.classList. add('scrolled');
-        // Change to logo2 when scrolled
+        // Smooth logo change with fade
         if (logoImg) {
-            logoImg.src = 'static/logo2.jpeg';
+            logoImg.style.opacity = '0';
+            setTimeout(() => {
+                logoImg.src = 'static/logo2.jpeg';
+                logoImg.style.opacity = '1';
+            }, 150);
         }
-    } else {
+    } else if (window.scrollY <= 50 && isScrolled) {
+        isScrolled = false;
         navbar.classList. remove('scrolled');
-        // Change back to newLogo when at top
+        // Smooth logo change with fade
         if (logoImg) {
-            logoImg.src = 'static/newLogo.png';
+            logoImg.style.opacity = '0';
+            setTimeout(() => {
+                logoImg.src = 'static/newLogo.png';
+                logoImg.style.opacity = '1';
+            }, 150);
         }
     }
 });
@@ -28,7 +46,7 @@ hamburger.addEventListener('click', () => {
 });
 
 // Close menu when clicking nav link
-document.querySelectorAll('. nav-link').forEach(link => {
+document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', () => {
         navMenu.classList.remove('active');
         hamburger.classList.remove('active');
@@ -80,3 +98,74 @@ document.querySelector('.scroll-indicator')?.addEventListener('click', () => {
         behavior: 'smooth'
     });
 });
+
+// ==================== PRICING TOGGLE ====================
+const toggleBtns = document.querySelectorAll('.toggle-btn');
+const weekdayPricing = document.querySelector('.weekday-pricing');
+const weekendPricing = document.querySelector('.weekend-pricing');
+
+console.log('Toggle buttons found:', toggleBtns.length);
+console.log('Weekday pricing:', weekdayPricing);
+console.log('Weekend pricing:', weekendPricing);
+
+if (toggleBtns.length > 0) {
+    toggleBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const period = this.getAttribute('data-period');
+            console.log('Button clicked:', period);
+            
+            // Check if we're on mobile (window width <= 768px)
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile) {
+                // ACCORDION MODE: Toggle the clicked section, allow both to be open
+                this.classList.toggle('active');
+                
+                if (period === 'weekday') {
+                    weekdayPricing.classList.toggle('active');
+                } else if (period === 'weekend') {
+                    weekendPricing.classList.toggle('active');
+                }
+            } else {
+                // DESKTOP MODE: Toggle between sections (only one open at a time)
+                // Remove active class from all buttons
+                toggleBtns.forEach(b => b.classList.remove('active'));
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Toggle pricing grids
+                if (period === 'weekday') {
+                    console.log('Showing weekday pricing');
+                    if (weekdayPricing) weekdayPricing.classList.add('active');
+                    if (weekendPricing) weekendPricing.classList.remove('active');
+                } else if (period === 'weekend') {
+                    console.log('Showing weekend pricing');
+                    if (weekdayPricing) weekdayPricing.classList.remove('active');
+                    if (weekendPricing) weekendPricing.classList.add('active');
+                }
+            }
+        });
+    });
+} else {
+    console.error('No toggle buttons found!');
+}
+
+// Handle window resize to reset pricing display
+window.addEventListener('resize', () => {
+    const isMobile = window.innerWidth <= 768;
+    
+    if (!isMobile) {
+        // On desktop, ensure only one is active
+        const hasActive = document.querySelector('.toggle-btn.active');
+        if (!hasActive && toggleBtns.length > 0) {
+            // Default to weekday if none active
+            toggleBtns[0].classList.add('active');
+            if (weekdayPricing) weekdayPricing.classList.add('active');
+            if (weekendPricing) weekendPricing.classList.remove('active');
+        }
+    }
+});
+
+
+
