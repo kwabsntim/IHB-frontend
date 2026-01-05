@@ -31,11 +31,115 @@
     --transition: all 0.3s ease;
 }
 
+/* ==================== GLOBAL ANIMATIONS ==================== */
+
+/* Fade In on Scroll */
+.fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-in.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Slide from Left */
+.slide-left {
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.slide-left.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Slide from Right */
+.slide-right {
+    opacity: 0;
+    transform: translateX(50px);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.slide-right.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Floating Animation */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+.float {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Pulse Glow Animation */
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 20px 10px rgba(220, 38, 38, 0);
+        transform: scale(1.05);
+    }
+}
+
+.pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* Typing Cursor */
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+.typing-cursor {
+    display: inline-block;
+    width: 3px;
+    height: 1em;
+    background-color: var(--primary-red);
+    margin-left: 5px;
+    animation: blink 1s step-start infinite;
+}
+
+/* Page Load Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.page-load-animate {
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
 /* ==================== RESET & BASE ==================== */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
 }
 
 body {
@@ -397,12 +501,33 @@ input, button {
     justify-content: center;
     gap: 0.7rem;
     margin-top: 1.2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-primary:hover::before {
+    width: 300px;
+    height: 300px;
 }
 
 .btn-primary:hover {
     background-color: var(--dark-red);
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+    animation: pulseGlow 2s ease-in-out infinite;
 }
 
 .btn-primary:active {
@@ -472,12 +597,14 @@ input, button {
     padding: 2rem;
     background-color: var(--light-gray);
     border-radius: 12px;
-    transition: var(--transition);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
 }
 
 .about-feature:hover {
     background-color: var(--light-red);
-    transform: translateX(10px);
+    transform: translateX(10px) scale(1.05) rotateZ(-1deg);
+    box-shadow: 0 10px 30px rgba(220, 38, 38, 0.2);
 }
 
 .about-feature i {
@@ -871,13 +998,14 @@ input, button {
     border-radius: 20px;
     padding: 2.5rem;
     position: relative;
-    transition: var(--transition);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
 }
 
 .pricing-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    transform: translateY(-15px) scale(1.03) rotateZ(1deg);
+    box-shadow: 0 20px 50px rgba(220, 38, 38, 0.15);
 }
 
 /* Popular Badge */
@@ -1085,5 +1213,141 @@ input, button {
     
     .price {
         font-size: 2.5rem;
+    }
+}
+
+/* ==================== TESTIMONIALS SECTION ==================== */
+.testimonials-section {
+    background-color: var(--white);
+    padding: 6rem 2rem;
+}
+
+.testimonials-slider {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.testimonial-track {
+    position: relative;
+    height: 400px;
+}
+
+.testimonial-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--light-gray);
+    border-radius: 20px;
+    padding: 3rem;
+    opacity: 0;
+    transform: translateX(100px);
+    transition: all 0.5s ease-in-out;
+    pointer-events: none;
+}
+
+.testimonial-card.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+.testimonial-rating {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    justify-content: center;
+}
+
+.testimonial-rating i {
+    color: #F59E0B;
+    font-size: 1.2rem;
+}
+
+.testimonial-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--dark-gray);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-style: italic;
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.author-avatar {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.author-avatar i {
+    font-size: 1.5rem;
+    color: var(--white);
+}
+
+.author-info h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--dark-gray);
+    margin-bottom: 0.2rem;
+}
+
+.author-info p {
+    font-size: 0.9rem;
+    color: var(--gray);
+}
+
+.testimonial-dots {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--gray);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.dot.active {
+    background-color: var(--primary-red);
+    transform: scale(1.3);
+}
+
+.dot:hover {
+    background-color: var(--primary-red);
+}
+
+@media (max-width: 768px) {
+    .testimonials-section {
+        padding: 4rem 1.5rem;
+    }
+    
+    .testimonial-card {
+        padding: 2rem;
+        height: auto;
+    }
+    
+    .testimonial-text {
+        font-size: 1rem;
+    }
+    
+    .testimonial-track {
+        height: 450px;
     }
 }
