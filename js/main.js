@@ -1,11 +1,20 @@
 // ==================== NAVBAR SCROLL EFFECT ====================
 const navbar = document.getElementById('navbar');
+const logoImg = document.querySelector('.logo-img');
 
 window.addEventListener('scroll', () => {
     if (window.scrollY > 50) {
         navbar.classList. add('scrolled');
+        // Change to logo2 when scrolled
+        if (logoImg) {
+            logoImg.src = 'static/logo2.jpeg';
+        }
     } else {
         navbar.classList. remove('scrolled');
+        // Change back to newLogo when at top
+        if (logoImg) {
+            logoImg.src = 'static/newLogo.png';
+        }
     }
 });
 
