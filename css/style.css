@@ -316,7 +316,7 @@ input, button {
 .quote-form-container {
     background-color: var(--white);
     border-radius: 20px;
-    padding: 1rem;
+    padding: 2.5rem;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     animation: fadeInRight 0.8s ease 0.3s backwards;
     max-width: 450px;
