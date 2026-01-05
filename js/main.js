@@ -18,7 +18,7 @@ window.addEventListener('scroll', () => {
         if (logoImg) {
             logoImg.style.opacity = '0';
             setTimeout(() => {
-                logoImg.src = 'static/logo2.jpeg';
+                logoImg.src = 'static/logo2.png';
                 logoImg.style.opacity = '1';
             }, 150);
         }
@@ -167,5 +167,62 @@ window.addEventListener('resize', () => {
     }
 });
 
+// ==================== BUTTON GLOW ON LOAD & SCROLL ====================
+// Helper function to add glow for 10 seconds
+function addTemporaryGlow(element) {
+    if (!element) return;
+    
+    element.classList.add('glow-temp');
+    
+    // Remove after 10 seconds (2s animation * 5 iterations = 10s)
+    setTimeout(() => {
+        element.classList.remove('glow-temp');
+    }, 10000);
+}
+
+// Track if user has scrolled
+let hasScrolled = false;
+
+// Glow hero button and nav buttons on page load
+window.addEventListener('load', () => {
+    const heroButton = document.querySelector('.hero .btn-primary');
+    const navBookButton = document.querySelector('.nav-cta');
+    const mobileBookButton = document.querySelector('.mobile-book-btn');
+    
+    setTimeout(() => {
+        addTemporaryGlow(heroButton);
+        addTemporaryGlow(navBookButton);
+        addTemporaryGlow(mobileBookButton);
+    }, 500); // Small delay after page load
+    
+    // Stop nav button glow on scroll
+    window.addEventListener('scroll', () => {
+        if (!hasScrolled) {
+            hasScrolled = true;
+            // Smoothly remove glow from nav buttons when user scrolls
+            if (navBookButton) navBookButton.classList.remove('glow-temp');
+            if (mobileBookButton) mobileBookButton.classList.remove('glow-temp');
+        }
+    }, { once: true });
+});
+
+// Glow pricing button when it comes into view
+const pricingButton = document.querySelector('.pricing-cta .btn-primary');
+let hasGlowedPricing = false;
+
+const pricingObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting && !hasGlowedPricing) {
+            hasGlowedPricing = true;
+            addTemporaryGlow(entry.target);
+        }
+    });
+}, {
+    threshold: 0.5 // Button must be 50% visible
+});
+
+if (pricingButton) {
+    pricingObserver.observe(pricingButton);
+}
 
 
