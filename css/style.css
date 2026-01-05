@@ -820,12 +820,13 @@ input, button {
     
     .hero-badges {
         flex-direction: column;
-        gap: 1rem;
-        align-items: flex-start;
+        gap: 0.75rem;
+        align-items: center;
+        width: 100%;
     }
     
     .badge {
-        justify-content: flex-start;
+        justify-content: center;
     }
     
     .quote-form-container {
