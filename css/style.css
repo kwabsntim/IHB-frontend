@@ -95,10 +95,104 @@
     }
 }
 
-/* Temporary Glow Class */
-.glow-temp {
-    animation: pulseGlow 2s ease-in-out 5;
+/* YouTube Subscribe Button Animation - Border Drawing Effect */
+@keyframes drawBorder {
+    0% {
+        box-shadow: 
+            inset 0 0 0 3px transparent,
+            inset 0 0 0 3px transparent,
+            inset 0 0 0 3px transparent,
+            inset 0 0 0 3px transparent;
+    }
+    25% {
+        box-shadow: 
+            inset 100% 0 0 3px #FFD700,
+            inset 0 0 0 3px transparent,
+            inset 0 0 0 3px transparent,
+            inset 0 0 0 3px transparent;
+    }
+    50% {
+        box-shadow: 
+            inset 100% 0 0 3px #FFD700,
+            inset 0 100% 0 3px #FFD700,
+            inset 0 0 0 3px transparent,
+            inset 0 0 0 3px transparent;
+    }
+    75% {
+        box-shadow: 
+            inset 100% 0 0 3px #FFD700,
+            inset 0 100% 0 3px #FFD700,
+            inset -100% 0 0 3px #FFD700,
+            inset 0 0 0 3px transparent;
+    }
+    100% {
+        box-shadow: 
+            inset 100% 0 0 3px #FFD700,
+            inset 0 100% 0 3px #FFD700,
+            inset -100% 0 0 3px #FFD700,
+            inset 0 -100% 0 3px #FFD700;
+    }
 }
+
+/* Simpler border animation */
+@keyframes borderDraw {
+    0% {
+        outline: 3px solid transparent;
+        outline-offset: -3px;
+    }
+    100% {
+        outline: 3px solid #FFD700;
+        outline-offset: -3px;
+    }
+}
+
+/* SVG-style border drawing */
+@keyframes svgBorderDraw {
+    0% {
+        border-image: linear-gradient(90deg, #FFD700 0%, transparent 0%) 1;
+    }
+    25% {
+        border-image: linear-gradient(90deg, #FFD700 100%, transparent 0%) 1;
+    }
+    50% {
+        border-image: linear-gradient(90deg, #FFD700 100%, transparent 0%), 
+                      linear-gradient(180deg, #FFD700 100%, transparent 0%) 1;
+    }
+    75% {
+        border-image: linear-gradient(90deg, #FFD700 100%, transparent 0%), 
+                      linear-gradient(180deg, #FFD700 100%, transparent 0%),
+                      linear-gradient(270deg, #FFD700 100%, transparent 0%) 1;
+    }
+    100% {
+        border-image: linear-gradient(90deg, #FFD700 100%, transparent 0%), 
+                      linear-gradient(180deg, #FFD700 100%, transparent 0%),
+                      linear-gradient(270deg, #FFD700 100%, transparent 0%),
+                      linear-gradient(0deg, #FFD700 100%, transparent 0%) 1;
+    }
+}
+
+/* Button Bounce Animation */
+.btn-bounce {
+    animation: btnBounce 2s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+    will-change: transform;
+}
+
+@keyframes btnBounce {
+    0%, 20%, 50%, 80% {
+        transform: translateY(0) scale(1);
+    }
+    40% {
+        transform: translateY(-7px) scale(1.03);
+    }
+    60% {
+        transform: translateY(-3px) scale(1.01);
+    }
+    100% {
+        transform: translateY(0) scale(1);
+    }
+}
+
+
 
 .pulse-glow {
     animation: pulseGlow 2s ease-in-out infinite;
@@ -275,6 +369,7 @@ input, button {
     padding: 0.6rem 1.5rem;
     border-radius: 50px;
     font-weight: 600;
+    display: inline-block;
 }
 
 .nav-cta::after {
@@ -285,6 +380,11 @@ input, button {
     background-color: var(--dark-red);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.nav-cta.btn-shake:hover,
+.mobile-book-btn.btn-shake:hover {
+    transform: none !important;
 }
 
 /* Mobile Book Now Button */
