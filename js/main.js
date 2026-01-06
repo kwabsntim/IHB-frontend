@@ -1,3 +1,35 @@
+// ==================== PRICING CARDS ROTATE-IN ANIMATION (MOBILE) ====================
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.innerWidth > 768) return;
+    const pricingCards = document.querySelectorAll('.pricing-card');
+    if (!pricingCards.length) return;
+    const observer = new window.IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('rotate-in');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.3 });
+    pricingCards.forEach(card => observer.observe(card));
+});
+// ==================== ABOUT FEATURES SLIDE-IN ANIMATION (MOBILE) ====================
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.innerWidth > 768) return;
+    const features = document.querySelectorAll('.about-feature');
+    if (!features.length) return;
+    const observer = new window.IntersectionObserver((entries) => {
+        entries.forEach((entry, idx) => {
+            if (entry.isIntersecting) {
+                if (idx === 0) entry.target.classList.add('slide-in-left');
+                else if (idx === 1) entry.target.classList.add('slide-in-center');
+                else entry.target.classList.add('slide-in-right');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.4 });
+    features.forEach(f => observer.observe(f));
+});
 // ==================== PRICING BOOK NOW BOUNCE ANIMATION ====================
 document.addEventListener('DOMContentLoaded', () => {
     const pricingBookBtn = document.querySelector('.pricing-cta .btn-primary');
@@ -10,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 bounced = true;
                 setTimeout(() => {
                     pricingBookBtn.classList.remove('btn-bounce');
-                }, 2000);
+                }, 3500);
             }
         });
     }, { threshold: 0.7 });

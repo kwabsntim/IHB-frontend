@@ -1,3 +1,55 @@
+/* Pricing Cards Slide-in Animation (Mobile) */
+@media (max-width: 768px) {
+    .pricing-card {
+        opacity: 0;
+        transform: rotateY(40deg) scale(0.95);
+        transition: opacity 2.2s cubic-bezier(0.23, 1, 0.32, 1), transform 2.2s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .pricing-card.rotate-in {
+        opacity: 1;
+        animation: rotateIn 2.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    }
+    @keyframes rotateIn {
+        from { opacity: 0; transform: rotateY(40deg) scale(0.95); }
+        60% { opacity: 1; transform: rotateY(-10deg) scale(1.03); }
+        to { opacity: 1; transform: rotateY(0deg) scale(1); }
+    }
+}
+/* About Features Slide-in Animation (Mobile) */
+@media (max-width: 768px) {
+    .about-feature {
+        opacity: 0;
+        transform: translateX(0);
+        transition: opacity 1.3s cubic-bezier(0.23, 1, 0.32, 1), transform 1.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .about-feature.slide-in-left {
+        opacity: 1;
+        transform: translateX(-40px);
+        animation: slideInLeft 1.3s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    }
+    .about-feature.slide-in-center {
+        opacity: 1;
+        transform: translateY(20px);
+        animation: slideInCenter 1.3s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    }
+    .about-feature.slide-in-right {
+        opacity: 1;
+        transform: translateX(40px);
+        animation: slideInRight 1.3s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    }
+    @keyframes slideInLeft {
+        from { opacity: 0; transform: translateX(-80px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideInCenter {
+        from { opacity: 0; transform: translateY(40px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(80px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+}
 /* ==================== ROOT VARIABLES ==================== */
 :root {
     /* Red Theme Colors */
@@ -173,7 +225,7 @@
 
 /* Button Bounce Animation */
 .btn-bounce {
-    animation: btnBounce 2s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+    animation: btnBounce 3.5s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
     will-change: transform;
 }
 
@@ -182,10 +234,10 @@
         transform: translateY(0) scale(1);
     }
     40% {
-        transform: translateY(-7px) scale(1.03);
+        transform: translateY(-6px) scale(1.02);
     }
     60% {
-        transform: translateY(-3px) scale(1.01);
+        transform: translateY(-2px) scale(1.01);
     }
     100% {
         transform: translateY(0) scale(1);
@@ -596,7 +648,7 @@ input, button {
     background-color: var(--primary-red);
     color: var(--white);
     border: none;
-    border-radius: 8px;
+    border-radius: 20px;
     font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
@@ -1108,7 +1160,8 @@ input, button {
 .pricing-card {
     background-color: var(--white);
     border-radius: 20px;
-    padding: 2.5rem;
+    padding: 1.5rem 1.2rem;
+    min-height: 220px;
     position: relative;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
