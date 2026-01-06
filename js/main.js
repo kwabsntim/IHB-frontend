@@ -1,53 +1,60 @@
 // ==================== PRICING CARDS ROTATE-IN ANIMATION (MOBILE) ====================
 document.addEventListener('DOMContentLoaded', () => {
     if (window.innerWidth > 768) return;
+    // About features slide-in
+    const features = document.querySelectorAll('.about-feature');
+    if (features.length) {
+        const aboutObserver = new window.IntersectionObserver((entries) => {
+            entries.forEach((entry, idx) => {
+                if (entry.isIntersecting) {
+                    if (idx === 0) entry.target.classList.add('slide-in-left');
+                    else if (idx === 1) entry.target.classList.add('slide-in-center');
+                    else entry.target.classList.add('slide-in-right');
+                    aboutObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.4 });
+        features.forEach(f => aboutObserver.observe(f));
+    }
+
+    // Mobile Book Now Button Slide Down and Bounce
+    const mobileBookBtn = document.querySelector('.mobile-book-btn');
+    if (mobileBookBtn) {
+        mobileBookBtn.classList.remove('btn-bounce');
+        mobileBookBtn.classList.remove('slide-in-down');
+        setTimeout(() => {
+            mobileBookBtn.classList.add('slide-in-down');
+            setTimeout(() => {
+                mobileBookBtn.classList.add('btn-bounce');
+            }, 700); // Start bounce after slide in
+        }, 300); // Small delay after DOMContentLoaded
+    }
+
+    // Pricing cards rotate-in and bottom Book Now bounce
     const pricingCards = document.querySelectorAll('.pricing-card');
-    if (!pricingCards.length) return;
-    const observer = new window.IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('rotate-in');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.3 });
-    pricingCards.forEach(card => observer.observe(card));
+    const pricingBookBtn = document.querySelector('.pricing-cta .btn-primary');
+    if (pricingCards.length && pricingBookBtn) {
+        const lastCard = pricingCards[pricingCards.length - 1];
+        const cardObserver = new window.IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('rotate-in');
+                    cardObserver.unobserve(entry.target);
+                    // If this is the last card, trigger the button bounce immediately
+                    if (entry.target === lastCard) {
+                        pricingBookBtn.classList.remove('btn-bounce');
+                        setTimeout(() => {
+                            pricingBookBtn.classList.add('btn-bounce');
+                        }, 50); // Practically immediate
+                    }
+                }
+            });
+        }, { threshold: 0.1 });
+        pricingCards.forEach(card => cardObserver.observe(card));
+    }
 });
 // ==================== ABOUT FEATURES SLIDE-IN ANIMATION (MOBILE) ====================
-document.addEventListener('DOMContentLoaded', () => {
-    if (window.innerWidth > 768) return;
-    const features = document.querySelectorAll('.about-feature');
-    if (!features.length) return;
-    const observer = new window.IntersectionObserver((entries) => {
-        entries.forEach((entry, idx) => {
-            if (entry.isIntersecting) {
-                if (idx === 0) entry.target.classList.add('slide-in-left');
-                else if (idx === 1) entry.target.classList.add('slide-in-center');
-                else entry.target.classList.add('slide-in-right');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.4 });
-    features.forEach(f => observer.observe(f));
-});
 // ==================== PRICING BOOK NOW BOUNCE ANIMATION ====================
-document.addEventListener('DOMContentLoaded', () => {
-    const pricingBookBtn = document.querySelector('.pricing-cta .btn-primary');
-    if (!pricingBookBtn) return;
-    let bounced = false;
-    const observer = new window.IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && !bounced) {
-                pricingBookBtn.classList.add('btn-bounce');
-                bounced = true;
-                setTimeout(() => {
-                    pricingBookBtn.classList.remove('btn-bounce');
-                }, 3500);
-            }
-        });
-    }, { threshold: 0.7 });
-    observer.observe(pricingBookBtn);
-});
 // ==================== BUTTON BOUNCE ANIMATION ====================
 window.addEventListener('load', () => {
     const navBookButton = document.querySelector('.nav-cta');
