@@ -356,7 +356,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ==================== MOBILE AUTO-SCROLL FOR ANIMATIONS ====================
+// ==================== MOBILE SCROLL-BASED ANIMATION ====================
+// Function to animate steps based on scroll position (mobile only)
+function animateStepsOnScroll() {
+    const stepObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                // Add delay based on step index for sequential animation
+                setTimeout(() => {
+                    entry.target.classList.add('active');
+                }, index * 300); // 300ms delay between steps
+            }
+        });
+    }, {
+        threshold: 0.5, // Trigger when 50% of step is visible
+        rootMargin: '0px 0px -50px 0px' // Trigger slightly before fully visible
+    });
+
+    // Observe each step
+    processSteps.forEach(step => {
+        stepObserver.observe(step);
+    });
+
+    // After all steps are animated, trigger Book Now glow
+    let animatedSteps = 0;
+    const stepObserverWithCallback = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting && !entry.target.classList.contains('active')) {
+                entry.target.classList.add('active');
+                animatedSteps++;
+
+                // When all steps have been animated, trigger the glow
+                if (animatedSteps === processSteps.length) {
+                    setTimeout(() => {
+                        triggerBookNowGlow();
+                    }, 1000); // Wait 1 second after last step
+                }
+            }
+        });
+    }, { threshold: 0.5 });
+
+    processSteps.forEach(step => {
+        stepObserverWithCallback.observe(step);
+    });
+}
 // Function to check if device is mobile
 function isMobile() {
     return window.innerWidth <= 768;
@@ -418,19 +461,22 @@ document.addEventListener('DOMContentLoaded', () => {
     function animateSteps() {
         processSteps.forEach((step, index) => {
             setTimeout(() => {
+                // Force reflow to ensure smooth animation
+                step.offsetHeight;
+                step.style.animation = 'popUp 1.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards';
                 step.classList.add('active');
 
                 // Auto-scroll to this step on mobile after a brief delay
                 if (isMobileDevice) {
                     setTimeout(() => {
                         scrollToElement(step);
-                    }, 800); // Scroll after animation starts
+                    }, 1200); // Scroll after animation has settled
                 }
-            }, index * 1500); // 1.5 seconds delay between each step for smoother flow
+            }, index * 1800); // Increased delay for smoother sequential animation
         });
 
         // After all steps are animated, immediately trigger Book Now glow
-        const totalAnimationTime = (processSteps.length * 1500) + 500; // steps + small pause
+        const totalAnimationTime = (processSteps.length * 1800) + 800; // steps + small pause
         setTimeout(() => {
             triggerBookNowGlow();
 
@@ -439,9 +485,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => {
                     const typingContainer = document.querySelector('.typing-container');
                     if (typingContainer) {
-                        scrollToElement(typingContainer, 150);
+                        scrollToElement(typingContainer, 200);
                     }
-                }, 1000);
+                }, 1500);
             }
         }, totalAnimationTime);
     }
@@ -504,13 +550,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                setTimeout(() => {
-                    animateSteps();
-                }, 300); // Small delay before starting animation
+                if (isMobileDevice) {
+                    // On mobile, animate steps as user scrolls through the section
+                    animateStepsOnScroll();
+                } else {
+                    // On desktop, animate all steps automatically
+                    setTimeout(() => {
+                        animateSteps();
+                    }, 500);
+                }
                 observer.disconnect(); // Disconnect after triggering to free up resources
             }
         });
-    }, { threshold: 0.3 });
+    }, { threshold: 0.2 }); // Lower threshold for earlier triggering
 
     observer.observe(howItWorksSection);
 });

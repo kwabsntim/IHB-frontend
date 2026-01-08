@@ -184,7 +184,8 @@ html {
 /* ==================== HOW IT WORKS SECTION ==================== */
 .how-it-works-section {
     background: var(--white);
-    padding: 6rem 2rem;
+    padding: 6rem 2rem 12rem 2rem; /* Increased bottom padding significantly */
+    margin-bottom: 8rem; /* Additional margin */
 }
 
 .how-it-works-section .container {
@@ -231,19 +232,20 @@ html {
     text-align: center;
     position: relative;
     opacity: 0;
-    transform: translateY(20px) scale(0.9);
-    transition: all 1.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+    transform: translateY(100px) scale(0.3);
     min-width: 120px;
     flex-shrink: 0;
     will-change: opacity, transform;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 .process-step.active {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+    /* Animation is handled by JavaScript, this class is for other styling if needed */
 }
 
 .step-icon {
@@ -255,14 +257,15 @@ html {
     align-items: center;
     justify-content: center;
     margin-bottom: 0.5rem;
-    transition: all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     position: relative;
     overflow: hidden;
     flex-shrink: 0;
     will-change: transform;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
-    transform: translateZ(0); /* Force hardware acceleration */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 .step-icon::before {
@@ -293,11 +296,13 @@ html {
     margin-bottom: 0.5rem;
     opacity: 0;
     transform: scaleX(0);
-    transition: all 1s cubic-bezier(0.4, 0.0, 0.2, 1);
+    transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     overflow: hidden;
     will-change: opacity, transform;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 .process-step.active .step-connector {
@@ -396,18 +401,22 @@ html {
     }
 }
 
-/* Bounce In Animation - Smoother */
-@keyframes bounceIn {
+/* Pop Up Animation for Process Steps */
+@keyframes popUp {
     0% {
-        transform: scale(0.8) translateY(20px);
+        transform: translateY(100px) scale(0.3);
         opacity: 0;
     }
-    60% {
-        transform: scale(1.02) translateY(-2px);
+    50% {
+        transform: translateY(-20px) scale(1.1);
+        opacity: 0.8;
+    }
+    70% {
+        transform: translateY(5px) scale(0.95);
         opacity: 0.9;
     }
     100% {
-        transform: scale(1) translateY(0);
+        transform: translateY(0) scale(1);
         opacity: 1;
     }
 }
@@ -463,6 +472,10 @@ html {
         gap: 2rem;
         overflow-x: visible;
         padding: 0;
+        align-items: center;
+        justify-content: center;
+        max-width: 400px;
+        margin: 0 auto;
     }
     
     .process-step {
@@ -499,6 +512,7 @@ html {
     .connector-arrow {
         margin: 0.5rem 0 0 0;
         margin-left: 0;
+        transform: rotate(90deg);
     }
     
     .step-content {
@@ -775,9 +789,14 @@ img {
 /* Optimize animations */
 .process-container,
 .step-icon,
-.process-step {
+.process-step,
+.step-connector {
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    will-change: transform, opacity;
+    contain: layout style paint;
 }
 
 /* ==================== ROOT VARIABLES ==================== */
@@ -1837,7 +1856,8 @@ input, button {
 /* ==================== PRICING SECTION ==================== */
 .pricing-section {
     background-color: var(--light-gray);
-    padding: 6rem 2rem;
+    padding: 12rem 2rem 6rem 2rem; /* Increased top padding significantly */
+    margin-top: 6rem; /* Additional top margin */
 }
 
 .pricing-section .container {
