@@ -133,6 +133,8 @@
         </div>
     </section>
 
+
+
     <!-- About Section -->
     <section class="about" id="about">
         <div class="about-container">
@@ -480,8 +482,100 @@
                 </a>
             </div>
 
+                </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <main class="testimonials" aria-labelledby="testimonial-heading">
+            <h2 id="testimonial-heading">What our customers say</h2>
+
+            <section class="cards" id="testimonials" aria-label="Testimonials list">
+                <!-- Card 1 -->
+                <article class="testimonial-card" data-idx="0">
+                    <div class="testimonial-image">
+                        <div class="avatar">J</div>
+                    </div>
+                    <div class="testimonial-content">
+                        <blockquote class="quote">
+                            "IHB Transport made our international move seamless. Professional team, timely delivery, and great communication throughout the process."
+                        </blockquote>
+                        <div class="author-meta">
+                            <div class="name">Josh Kastel</div>
+                            <div class="title">Founder · Reap</div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Card 2 -->
+                <article class="testimonial-card" data-idx="1">
+                    <div class="testimonial-image">
+                        <div class="avatar">A</div>
+                    </div>
+                    <div class="testimonial-content">
+                        <blockquote class="quote">
+                            "Excellent service for our office relocation. The movers were careful with our equipment and everything arrived on time."
+                        </blockquote>
+                        <div class="author-meta">
+                            <div class="name">Aisha Khan</div>
+                            <div class="title">Head of Growth · Acme</div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Card 3 -->
+                <article class="testimonial-card" data-idx="2">
+                    <div class="testimonial-image">
+                        <div class="avatar">N</div>
+                    </div>
+                    <div class="testimonial-content">
+                        <blockquote class="quote">
+                            "Fast, reliable, and affordable. IHB Transport handled our furniture assembly and junk removal perfectly."
+                        </blockquote>
+                        <div class="author-meta">
+                            <div class="name">Noah Reed</div>
+                            <div class="title">Product Designer · Nimbus</div>
+                        </div>
+                    </div>
+                </article>
+            </section>
+        </main>
+
+        <section class="contact-section" id="contact">
+    <div class="contact-container" style="display: flex; gap: 2rem; align-items: flex-start; justify-content: center;">
+        <div class="contact-content" style="flex:1; text-align: center;">
+            <h2 class="section-title" style="color: var(--dark-gray); display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                <i class="fas fa-phone wiggle-icon"></i>
+                Contact Us
+            </h2>
+            <p class="contact-desc">
+                Have questions or want to reach us directly? Send us a message below and we'll get back to you!
+            </p>
+            
+            <!-- Contact Form -->
+            <form class="contact-form" id="contactForm">
+                <div class="form-group">
+                    <textarea 
+                        id="contactMessage" 
+                        name="message" 
+                        placeholder="Type your message here..."
+                        rows="4"
+                        required
+                    ></textarea>
+                </div>
+                <button type="submit" class="btn-primary contact-btn">
+                    Send Message
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
         </div>
-    </section>
+        <div class="contact-image" style="flex:1; text-align: center;">
+            <img src="static/IHB hero.jpeg" alt="IHB Transport Contact" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+        </div>
+    </div>
+</section>
+
+<footer style="background: #e5e7eb; width: 100vw; min-height: 80px;"></footer>
+
 
     <script src="js/main.js"></script>
 </body>

@@ -1,3 +1,33 @@
+// ==================== BOTTOM BUTTONS SHAKE ON IN-VIEW ====================
+document.addEventListener('DOMContentLoaded', () => {
+    // Select bottom Book Now button only
+    const bottomBookBtn = document.querySelector('.pricing-cta .btn-primary');
+    const shakeOnce = (el) => {
+        console.log('Shaking bottom book button');
+        if (!el) return;
+        el.classList.remove('btn-pop'); // Remove if present
+        // Force reflow to restart animation if needed
+        void el.offsetWidth;
+        el.classList.add('btn-pop');
+        setTimeout(() => el.classList.remove('btn-pop'), 700);
+    };
+    const observer = new window.IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                console.log('Bottom book button in view, shaking');
+                shakeOnce(entry.target);
+                // Only animate once per view
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+    if (bottomBookBtn) {
+        console.log('Bottom book button found, observing');
+        observer.observe(bottomBookBtn);
+    } else {
+        console.log('Bottom book button not found');
+    }
+});
 // ==================== PRICING CARDS ROTATE-IN ANIMATION (MOBILE) ====================
 document.addEventListener('DOMContentLoaded', () => {
     if (window.innerWidth > 768) return;
@@ -17,16 +47,16 @@ document.addEventListener('DOMContentLoaded', () => {
         features.forEach(f => aboutObserver.observe(f));
     }
 
-    // Mobile Book Now Button Slide Down and Bounce
+    // Mobile Book Now Button Slide Down and Wiggle
     const mobileBookBtn = document.querySelector('.mobile-book-btn');
     if (mobileBookBtn) {
-        mobileBookBtn.classList.remove('btn-bounce');
+        mobileBookBtn.classList.remove('btn-wiggle');
         mobileBookBtn.classList.remove('slide-in-down');
         setTimeout(() => {
             mobileBookBtn.classList.add('slide-in-down');
             setTimeout(() => {
-                mobileBookBtn.classList.add('btn-bounce');
-            }, 700); // Start bounce after slide in
+                mobileBookBtn.classList.add('btn-wiggle');
+            }, 700); // Start wiggle after slide in
         }, 300); // Small delay after DOMContentLoaded
     }
 
@@ -54,22 +84,56 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 // ==================== ABOUT FEATURES SLIDE-IN ANIMATION (MOBILE) ====================
-// ==================== PRICING BOOK NOW BOUNCE ANIMATION ====================
-// ==================== BUTTON BOUNCE ANIMATION ====================
+// ==================== PRICING BOOK NOW WIGGLE ANIMATION ====================
+// ==================== BUTTON WIGGLE ANIMATION ====================
 window.addEventListener('load', () => {
     const navBookButton = document.querySelector('.nav-cta');
-    const mobileBookButton = document.querySelector('.mobile-book-btn');
-    
     setTimeout(() => {
-        if (navBookButton) navBookButton.classList.add('btn-bounce');
-        if (mobileBookButton) mobileBookButton.classList.add('btn-bounce');
-        
-        // Remove bounce after 6 seconds (3 complete cycles at 2s each)
-        setTimeout(() => {
-            if (navBookButton) navBookButton.classList.remove('btn-bounce');
-            if (mobileBookButton) mobileBookButton.classList.remove('btn-bounce');
-        }, 6000);
-    }, 500);
+        console.log('Adding wiggle to navbar button');
+        if (navBookButton) {
+            navBookButton.classList.add('btn-wiggle');
+        } else {
+            console.log('Navbar button not found');
+        }
+    }, 5000);
+});
+// ========== GET QUOTE BUTTON WIGGLE ON IN-VIEW ==========
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Window width:', window.innerWidth);
+    const getQuoteButton = document.querySelector('.quote-form button.btn-primary');
+    console.log('Get quote button:', getQuoteButton);
+    if (!getQuoteButton) return;
+    const wiggleOnce = (el) => {
+        console.log('Wiggling get quote button');
+        el.classList.remove('btn-wiggle');
+        void el.offsetWidth;
+        el.classList.add('btn-wiggle');
+        setTimeout(() => el.classList.remove('btn-wiggle'), 2000);
+    };
+    const observer = new window.IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                console.log('Get quote button in view, wiggling');
+                wiggleOnce(entry.target);
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+    observer.observe(getQuoteButton);
+});
+
+// Contact form submission handler (send mail)
+document.addEventListener('DOMContentLoaded', () => {
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const message = document.getElementById('contactMessage').value;
+            if (message.trim()) {
+                window.location.href = `mailto:info@ihbtransport.com?subject=Contact%20Request&body=${encodeURIComponent(message)}`;
+            }
+        });
+    }
 });
 
 // ==================== NAVBAR SCROLL EFFECT ====================
@@ -240,4 +304,31 @@ window.addEventListener('resize', () => {
         }
     }
 });
+
+// ==================== TESTIMONIALS: STAGGER REVEAL ====================
+(function(){
+    const cards = Array.from(document.querySelectorAll('.testimonial-card'));
+    console.log('Testimonial cards found:', cards.length);
+    if (!cards.length) return;
+
+    // Staggered entrance using IntersectionObserver
+    if ('IntersectionObserver' in window) {
+        const obs = new IntersectionObserver((entries, o) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    console.log('Testimonial card in view:', entry.target.dataset.idx);
+                    const card = entry.target;
+                    const idx = Number(card.dataset.idx) || 0;
+                    card.style.transitionDelay = (idx * 200) + 'ms';
+                    card.classList.add('in-view');
+                    o.unobserve(card);
+                }
+            });
+        }, { threshold: 0.1 });
+        cards.forEach(c => obs.observe(c));
+    } else {
+        // fallback
+        cards.forEach(c => c.classList.add('in-view'));
+    }
+})();
 
