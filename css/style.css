@@ -441,7 +441,6 @@ html {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
-    animation: pulse 2s ease-in-out infinite;
 }
 
 .cursor {
@@ -498,31 +497,53 @@ html {
     }
     
     .process-step {
-        min-width: 100%;
-        flex-direction: column;
-        text-align: center;
-        gap: 1rem;
-        align-items: center;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-rows: auto auto;
+        gap: 1rem 1rem;
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 1rem;
+        align-items: start;
     }
     
     .step-icon {
+        grid-column: 1;
+        grid-row: 1;
         width: 60px;
         height: 60px;
-        flex-shrink: 0;
-        margin-bottom: 0.5rem;
+        justify-self: center;
+        margin-bottom: 0;
+    }
+    
+    .step-content {
+        grid-column: 2;
+        grid-row: 1;
+        text-align: left;
+    }
+    
+    .step-connector {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        justify-self: center;
+        margin-top: 0.5rem;
     }
     
     .step-icon i {
         font-size: 1.5rem;
     }
     
+    .step-content {
+        text-align: left;
+    }
+    
     .step-connector {
+        display: flex;
         flex-direction: column;
-        width: 100%;
-        height: auto;
-        margin: 1rem 0;
         align-items: center;
+        width: 100%;
         transform: scaleY(0);
+        transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
     
     .process-step.active .step-connector {

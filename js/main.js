@@ -335,6 +335,69 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Function to trigger Book Now button glow and typing text
+function triggerBookNowGlow() {
+    // Start typing text first
+    createTypingText();
+}
+
+// Function to trigger glow after typing is complete
+function triggerGlowAfterTyping() {
+    const bookNowBtn = document.querySelector('.nav-cta');
+    const mobileBookBtn = document.querySelector('.mobile-book-btn');
+
+    // Add glow effect to both buttons
+    if (bookNowBtn) {
+        bookNowBtn.classList.add('glow-effect');
+    }
+    if (mobileBookBtn) {
+        mobileBookBtn.classList.add('glow-effect');
+    }
+}
+
+// Function to create and animate typing text
+function createTypingText() {
+    // Create container for typing text
+    const typingContainer = document.createElement('div');
+    typingContainer.className = 'typing-container';
+    typingContainer.innerHTML = `
+        <div class="typing-text"></div>
+    `;
+
+    // Insert after the process container
+    const processContainer = document.querySelector('.process-container');
+    if (processContainer) {
+        processContainer.parentNode.insertBefore(typingContainer, processContainer.nextSibling);
+    } else {
+        // Fallback: insert at end of how-it-works section
+        const howItWorksSection = document.querySelector('.how-it-works-section');
+        if (howItWorksSection) {
+            howItWorksSection.appendChild(typingContainer);
+        }
+    }
+
+    // Start typing animation
+    const text = "🚚 Interested in the service? Click Book Now at the top!";
+    const typingText = typingContainer.querySelector('.typing-text');
+    let charIndex = 0;
+
+    function typeWriter() {
+        if (charIndex < text.length) {
+            typingText.textContent += text.charAt(charIndex);
+            charIndex++;
+            setTimeout(typeWriter, 100); // Faster typing for engagement
+        } else {
+            // Typing complete - add blinking cursor effect
+            typingText.innerHTML += '<span class="cursor">|</span>';
+            setTimeout(() => {
+                triggerGlowAfterTyping(); // Trigger glow after typing is done
+            }, 500);
+        }
+    }
+
+    typeWriter();
+}
+
 // ==================== MOBILE SCROLL-BASED ANIMATION ====================
 // Function to animate steps based on scroll position (mobile only)
 function animateStepsOnScroll(processSteps) {
