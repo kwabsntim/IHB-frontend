@@ -356,3 +356,120 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// ==================== HOW IT WORKS ANIMATION ====================
+document.addEventListener('DOMContentLoaded', () => {
+    const howItWorksSection = document.querySelector('.how-it-works-section');
+    if (!howItWorksSection) return;
+
+    const processSteps = document.querySelectorAll('.process-step');
+    if (!processSteps.length) return;
+
+    // Function to animate steps sequentially with enhanced effects
+    function animateSteps() {
+        processSteps.forEach((step, index) => {
+            setTimeout(() => {
+                step.classList.add('active');
+            }, index * 1500); // 1.5 seconds delay between each step for smoother flow
+        });
+
+        // After all steps are animated, wait 3 seconds then trigger Book Now glow
+        const totalAnimationTime = (processSteps.length * 1500) + 3000; // steps + pause
+        setTimeout(() => {
+            triggerBookNowGlow();
+        }, totalAnimationTime);
+    }
+
+    // Function to trigger Book Now button glow and typing text
+    function triggerBookNowGlow() {
+        // Start typing text first
+        createTypingText();
+    }
+
+    // Function to trigger glow after typing is complete
+    function triggerGlowAfterTyping() {
+        const bookNowBtn = document.querySelector('.nav-cta');
+        const mobileBookBtn = document.querySelector('.mobile-book-btn');
+
+        // Add glow effect to both buttons
+        if (bookNowBtn) {
+            bookNowBtn.classList.add('glow-effect');
+        }
+        if (mobileBookBtn) {
+            mobileBookBtn.classList.add('glow-effect');
+        }
+    }
+
+    // Function to create and animate typing text
+    function createTypingText() {
+        // Create container for typing text
+        const typingContainer = document.createElement('div');
+        typingContainer.className = 'typing-container';
+        typingContainer.innerHTML = `
+            <div class="typing-text"></div>
+        `;
+
+        // Insert after the process container
+        const processContainer = document.querySelector('.process-container');
+        processContainer.parentNode.insertBefore(typingContainer, processContainer.nextSibling);
+
+        // Start typing animation
+        const text = "Interested in the service? Click Book Now at the top";
+        const typingText = typingContainer.querySelector('.typing-text');
+        let charIndex = 0;
+
+        function typeWriter() {
+            if (charIndex < text.length) {
+                typingText.textContent += text.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeWriter, 120); // Smooth typing speed
+            } else {
+                // Typing complete - trigger glow
+                setTimeout(() => {
+                    triggerGlowAfterTyping(); // Trigger glow after typing is done
+                }, 300);
+            }
+        }
+
+        typeWriter();
+    }
+
+    // Trigger animation when section comes into view
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                setTimeout(() => {
+                    animateSteps();
+                }, 300); // Small delay before starting animation
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.3 });
+
+    observer.observe(howItWorksSection);
+});
+
+// ==================== STOP GLOW WHEN PRICES SECTION IS VISIBLE ====================
+document.addEventListener('DOMContentLoaded', () => {
+    const pricesSection = document.getElementById('pricing');
+    const bookNowBtn = document.querySelector('.nav-cta');
+    const mobileBookBtn = document.querySelector('.mobile-book-btn');
+
+    if (pricesSection && (bookNowBtn || mobileBookBtn)) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Remove glow effect when prices section comes into view
+                    if (bookNowBtn) {
+                        bookNowBtn.classList.remove('glow-effect');
+                    }
+                    if (mobileBookBtn) {
+                        mobileBookBtn.classList.remove('glow-effect');
+                    }
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 }); // Trigger when 10% of the section is visible
+
+        observer.observe(pricesSection);
+    }
+});

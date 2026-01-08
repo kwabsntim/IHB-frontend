@@ -176,6 +176,333 @@
     }
 }
 
+/* ==================== HOW IT WORKS SECTION ==================== */
+.how-it-works-section {
+    background: var(--white);
+    padding: 6rem 2rem;
+}
+
+.how-it-works-section .container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.section-header .section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--dark-gray);
+    margin-bottom: 0.5rem;
+}
+
+.section-header .section-subtitle {
+    font-size: 1.2rem;
+    color: var(--dark-gray);
+    opacity: 0.8;
+    font-weight: 400;
+}
+
+.process-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: 0.3rem;
+    position: relative;
+    overflow-x: auto;
+    padding: 0 0.5rem;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.process-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+    transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    min-width: 120px;
+    flex-shrink: 0;
+}
+
+.process-step.active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.step-icon {
+    width: 70px;
+    height: 70px;
+    background: #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    transition: all 0.5s ease;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.step-icon::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.8s ease;
+}
+
+.process-step.active .step-icon::before {
+    left: 100%;
+}
+
+.step-icon i {
+    font-size: 1.8rem;
+    color: var(--white);
+    z-index: 1;
+    position: relative;
+}
+
+.step-connector {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    transform: scaleX(0);
+    transition: all 0.8s ease 0.3s;
+    overflow: hidden;
+}
+
+.process-step.active .step-connector {
+    opacity: 1;
+    transform: scaleX(1);
+}
+
+.connector-line {
+    width: 40px;
+    height: 3px;
+    background: transparent;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+}
+
+.process-step.active .connector-line {
+    background: linear-gradient(90deg, var(--primary-red), var(--dark-red));
+}
+
+.connector-line::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-red), var(--dark-red));
+    border-radius: 2px;
+    animation: lineFlow 1.5s ease-in-out infinite;
+}
+
+@keyframes lineFlow {
+    0%, 100% {
+        width: 0;
+        left: 0;
+    }
+    50% {
+        width: 100%;
+        left: 0;
+    }
+}
+
+.connector-arrow {
+    margin-left: 0.5rem;
+    color: var(--primary-red);
+    font-size: 1.2rem;
+    animation: arrowPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes arrowPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+}
+
+.step-content {
+    max-width: 180px;
+}
+
+.step-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--dark-gray);
+    margin-bottom: 0.3rem;
+}
+
+.step-description {
+    font-size: 0.85rem;
+    color: var(--dark-gray);
+    opacity: 0.8;
+    line-height: 1.4;
+    max-width: 140px;
+}
+
+/* Book Now Button Glow Effect */
+.nav-cta.glow-effect,
+.mobile-book-btn.glow-effect {
+    animation: buttonGlow 2s ease-in-out infinite alternate;
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.8);
+}
+
+@keyframes buttonGlow {
+    0% {
+        box-shadow: 0 0 20px rgba(220, 38, 38, 0.8), 0 0 40px rgba(220, 38, 38, 0.4);
+        transform: scale(1);
+    }
+    100% {
+        box-shadow: 0 0 30px rgba(220, 38, 38, 1), 0 0 60px rgba(220, 38, 38, 0.6);
+        transform: scale(1.05);
+    }
+}
+
+/* Bounce In Animation - Smoother */
+@keyframes bounceIn {
+    0% {
+        transform: scale(0.8) translateY(20px);
+        opacity: 0;
+    }
+    60% {
+        transform: scale(1.02) translateY(-2px);
+        opacity: 0.9;
+    }
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Typing Text Container */
+.typing-container {
+    text-align: center;
+    margin-top: 2rem;
+    min-height: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.typing-text {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--primary-red);
+    font-family: 'Quicksand', sans-serif;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+@keyframes blink {
+    0%, 50% {
+        border-color: var(--primary-red);
+    }
+    51%, 100% {
+        border-color: transparent;
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .how-it-works-section {
+        padding: 4rem 1rem;
+    }
+    
+    .section-header {
+        margin-bottom: 3rem;
+    }
+    
+    .section-header .section-title {
+        font-size: 2rem;
+    }
+    
+    .section-header .section-subtitle {
+        font-size: 1rem;
+    }
+    
+    .process-container {
+        flex-direction: column;
+        gap: 2rem;
+        overflow-x: visible;
+        padding: 0;
+    }
+    
+    .process-step {
+        min-width: 100%;
+        flex-direction: row;
+        text-align: left;
+        gap: 1.5rem;
+    }
+    
+    .step-icon {
+        width: 60px;
+        height: 60px;
+        flex-shrink: 0;
+        margin-bottom: 0.5rem;
+    }
+    
+    .step-icon i {
+        font-size: 1.5rem;
+    }
+    
+    .step-connector {
+        flex-direction: column;
+        width: auto;
+        height: 60px;
+        margin: 0 1rem 0 0;
+    }
+    
+    .connector-line {
+        width: 3px;
+        height: 40px;
+        background: linear-gradient(180deg, var(--primary-red), var(--dark-red));
+    }
+    
+    .connector-arrow {
+        margin: 0.5rem 0 0 0;
+        margin-left: 0;
+    }
+    
+    .step-content {
+        max-width: none;
+        flex: 1;
+    }
+    
+    .step-title {
+        font-size: 1rem;
+    }
+    
+    .typing-container {
+        margin-top: 1.5rem;
+    }
+
+    .typing-text {
+        font-size: 1rem;
+    }
+}
+
 /* ==================== CONTACT SECTION ==================== */
 .contact-section {
     background: var(--white);
