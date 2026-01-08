@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Select bottom Book Now button only
     const bottomBookBtn = document.querySelector('.pricing-cta .btn-primary');
     const shakeOnce = (el) => {
-        console.log('Shaking bottom book button');
         if (!el) return;
         el.classList.remove('btn-pop'); // Remove if present
         // Force reflow to restart animation if needed
@@ -14,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const observer = new window.IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                console.log('Bottom book button in view, shaking');
                 shakeOnce(entry.target);
                 // Only animate once per view
                 observer.unobserve(entry.target);
@@ -22,10 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }, { threshold: 0.5 });
     if (bottomBookBtn) {
-        console.log('Bottom book button found, observing');
         observer.observe(bottomBookBtn);
     } else {
-        console.log('Bottom book button not found');
     }
 });
 // ==================== PRICING CARDS ROTATE-IN ANIMATION (MOBILE) ====================
@@ -89,22 +85,17 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('load', () => {
     const navBookButton = document.querySelector('.nav-cta');
     setTimeout(() => {
-        console.log('Adding wiggle to navbar button');
         if (navBookButton) {
             navBookButton.classList.add('btn-wiggle');
         } else {
-            console.log('Navbar button not found');
         }
     }, 5000);
 });
 // ========== GET QUOTE BUTTON WIGGLE ON IN-VIEW ==========
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Window width:', window.innerWidth);
     const getQuoteButton = document.querySelector('.quote-form button.btn-primary');
-    console.log('Get quote button:', getQuoteButton);
     if (!getQuoteButton) return;
     const wiggleOnce = (el) => {
-        console.log('Wiggling get quote button');
         el.classList.remove('btn-wiggle');
         void el.offsetWidth;
         el.classList.add('btn-wiggle');
@@ -113,7 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const observer = new window.IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                console.log('Get quote button in view, wiggling');
                 wiggleOnce(entry.target);
                 observer.unobserve(entry.target);
             }
@@ -194,8 +184,6 @@ quoteForm.addEventListener('submit', (e) => {
         weight: document.getElementById('weight').value
     };
     
-    console.log('Form Data:', formData);
-    
     // Store in sessionStorage for next page
     sessionStorage.setItem('quoteData', JSON.stringify(formData));
     
@@ -219,15 +207,10 @@ const toggleBtns = document.querySelectorAll('.toggle-btn');
 const weekdayPricing = document.querySelector('.weekday-pricing');
 const weekendPricing = document.querySelector('.weekend-pricing');
 
-console.log('Toggle buttons found:', toggleBtns.length);
-console.log('Weekday pricing:', weekdayPricing);
-console.log('Weekend pricing:', weekendPricing);
-
 if (toggleBtns.length > 0) {
     toggleBtns.forEach(btn => {
         btn.addEventListener('click', function() {
             const period = this.getAttribute('data-period');
-            console.log('Button clicked:', period);
             
             // Check if we're on mobile (window width <= 768px)
             const isMobile = window.innerWidth <= 768;
@@ -251,11 +234,9 @@ if (toggleBtns.length > 0) {
                 
                 // Toggle pricing grids
                 if (period === 'weekday') {
-                    console.log('Showing weekday pricing');
                     if (weekdayPricing) weekdayPricing.classList.add('active');
                     if (weekendPricing) weekendPricing.classList.remove('active');
                 } else if (period === 'weekend') {
-                    console.log('Showing weekend pricing');
                     if (weekdayPricing) weekdayPricing.classList.remove('active');
                     if (weekendPricing) weekendPricing.classList.add('active');
                 }
@@ -285,7 +266,6 @@ window.addEventListener('resize', () => {
 // ==================== TESTIMONIALS: STAGGER REVEAL ====================
 (function(){
     const cards = Array.from(document.querySelectorAll('.testimonial-card'));
-    console.log('Testimonial cards found:', cards.length);
     if (!cards.length) return;
 
     // Staggered entrance using IntersectionObserver
@@ -293,7 +273,6 @@ window.addEventListener('resize', () => {
         const obs = new IntersectionObserver((entries, o) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    console.log('Testimonial card in view:', entry.target.dataset.idx);
                     const card = entry.target;
                     const idx = Number(card.dataset.idx) || 0;
                     card.style.transitionDelay = (idx * 200) + 'ms';
@@ -358,10 +337,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ==================== MOBILE SCROLL-BASED ANIMATION ====================
 // Function to animate steps based on scroll position (mobile only)
-function animateStepsOnScroll() {
+function animateStepsOnScroll(processSteps) {
     const stepObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry, index) => {
-            if (entry.isIntersecting) {
+            if (entry.isIntersecting && !entry.target.classList.contains('active')) {
                 // Add delay based on step index for sequential animation
                 setTimeout(() => {
                     entry.target.classList.add('active');
@@ -374,13 +353,13 @@ function animateStepsOnScroll() {
     });
 
     // Observe each step
-    processSteps.forEach(step => {
+    processSteps.forEach((step, index) => {
         stepObserver.observe(step);
     });
 
-    // After all steps are animated, trigger Book Now glow
+    // Track animated steps for glow trigger
     let animatedSteps = 0;
-    const stepObserverWithCallback = new IntersectionObserver((entries) => {
+    const glowObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (entry.isIntersecting && !entry.target.classList.contains('active')) {
                 entry.target.classList.add('active');
@@ -397,7 +376,7 @@ function animateStepsOnScroll() {
     }, { threshold: 0.5 });
 
     processSteps.forEach(step => {
-        stepObserverWithCallback.observe(step);
+        glowObserver.observe(step);
     });
 }
 // Function to check if device is mobile
@@ -461,10 +440,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function animateSteps() {
         processSteps.forEach((step, index) => {
             setTimeout(() => {
-                // Force reflow to ensure smooth animation
-                step.offsetHeight;
-                step.style.animation = 'popUp 1.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards';
+                // Add active class to trigger CSS transitions (like mobile)
                 step.classList.add('active');
+
+                // Add a subtle bounce effect for desktop
+                setTimeout(() => {
+                    step.style.transform = 'translateY(-5px) scale(1.05)';
+                    setTimeout(() => {
+                        step.style.transform = 'translateY(0) scale(1)';
+                    }, 200);
+                }, 800);
 
                 // Auto-scroll to this step on mobile after a brief delay
                 if (isMobileDevice) {
@@ -472,11 +457,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         scrollToElement(step);
                     }, 1200); // Scroll after animation has settled
                 }
-            }, index * 1800); // Increased delay for smoother sequential animation
+            }, index * 1500); // Faster sequential animation for desktop engagement
         });
 
         // After all steps are animated, immediately trigger Book Now glow
-        const totalAnimationTime = (processSteps.length * 1800) + 800; // steps + small pause
+        const totalAnimationTime = (processSteps.length * 1500) + 1000; // steps + small pause
         setTimeout(() => {
             triggerBookNowGlow();
 
@@ -523,10 +508,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Insert after the process container
         const processContainer = document.querySelector('.process-container');
-        processContainer.parentNode.insertBefore(typingContainer, processContainer.nextSibling);
+        if (processContainer) {
+            processContainer.parentNode.insertBefore(typingContainer, processContainer.nextSibling);
+        } else {
+            // Fallback: insert at end of how-it-works section
+            const howItWorksSection = document.querySelector('.how-it-works-section');
+            if (howItWorksSection) {
+                howItWorksSection.appendChild(typingContainer);
+            }
+        }
 
         // Start typing animation
-        const text = "Interested in the service? Click Book Now at the top";
+        const text = "🚚 Interested in the service? Click Book Now at the top!";
         const typingText = typingContainer.querySelector('.typing-text');
         let charIndex = 0;
 
@@ -534,12 +527,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (charIndex < text.length) {
                 typingText.textContent += text.charAt(charIndex);
                 charIndex++;
-                setTimeout(typeWriter, 120); // Smooth typing speed
+                setTimeout(typeWriter, 100); // Faster typing for engagement
             } else {
-                // Typing complete - trigger glow
+                // Typing complete - add blinking cursor effect
+                typingText.innerHTML += '<span class="cursor">|</span>';
                 setTimeout(() => {
                     triggerGlowAfterTyping(); // Trigger glow after typing is done
-                }, 300);
+                }, 500);
             }
         }
 
@@ -552,7 +546,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (entry.isIntersecting) {
                 if (isMobileDevice) {
                     // On mobile, animate steps as user scrolls through the section
-                    animateStepsOnScroll();
+                    animateStepsOnScroll(processSteps);
                 } else {
                     // On desktop, animate all steps automatically
                     setTimeout(() => {
@@ -562,7 +556,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 observer.disconnect(); // Disconnect after triggering to free up resources
             }
         });
-    }, { threshold: 0.2 }); // Lower threshold for earlier triggering
+    }, { threshold: 0.1 }); // Lower threshold for earlier triggering
 
     observer.observe(howItWorksSection);
 });

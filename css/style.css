@@ -232,20 +232,19 @@ html {
     text-align: center;
     position: relative;
     opacity: 0;
-    transform: translateY(100px) scale(0.3);
+    transform: translateY(30px) scale(0.9) translateZ(0);
+    transition: all 1.5s cubic-bezier(0.4, 0.0, 0.2, 1);
     min-width: 120px;
     flex-shrink: 0;
-    will-change: opacity, transform;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     transform-style: preserve-3d;
     -webkit-transform-style: preserve-3d;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
 }
 
 .process-step.active {
-    /* Animation is handled by JavaScript, this class is for other styling if needed */
+    opacity: 1;
+    transform: translateY(0) scale(1) translateZ(0);
 }
 
 .step-icon {
@@ -261,7 +260,6 @@ html {
     position: relative;
     overflow: hidden;
     flex-shrink: 0;
-    will-change: transform;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     transform: translateZ(0);
@@ -298,7 +296,6 @@ html {
     transform: scaleX(0);
     transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     overflow: hidden;
-    will-change: opacity, transform;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     transform: translateZ(0);
@@ -425,19 +422,30 @@ html {
 .typing-container {
     text-align: center;
     margin-top: 2rem;
-    min-height: 2rem;
+    min-height: 3rem;
     display: flex;
     justify-content: center;
     align-items: center;
+    animation: fadeInUp 0.8s ease-out;
 }
 
 .typing-text {
-    font-size: 1.1rem;
-    font-weight: 500;
+    font-size: 1.2rem;
+    font-weight: 600;
     color: var(--primary-red);
     font-family: 'Quicksand', sans-serif;
     display: inline-block;
     white-space: nowrap;
+    background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.cursor {
+    animation: blink 1s infinite;
 }
 
 @keyframes blink {
@@ -446,6 +454,17 @@ html {
     }
     51%, 100% {
         border-color: transparent;
+    }
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
@@ -480,9 +499,10 @@ html {
     
     .process-step {
         min-width: 100%;
-        flex-direction: row;
-        text-align: left;
-        gap: 1.5rem;
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+        align-items: center;
     }
     
     .step-icon {
@@ -498,21 +518,29 @@ html {
     
     .step-connector {
         flex-direction: column;
-        width: auto;
-        height: 60px;
-        margin: 0 1rem 0 0;
+        width: 100%;
+        height: auto;
+        margin: 1rem 0;
+        align-items: center;
+        transform: scaleY(0);
+    }
+    
+    .process-step.active .step-connector {
+        transform: scaleY(1);
     }
     
     .connector-line {
         width: 3px;
-        height: 40px;
+        height: 30px;
         background: linear-gradient(180deg, var(--primary-red), var(--dark-red));
     }
     
     .connector-arrow {
         margin: 0.5rem 0 0 0;
-        margin-left: 0;
-        transform: rotate(90deg);
+    }
+    
+    .connector-arrow i::before {
+        content: "\f063"; /* FontAwesome down arrow */
     }
     
     .step-content {
@@ -795,7 +823,6 @@ img {
     -webkit-backface-visibility: hidden;
     transform-style: preserve-3d;
     -webkit-transform-style: preserve-3d;
-    will-change: transform, opacity;
     contain: layout style paint;
 }
 
@@ -980,7 +1007,6 @@ img {
 /* Button Bounce Animation */
 .btn-bounce {
     animation: btnBounce 3.5s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
-    will-change: transform;
 }
 
 /* Paper Plane Fly Animation */
