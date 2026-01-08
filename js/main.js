@@ -356,7 +356,57 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ==================== HOW IT WORKS ANIMATION ====================
+// ==================== MOBILE AUTO-SCROLL FOR ANIMATIONS ====================
+// Function to check if device is mobile
+function isMobile() {
+    return window.innerWidth <= 768;
+}
+
+// Handle window resize to update mobile detection
+let isMobileDevice = isMobile();
+window.addEventListener('resize', debounce(() => {
+    isMobileDevice = isMobile();
+}, 250));
+
+// Function to smoothly scroll element into view
+function scrollToElement(element, offset = 100) {
+    if (!isMobile()) return; // Only auto-scroll on mobile
+
+    const elementRect = element.getBoundingClientRect();
+    const absoluteElementTop = elementRect.top + window.pageYOffset;
+    const middle = absoluteElementTop - (window.innerHeight / 2) + (elementRect.height / 2);
+
+    window.scrollTo({
+        top: middle - offset,
+        behavior: 'smooth'
+    });
+}
+// Debounce function for scroll events
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Throttle function for performance
+function throttle(func, limit) {
+    let inThrottle;
+    return function() {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    }
+}
 document.addEventListener('DOMContentLoaded', () => {
     const howItWorksSection = document.querySelector('.how-it-works-section');
     if (!howItWorksSection) return;
@@ -369,13 +419,30 @@ document.addEventListener('DOMContentLoaded', () => {
         processSteps.forEach((step, index) => {
             setTimeout(() => {
                 step.classList.add('active');
+
+                // Auto-scroll to this step on mobile after a brief delay
+                if (isMobileDevice) {
+                    setTimeout(() => {
+                        scrollToElement(step);
+                    }, 800); // Scroll after animation starts
+                }
             }, index * 1500); // 1.5 seconds delay between each step for smoother flow
         });
 
-        // After all steps are animated, wait 3 seconds then trigger Book Now glow
-        const totalAnimationTime = (processSteps.length * 1500) + 3000; // steps + pause
+        // After all steps are animated, immediately trigger Book Now glow
+        const totalAnimationTime = (processSteps.length * 1500) + 500; // steps + small pause
         setTimeout(() => {
             triggerBookNowGlow();
+
+            // Scroll to typing text on mobile
+            if (isMobileDevice) {
+                setTimeout(() => {
+                    const typingContainer = document.querySelector('.typing-container');
+                    if (typingContainer) {
+                        scrollToElement(typingContainer, 150);
+                    }
+                }, 1000);
+            }
         }, totalAnimationTime);
     }
 
@@ -440,7 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => {
                     animateSteps();
                 }, 300); // Small delay before starting animation
-                observer.unobserve(entry.target);
+                observer.disconnect(); // Disconnect after triggering to free up resources
             }
         });
     }, { threshold: 0.3 });
@@ -465,7 +532,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (mobileBookBtn) {
                         mobileBookBtn.classList.remove('glow-effect');
                     }
-                    observer.unobserve(entry.target);
+                    observer.disconnect(); // Disconnect after triggering to free up resources
                 }
             });
         }, { threshold: 0.1 }); // Trigger when 10% of the section is visible

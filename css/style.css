@@ -1,3 +1,8 @@
+/* Smooth scrolling for better animation viewing */
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px; /* Account for fixed navbar */
+}
 @media (max-width: 768px) {
     .contact-form {
         align-items: center !important;
@@ -227,9 +232,13 @@
     position: relative;
     opacity: 0;
     transform: translateY(20px) scale(0.9);
-    transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all 1.5s cubic-bezier(0.4, 0.0, 0.2, 1);
     min-width: 120px;
     flex-shrink: 0;
+    will-change: opacity, transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform-style: preserve-3d;
 }
 
 .process-step.active {
@@ -246,10 +255,14 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 0.5rem;
-    transition: all 0.5s ease;
+    transition: all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
     position: relative;
     overflow: hidden;
     flex-shrink: 0;
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform: translateZ(0); /* Force hardware acceleration */
 }
 
 .step-icon::before {
@@ -280,8 +293,11 @@
     margin-bottom: 0.5rem;
     opacity: 0;
     transform: scaleX(0);
-    transition: all 0.8s ease 0.3s;
+    transition: all 1s cubic-bezier(0.4, 0.0, 0.2, 1);
     overflow: hidden;
+    will-change: opacity, transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 .process-step.active .step-connector {
@@ -745,6 +761,25 @@
         to { opacity: 1; transform: translateX(0); }
     }
 }
+/* ==================== PERFORMANCE OPTIMIZATIONS ==================== */
+/* Performance optimizations */
+* {
+    box-sizing: border-box;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Optimize animations */
+.process-container,
+.step-icon,
+.process-step {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
 /* ==================== ROOT VARIABLES ==================== */
 :root {
     /* Red Theme Colors */
