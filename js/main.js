@@ -138,39 +138,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ==================== NAVBAR SCROLL EFFECT ====================
 const navbar = document.getElementById('navbar');
-const logoImg = document.querySelector('.logo-img');
-
-// Preload logos for smoother transition
-const logo1 = new Image();
-const logo2 = new Image();
-logo1.src = 'static/newLogo.png';
-logo2.src = 'static/logo2.jpeg';
 
 let isScrolled = false;
 
 window.addEventListener('scroll', () => {
     if (window.scrollY > 50 && !isScrolled) {
         isScrolled = true;
-        navbar.classList. add('scrolled');
-        // Smooth logo change with fade
-        if (logoImg) {
-            logoImg.style.opacity = '0';
-            setTimeout(() => {
-                logoImg.src = 'static/logo2.png';
-                logoImg.style.opacity = '1';
-            }, 150);
-        }
+        navbar.classList.add('scrolled');
     } else if (window.scrollY <= 50 && isScrolled) {
         isScrolled = false;
-        navbar.classList. remove('scrolled');
-        // Smooth logo change with fade
-        if (logoImg) {
-            logoImg.style.opacity = '0';
-            setTimeout(() => {
-                logoImg.src = 'static/newLogo.png';
-                logoImg.style.opacity = '1';
-            }, 150);
-        }
+        navbar.classList.remove('scrolled');
     }
 });
 
@@ -331,4 +308,51 @@ window.addEventListener('resize', () => {
         cards.forEach(c => c.classList.add('in-view'));
     }
 })();
+
+// ==================== FOOTER TYPING ANIMATION ====================
+document.addEventListener('DOMContentLoaded', () => {
+    const typingText = document.getElementById('typingText');
+    const text = 'IHB TRANSPORT APS';
+    let index = 0;
+    
+    function typeWriter() {
+        if (index < text.length) {
+            typingText.textContent += text.charAt(index);
+            index++;
+            setTimeout(typeWriter, 150); // Typing speed
+        }
+    }
+    
+    // Start typing animation when footer comes into view
+    const footer = document.querySelector('footer');
+    if (footer) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        typeWriter();
+                    }, 500); // Small delay before starting
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        observer.observe(footer);
+    }
+});
+
+// Tracking form submission handler
+document.addEventListener('DOMContentLoaded', () => {
+    const trackingForm = document.getElementById('trackingForm');
+    if (trackingForm) {
+        trackingForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const requestId = document.getElementById('requestId').value.trim();
+            if (requestId) {
+                // For now, show an alert. In a real app, this would make an API call
+                alert(`Tracking request for ID: ${requestId}\n\nThis feature will be implemented with real tracking functionality.`);
+            }
+        });
+    }
+});
 

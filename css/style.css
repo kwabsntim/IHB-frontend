@@ -25,6 +25,157 @@
     10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
     20%, 40%, 60%, 80% { transform: translateX(5px); }
 }
+/* ==================== TRACKING SECTION ==================== */
+.tracking-section {
+    background: var(--light-gray);
+    padding: 6rem 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tracking-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+    gap: 3rem;
+}
+
+.tracking-image {
+    flex: 1 1 0;
+    min-width: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tracking-image img {
+    max-width: 370px;
+    width: 100%;
+    border-radius: 18px;
+    box-shadow: 0 4px 32px 0 rgba(31,41,55,0.10);
+    object-fit: cover;
+}
+
+.tracking-content {
+    flex: 1 1 0;
+    min-width: 260px;
+}
+
+.tracking-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--dark-gray);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.tracking-desc {
+    font-size: 1.1rem;
+    color: var(--dark-gray);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.tracking-form {
+    max-width: 400px;
+}
+
+.tracking-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.tracking-form input {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: var(--transition);
+    box-sizing: border-box;
+}
+
+.tracking-form input:focus {
+    outline: none;
+    border-color: var(--primary-red);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.tracking-btn {
+    width: 100%;
+    padding: 0.9rem 2rem;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* Location icon bounce animation */
+.location-icon {
+    color: var(--dark-gray);
+    animation: locationBounce 2s ease-in-out infinite;
+}
+
+@keyframes locationBounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Mobile Tracking Section */
+@media (max-width: 900px) {
+    .tracking-container {
+        flex-direction: column;
+        gap: 2.5rem;
+        text-align: center;
+    }
+    .tracking-content, .tracking-image {
+        min-width: 0;
+    }
+    .tracking-image img {
+        max-width: 320px;
+    }
+    .tracking-title {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .tracking-section {
+        padding: 3.5rem 1.5rem;
+    }
+    .tracking-container {
+        gap: 1.5rem;
+    }
+    .tracking-title {
+        font-size: 2rem;
+    }
+    .tracking-desc {
+        font-size: 1rem;
+    }
+    .tracking-form input {
+        font-size: 0.95rem;
+        padding: 0.8rem;
+    }
+    .tracking-btn {
+        font-size: 1rem;
+        padding: 0.8rem 1.5rem;
+    }
+}
+
 /* ==================== CONTACT SECTION ==================== */
 .contact-section {
     background: var(--white);
@@ -575,10 +726,10 @@ input, button {
     background-color: transparent;
 }
 
-/* Scrolled state (white background) */
+/* Scrolled state (dark background) */
 .navbar.scrolled {
-    background-color: var(--white);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, 0.9);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     padding: 0.5rem 0;
 }
 
@@ -619,7 +770,7 @@ input, button {
 }
 
 .navbar.scrolled .logo-transport {
-    color: var(--dark-gray);
+    color: var(--white);
 }
 
 /* Nav Menu */
@@ -638,7 +789,7 @@ input, button {
 }
 
 .navbar.scrolled .nav-link {
-    color: var(--dark-gray);
+    color: var(--white);
 }
 
 .nav-link::after {
@@ -737,7 +888,7 @@ input, button {
 }
 
 .navbar.scrolled .hamburger .bar {
-    background-color: var(--dark-gray);
+    background-color: var(--white);
 }
 
 /* ==================== HERO SECTION ==================== */
@@ -1095,6 +1246,13 @@ input, button {
     color: var(--white);
     font-size: 2rem;
     opacity: 0.7;
+}
+
+/* Hide scroll indicator on mobile */
+@media (max-width: 768px) {
+    .scroll-indicator {
+        display: none;
+    }
 }
 
 /* ==================== ANIMATIONS ==================== */
@@ -1944,5 +2102,64 @@ input, button {
     
     .testimonial-track {
         height: 450px;
+    }
+}
+
+/* ==================== FOOTER ==================== */
+footer {
+    background: #e5e7eb;
+    width: 100vw;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-container {
+    max-width: var(--max-width);
+    width: 100%;
+    padding: 0 2rem;
+}
+
+.footer-content {
+    text-align: center;
+}
+
+.footer-text {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--dark-gray);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.typing-text {
+    font-family: 'Quicksand', sans-serif;
+}
+
+/* Typing Cursor - Hidden */
+.typing-cursor {
+    display: none;
+}
+
+.footer-info {
+    font-size: 0.9rem;
+    color: var(--dark-gray);
+    margin: 0.5rem 0 0 0;
+    opacity: 0.8;
+    font-weight: 400;
+}
+
+/* Mobile Footer */
+@media (max-width: 600px) {
+    .footer-text {
+        font-size: 1.2rem;
+    }
+    
+    .footer-info {
+        font-size: 0.8rem;
     }
 }

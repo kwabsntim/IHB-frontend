@@ -540,6 +540,39 @@
             </section>
         </main>
 
+        <!-- Tracking Section -->
+        <section class="tracking-section" id="track">
+            <div class="tracking-container">
+                <div class="tracking-image">
+                    <img src="static/tracking.jpg" alt="Track Your Request" />
+                </div>
+                <div class="tracking-content">
+                    <h2 class="section-title tracking-title">
+                        <i class="fas fa-map-marker-alt location-icon"></i>
+                        Track Your Request
+                    </h2>
+                    <p class="tracking-desc">
+                        Enter your request ID below to track the status of your delivery. You'll receive an email after submitting your request ID.This will tell you the status of your request.Thank you for choosing IHB Transport!
+                    </p>
+                    <form class="tracking-form" id="trackingForm">
+                        <div class="form-group">
+                            <input 
+                                type="text" 
+                                id="requestId" 
+                                name="requestId" 
+                                placeholder="Enter your request ID"
+                                required
+                            >
+                        </div>
+                        <button type="submit" class="btn-primary tracking-btn">
+                            Track Request
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
         <section class="contact-section" id="contact">
     <div class="contact-container" style="display: flex; gap: 2rem; align-items: flex-start; justify-content: center;">
         <div class="contact-content" style="flex:1; text-align: center;">
@@ -574,7 +607,18 @@
     </div>
 </section>
 
-<footer style="background: #e5e7eb; width: 100vw; min-height: 80px;"></footer>
+<footer style="background: #e5e7eb; width: 100vw; min-height: 80px;">
+    <div class="footer-container">
+        <div class="footer-content">
+            <h3 class="footer-text">
+                <span class="typing-text" id="typingText"></span>
+            </h3>
+            <p class="footer-info">
+                CVR 44621592 | ©2026
+            </p>
+        </div>
+    </div>
+</footer>
 
 
     <script src="js/main.js"></script>
