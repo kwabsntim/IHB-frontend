@@ -528,6 +528,12 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             triggerBookNowGlow();
 
+            // Start glow only after How It Works animation is done
+            const bookNowBtn = document.querySelector('.nav-cta');
+            const mobileBookBtn = document.querySelector('.mobile-book-btn');
+            if (bookNowBtn) bookNowBtn.classList.add('glow-effect');
+            if (mobileBookBtn) mobileBookBtn.classList.add('glow-effect');
+
             // Scroll to typing text on mobile
             if (isMobileDevice) {
                 setTimeout(() => {
