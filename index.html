@@ -120,11 +120,11 @@
                         >
                     </div>
 
-                    <button type="submit" class="btn-primary">
-                        <a href="book-now.html" class="btn-primary" style="display:inline-block; width:100%; text-align:center; text-decoration:none; color:inherit;">
+                        <button type="submit" class="btn-primary" onsubmit="event.preventDefault(); window.location.href='book-now.html';">
                             Get Instant Quote
                             <i class="fas fa-arrow-right"></i>
-                        </a>
+                        </button>
+                                <form class="quote-form" id="quoteForm" onsubmit="event.preventDefault(); window.location.href='book-now.html';">
                 </form>
             </div>
         </div>
