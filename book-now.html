@@ -9,22 +9,14 @@
     <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Navbar -->
-    <nav style="background: #000; padding: 1rem;">
-    <nav style="background: #000; min-height: 76px; padding: 1.3rem 0;">
-        <div class="navbar-container" style="display: flex; align-items: center; justify-content: center; min-height: 60px;">
-            <a href="/" class="navbar-logo" style="display: flex; align-items:left;">
-                <img src="static/newLogo.png" alt="Logo" style="height: 56px; width: auto;">
-            </a>
-        </div>
-    </nav>
+
             
 
     <!-- Booking Form -->
     <main class="booking-main">
         <form class="booking-form">
             
-                <h3 style="font-size:1.4rem; text-align:center; margin-bottom:1.5rem; color:#222; font-weight:700; white-space:nowrap; overflow-x:auto;">Hey there!, fill out this form to create a booking</h1>
+            <h1 class="booking-title">Hey there!, fill out this form to create a booking</h1>
             <!-- Client Details -->
             <h2>Client Details</h2>
             <div class="form-group">
@@ -113,6 +105,23 @@
     </main>
 
     <style>
+                .booking-title {
+                    font-size: 1.4rem;
+                    text-align: center;
+                    margin-bottom: 1.5rem;
+                    color: #222;
+                    font-weight: 700;
+                    white-space: nowrap;
+                    width: 100%;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    display: block;
+                }
+                @media (max-width: 600px) {
+                    .booking-title {
+                        font-size: 1.05rem;
+                    }
+                }
         body, html {
             font-family: 'Quicksand', Arial, sans-serif;
         }
