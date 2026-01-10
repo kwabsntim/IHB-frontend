@@ -19,7 +19,10 @@
             <h1 class="booking-title">Hey there!, fill out this form to create a booking</h1>
             <!-- Client Details -->
             <h2>Client Details</h2>
-            <div class="form-group">
+            <div class="booking-header">
+                <h1 class="booking-title">Hey there!, fill out this form to create a booking</h1>
+            </div>
+            <form class="booking-form">
                 <label for="client_name">Name</label>
                 <input type="text" id="client_name" name="client_name" maxlength="120" required>
             </div>
@@ -106,20 +109,18 @@
 
     <style>
                 .booking-title {
-                    font-size: 1.4rem;
+                    font-size: clamp(0.9rem, 2.2vw, 1.6rem);
                     text-align: center;
                     margin-bottom: 1.5rem;
                     color: #222;
                     font-weight: 700;
                     white-space: nowrap;
                     width: 100%;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
                     display: block;
                 }
-                @media (max-width: 600px) {
+                @media (max-width: 900px) {
                     .booking-title {
-                        font-size: 1.05rem;
+                        font-size: clamp(0.85rem, 3.5vw, 1.2rem);
                     }
                 }
         body, html {
