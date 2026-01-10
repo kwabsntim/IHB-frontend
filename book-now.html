@@ -11,9 +11,10 @@
 <body>
     <!-- Navbar -->
     <nav style="background: #000; padding: 1rem;">
-        <div class="navbar-container" style="display: flex; align-items: center; justify-content: center;">
+    <nav style="background: #000; min-height: 76px; padding: 1.3rem 0;">
+        <div class="navbar-container" style="display: flex; align-items: center; justify-content: center; min-height: 60px;">
             <a href="/" class="navbar-logo">
-                <img src="static/logo.png" alt="Logo" style="height: 40px;">
+                <img src="static/newLogo.png" alt="Logo" style="height: 40px;">
             </a>
         </div>
     </nav>
@@ -21,6 +22,7 @@
     <!-- Booking Form -->
     <main class="booking-main">
         <form class="booking-form">
+            <h1 style="font-size:1.4rem; text-align:center; margin-bottom:1.5rem; color:#222; font-weight:700;">fill out this form to create a booking</h1>
             <!-- Client Details -->
             <h2>Client Details</h2>
             <div class="form-group">
@@ -33,7 +35,7 @@
             </div>
 
             <!-- Pickup Address Details -->
-            <h2>Pickup Address Details</h2>
+            <h2>Address Details</h2>
             <div class="form-group">
                 <label for="pickup_street">Street</label>
                 <input type="text" id="pickup_street" name="pickup_street" maxlength="255" required>
@@ -51,8 +53,8 @@
                 <input type="text" id="pickup_country" name="pickup_country" maxlength="100" required>
             </div>
 
-            <!-- Dropoff Address Details -->
-            <h2>Dropoff Address Details</h2>
+            <!-- Service Address Details -->
+            <h2>Service Address Details</h2>
             <div class="form-group">
                 <label for="dropoff_street">Street</label>
                 <input type="text" id="dropoff_street" name="dropoff_street" maxlength="255" required>
@@ -92,24 +94,10 @@
                 <input type="text" id="service" name="service" maxlength="100" required>
             </div>
             <div class="form-group">
-                <label for="pickup_date">Pickup Date</label>
-                <input type="date" id="pickup_date" name="pickup_date" required>
+                <label for="service_date">Service Date</label>
+                <input type="date" id="service_date" name="service_date" required>
             </div>
 
-            <!-- Delivery Details -->
-            <h2>Delivery Details</h2>
-            <div class="form-group">
-                <label for="price">Price</label>
-                <input type="number" id="price" name="price" step="0.01" min="0" required>
-            </div>
-            <div class="form-group">
-                <label for="status">Status</label>
-                <input type="text" id="status" name="status" maxlength="20" value="REQUESTED" required>
-            </div>
-            <div class="form-group">
-                <label for="decline_reason">Decline Reason</label>
-                <textarea id="decline_reason" name="decline_reason" rows="2"></textarea>
-            </div>
 
             <!-- Submit Button -->
             <button type="submit" class="btn-primary">Submit Booking</button>
