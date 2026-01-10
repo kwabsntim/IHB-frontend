@@ -18,11 +18,13 @@
             </a>
         </div>
     </nav>
+            
 
     <!-- Booking Form -->
     <main class="booking-main">
         <form class="booking-form">
             <h1 style="font-size:1.4rem; text-align:center; margin-bottom:1.5rem; color:#222; font-weight:700;">Hey there!, fill out this form to create a booking</h1>
+                <h1 style="font-size:1.4rem; text-align:center; margin-bottom:1.5rem; color:#222; font-weight:700; white-space:nowrap; overflow-x:auto;">Hey there!, fill out this form to create a booking</h1>
             <!-- Client Details -->
             <h2>Client Details</h2>
             <div class="form-group">
@@ -148,7 +150,8 @@
         .form-group label {
             font-size: 1rem;
             color: #333;
-        }
+                font-weight: 400;
+            }
         .form-group input,
         .form-group textarea {
             padding: 0.7rem 0.9rem;
@@ -184,6 +187,19 @@
                 max-width: 98vw;
             }
         }
+            @media (max-width: 600px) {
+                .booking-main {
+                    padding: 0.5rem 0;
+                }
+                .booking-form {
+                    padding: 0 0.5rem;
+                    max-width: 100vw;
+                    box-sizing: border-box;
+                }
+                h1 {
+                    font-size: 1.1rem !important;
+                }
+            }
     </style>
 </body>
 </html>
