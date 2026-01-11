@@ -298,7 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (index < text.length) {
             typingText.textContent += text.charAt(index);
             index++;
-            setTimeout(typeWriter, 150); // Typing speed
+            setTimeout(typeWriter, 190); // Typing speed
         }
     }
     
@@ -385,7 +385,7 @@ function createTypingText() {
         if (charIndex < text.length) {
             typingText.textContent += text.charAt(charIndex);
             charIndex++;
-            setTimeout(typeWriter, 100); // Faster typing for engagement
+            setTimeout(typeWriter, 140); // Faster typing for engagement
         } else {
             // Typing complete - add blinking cursor effect
             typingText.innerHTML += '<span class="cursor">|</span>';
