@@ -1842,6 +1842,14 @@ input, button {
     .navbar {
         top: 40px;
     }
+
+    /* Hide desktop nav contact and keep Book Now sizing on small screens */
+    .nav-phone {
+        display: none !important;
+    }
+    .mobile-book-btn {
+        padding: 0.6rem 1.2rem; /* maintain old width/padding */
+    }
     
     .hamburger {
         display: flex;
