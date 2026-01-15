@@ -383,18 +383,18 @@ html {
 /* Book Now Button Glow Effect */
 .nav-cta.glow-effect,
 .mobile-book-btn.glow-effect {
-    animation: buttonGlow 2s ease-in-out infinite alternate;
-    box-shadow: 0 0 20px rgba(220, 38, 38, 0.8);
+    animation: buttonGlow 2s ease-in-out 1 forwards;
+    box-shadow: 0 0 20px rgba(255,215,0,0.9);
 }
 
 @keyframes buttonGlow {
     0% {
-        box-shadow: 0 0 20px rgba(220, 38, 38, 0.8), 0 0 40px rgba(220, 38, 38, 0.4);
+        box-shadow: 0 0 8px rgba(255,215,0,0.6);
         transform: scale(1);
     }
     100% {
-        box-shadow: 0 0 30px rgba(220, 38, 38, 1), 0 0 60px rgba(220, 38, 38, 0.6);
-        transform: scale(1.05);
+        box-shadow: 0 0 24px rgba(255,215,0,1), 0 0 48px rgba(255,215,0,0.6);
+        transform: scale(1.03);
     }
 }
 
