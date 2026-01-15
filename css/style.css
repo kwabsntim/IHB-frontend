@@ -1298,6 +1298,25 @@ input, button {
     pointer-events: none;
 }
 
+/* Mobile topbar (thin) */
+.mobile-topbar {
+    display: none;
+}
+.mobile-topbar-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 1rem;
+    width: 100%;
+}
+.mobile-topbar-phone {
+    color: var(--white);
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 /* Hamburger Menu (Mobile) */
 .hamburger {
     display: none;
@@ -1800,6 +1819,28 @@ input, button {
         display: block;
         margin-right: 0.5rem;
         color: var(--primary-red);
+    }
+
+    /* Show thin topbar and move navbar down on small screens */
+    .mobile-topbar {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 40px;
+        background-color: rgba(0,0,0,0.9);
+        z-index: 1002;
+        display: flex;
+        align-items: center;
+    }
+    .mobile-topbar-inner {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+    .navbar {
+        top: 40px;
     }
     
     .hamburger {
