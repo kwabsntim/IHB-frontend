@@ -745,13 +745,13 @@ html {
 /* Wiggle animation for buttons */
 @keyframes wiggle {
     0%, 7% { transform: rotateZ(0) scale(1); }
-    15% { transform: rotateZ(-20deg) scale(1.05); }
-    20% { transform: rotateZ(15deg) scale(1.05); }
-    25% { transform: rotateZ(-15deg) scale(1.05); }
-    30% { transform: rotateZ(10deg) scale(1.05); }
-    35% { transform: rotateZ(-8deg) scale(1.05); }
-    40% { transform: rotateZ(5deg) scale(1.05); }
-    45% { transform: rotateZ(-3deg) scale(1.05); }
+    15% { transform: rotateZ(-10deg) scale(1.04); }
+    20% { transform: rotateZ(7deg) scale(1.04); }
+    25% { transform: rotateZ(-7deg) scale(1.04); }
+    30% { transform: rotateZ(5deg) scale(1.03); }
+    35% { transform: rotateZ(-4deg) scale(1.03); }
+    40% { transform: rotateZ(3deg) scale(1.02); }
+    45% { transform: rotateZ(-2deg) scale(1.02); }
     50%, 100% { transform: rotateZ(0) scale(1); }
 }
 
