@@ -10,92 +10,89 @@
 </head>
 <body>
 
-            
-
-
-    <!-- Booking Overlay with Background Image -->
-    <div class="booking-bg">
-        <div class="booking-overlay">
-            <form class="booking-form">
-                <h1 class="booking-title">Hey there!, fill out this form to create a booking</h1>
-                <!-- Client Details -->
-                <h2>Client Details</h2>
-                <div class="form-group">
-                    <label for="client_name">Name</label>
-                    <input class="form-input" type="text" id="client_name" name="client_name" maxlength="120" required>
-                </div>
-                <div class="form-group">
-                    <label for="client_email">Email</label>
-                    <input type="email" id="client_email" name="client_email" maxlength="120" required>
-                </div>
-                <!-- Pickup Address Details -->
-                <h2>Address Details</h2>
-                <div class="form-group">
-                    <label for="pickup_street">Street</label>
-                    <input type="text" id="pickup_street" name="pickup_street" maxlength="255" required>
-                </div>
-                <div class="form-group">
-                    <label for="pickup_city">City</label>
-                    <input type="text" id="pickup_city" name="pickup_city" maxlength="100" required>
-                </div>
-                <div class="form-group">
-                    <label for="pickup_post_code">Post Code</label>
-                    <input type="text" id="pickup_post_code" name="pickup_post_code" maxlength="20" required>
-                </div>
-                <div class="form-group">
-                    <label for="pickup_country">Country</label>
-                    <input type="text" id="pickup_country" name="pickup_country" maxlength="100" required>
-                </div>
-                <!-- Service Address Details -->
-                <h2>Service Address Details</h2>
-                <div class="form-group">
-                    <label for="dropoff_street">Street</label>
-                    <input type="text" id="dropoff_street" name="dropoff_street" maxlength="255" required>
-                </div>
-                <div class="form-group">
-                    <label for="dropoff_city">City</label>
-                    <input type="text" id="dropoff_city" name="dropoff_city" maxlength="100" required>
-                </div>
-                <div class="form-group">
-                    <label for="dropoff_post_code">Post Code</label>
-                    <input type="text" id="dropoff_post_code" name="dropoff_post_code" maxlength="20" required>
-                </div>
-                <div class="form-group">
-                    <label for="dropoff_country">Country</label>
-                    <input type="text" id="dropoff_country" name="dropoff_country" maxlength="100" required>
-                </div>
-                <!-- Item Details -->
-                <h2>Item Details</h2>
-                <div class="form-group">
-                    <label for="item_description">Item Description</label>
-                    <input type="text" id="item_description" name="item_description" maxlength="255" required>
-                </div>
-                <div class="form-group">
-                    <label for="items">Items</label>
-                    <textarea id="items" name="items" rows="2" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="weight">Weight</label>
-                    <input type="text" id="weight" name="weight" maxlength="50" required>
-                </div>
-                <!-- Service Details -->
-                <h2>Service Details</h2>
-                <div class="form-group">
-                    <label for="service">Service Type</label>
-                    <select id="service" name="service" required>
-                        <option value="">Select a service</option>
-                        <option value="Moving Services">Moving Services</option>
-                        <option value="Storage Solutions">Storage Solutions</option>
-                        <option value="Furniture & Junk Services">Furniture & Junk Services</option>
-                        <option value="International Shipping">International Shipping</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="service_date">Service Date</label>
-                    <input type="date" id="service_date" name="service_date" required>
-                </div>
-                <!-- Submit Button -->
-                <button type="submit" class="btn-primary">Submit Booking</button>
+    <main class="booking-main">
+        <form class="booking-form">
+            <h1 class="booking-title">Hey there!, fill out this form to create a booking</h1>
+            <!-- Client Details -->
+            <h2>Client Details</h2>
+            <div class="form-group">
+                <label for="client_name">Name</label>
+                <input class="form-input" type="text" id="client_name" name="client_name" maxlength="120" required>
+            </div>
+            <div class="form-group">
+                <label for="client_email">Email</label>
+                <input type="email" id="client_email" name="client_email" maxlength="120" required>
+            </div>
+            <!-- Pickup Address Details -->
+            <h2>Address Details</h2>
+            <div class="form-group">
+                <label for="pickup_street">Street</label>
+                <input type="text" id="pickup_street" name="pickup_street" maxlength="255" required>
+            </div>
+            <div class="form-group">
+                <label for="pickup_city">City</label>
+                <input type="text" id="pickup_city" name="pickup_city" maxlength="100" required>
+            </div>
+            <div class="form-group">
+                <label for="pickup_post_code">Post Code</label>
+                <input type="text" id="pickup_post_code" name="pickup_post_code" maxlength="20" required>
+            </div>
+            <div class="form-group">
+                <label for="pickup_country">Country</label>
+                <input type="text" id="pickup_country" name="pickup_country" maxlength="100" required>
+            </div>
+            <!-- Service Address Details -->
+            <h2>Service Address Details</h2>
+            <div class="form-group">
+                <label for="dropoff_street">Street</label>
+                <input type="text" id="dropoff_street" name="dropoff_street" maxlength="255" required>
+            </div>
+            <div class="form-group">
+                <label for="dropoff_city">City</label>
+                <input type="text" id="dropoff_city" name="dropoff_city" maxlength="100" required>
+            </div>
+            <div class="form-group">
+                <label for="dropoff_post_code">Post Code</label>
+                <input type="text" id="dropoff_post_code" name="dropoff_post_code" maxlength="20" required>
+            </div>
+            <div class="form-group">
+                <label for="dropoff_country">Country</label>
+                <input type="text" id="dropoff_country" name="dropoff_country" maxlength="100" required>
+            </div>
+            <!-- Item Details -->
+            <h2>Item Details</h2>
+            <div class="form-group">
+                <label for="item_description">Item Description</label>
+                <input type="text" id="item_description" name="item_description" maxlength="255" required>
+            </div>
+            <div class="form-group">
+                <label for="items">Items</label>
+                <textarea id="items" name="items" rows="2" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="weight">Weight</label>
+                <input type="text" id="weight" name="weight" maxlength="50" required>
+            </div>
+            <!-- Service Details -->
+            <h2>Service Details</h2>
+            <div class="form-group">
+                <label for="service">Service Type</label>
+                <select id="service" name="service" required>
+                    <option value="">Select a service</option>
+                    <option value="Moving Services">Moving Services</option>
+                    <option value="Storage Solutions">Storage Solutions</option>
+                    <option value="Furniture & Junk Services">Furniture & Junk Services</option>
+                    <option value="International Shipping">International Shipping</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="service_date">Service Date</label>
+                <input type="date" id="service_date" name="service_date" required>
+            </div>
+            <!-- Submit Button -->
+            <button type="submit" class="btn-primary">Submit Booking</button>
+        </form>
+    </main>
             </form>
         </div>
     </div>
