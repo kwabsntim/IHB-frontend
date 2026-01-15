@@ -1282,6 +1282,22 @@ input, button {
     background-color: var(--dark-red);
 }
 
+/* Mobile Phone Button (hidden on desktop) */
+.mobile-phone-btn {
+    display: none;
+    background-color: transparent;
+    color: var(--primary-red);
+    padding: 0.45rem 0.6rem;
+    border-radius: 50%;
+    font-size: 1rem;
+    text-decoration: none;
+    border: 1px solid transparent;
+}
+
+.mobile-phone-btn i {
+    pointer-events: none;
+}
+
 /* Hamburger Menu (Mobile) */
 .hamburger {
     display: none;
@@ -1779,6 +1795,11 @@ input, button {
         display: block;
         margin-right: 0.5rem;
         margin-left: auto;
+    }
+    .mobile-phone-btn {
+        display: block;
+        margin-right: 0.5rem;
+        color: var(--primary-red);
     }
     
     .hamburger {
