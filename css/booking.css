@@ -100,8 +100,31 @@
     cursor: pointer;
     font-size: 14px;
     font-weight: 700;
+    transition: background-color 0.15s ease, color 0.15s ease;
 }
 .form-container button.btn-primary:hover {
+    background: #000;
+    color: #fff;
+}
+
+/* Apply the same hover/focus styles to any buttons/links inside the booking form */
+.booking-form button:hover,
+.booking-form .btn-primary:hover,
+.booking-form .btn:hover,
+.booking-form a.btn-primary:hover,
+.booking-form input[type="submit"]:hover {
+    background: #000 !important;
+    color: #fff !important;
+    border-color: #000 !important;
+}
+
+.booking-form button:focus,
+.booking-form .btn:focus,
+.booking-form .btn-primary:focus,
+.booking-form a.btn-primary:focus,
+.booking-form input[type="submit"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.12);
     background: #000;
     color: #fff;
 }
