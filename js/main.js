@@ -560,9 +560,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add glow effect to both buttons
         if (bookNowBtn) {
             bookNowBtn.classList.add('glow-effect');
+            // remove after 2s so glow only lasts 2 seconds
+            setTimeout(() => bookNowBtn.classList.remove('glow-effect'), 2000);
         }
         if (mobileBookBtn) {
             mobileBookBtn.classList.add('glow-effect');
+            setTimeout(() => mobileBookBtn.classList.remove('glow-effect'), 2000);
         }
     }
 

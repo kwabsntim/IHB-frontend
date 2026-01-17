@@ -1022,7 +1022,7 @@ img {
 
 /* Button Wiggle Animation */
 .btn-wiggle {
-    animation: wiggle 3.5s ease-in-out;
+    animation: wiggle 3.5s ease-in-out infinite;
 }
 
 /* Button Bounce Animation */
