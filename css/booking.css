@@ -11,6 +11,20 @@
     box-shadow: none;
 }
 
+/* Admin page: center the login form vertically and horizontally */
+.booking-main.admin-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+}
+
+.booking-main.admin-page .form-container {
+    max-width: 420px; /* narrower for forms */
+    padding: 24px;
+}
+
 .booking-title {
     text-align: center;
     color:#DC2626;
@@ -74,7 +88,7 @@
 .booking-form .form-input:focus {
     outline: none;
     border-color: #DC2626;
-    box-shadow: 0 0 0 3px rgba(220,38,38,0.12);
+    box-shadow: none; /* only show red border, no shadow */
 }
 
 /* Visible focus for keyboard users */
@@ -82,7 +96,7 @@
 .booking-form textarea:focus-visible,
 .booking-form select:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(220,38,38,0.18);
+    box-shadow: none;
 }
 
 .phone-group { display: flex; gap: 8px; }
