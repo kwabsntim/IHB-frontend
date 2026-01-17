@@ -383,8 +383,9 @@ html {
 /* Book Now Button Glow Effect */
 .nav-cta.glow-effect,
 .mobile-book-btn.glow-effect {
-    animation: buttonGlow 2s ease-in-out 1 forwards;
-    box-shadow: 0 0 20px rgba(255,215,0,0.9);
+    /* Play the glow animation once (2s). Do not persist final state.
+       The keyframes provide the temporary box-shadow during animation. */
+    animation: buttonGlow 2s ease-in-out 1;
 }
 
 @keyframes buttonGlow {

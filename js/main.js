@@ -349,9 +349,12 @@ function triggerGlowAfterTyping() {
     // Add glow effect to both buttons
     if (bookNowBtn) {
         bookNowBtn.classList.add('glow-effect');
+        // Remove the class after the animation duration so the glow stops
+        setTimeout(() => bookNowBtn.classList.remove('glow-effect'), 2100);
     }
     if (mobileBookBtn) {
         mobileBookBtn.classList.add('glow-effect');
+        setTimeout(() => mobileBookBtn.classList.remove('glow-effect'), 2100);
     }
 }
 
