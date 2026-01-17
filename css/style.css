@@ -1026,6 +1026,17 @@ img {
     animation: wiggle 3.5s ease-in-out infinite;
 }
 
+/* Stagger wiggle start times on desktop so navbar button wiggles first */
+@media (min-width: 900px) {
+    .nav-cta.btn-wiggle {
+        animation-delay: 0s;
+    }
+    .quote-form .btn-wiggle,
+    .btn-primary.btn-wiggle {
+        animation-delay: 0.8s;
+    }
+}
+
 /* Button Bounce Animation */
 .btn-bounce {
     animation: btnBounce 3.5s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
