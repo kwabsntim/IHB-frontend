@@ -380,24 +380,7 @@ html {
     max-width: 140px;
 }
 
-/* Book Now Button Glow Effect */
-.nav-cta.glow-effect,
-.mobile-book-btn.glow-effect {
-    /* Play the glow animation once (2s). Do not persist final state.
-       The keyframes provide the temporary box-shadow during animation. */
-    animation: buttonGlow 2s ease-in-out 1;
-}
-
-@keyframes buttonGlow {
-    0% {
-        box-shadow: 0 0 8px rgba(255,215,0,0.6);
-        transform: scale(1);
-    }
-    100% {
-        box-shadow: 0 0 24px rgba(255,215,0,1), 0 0 48px rgba(255,215,0,0.6);
-        transform: scale(1.03);
-    }
-}
+/* (Glow effect removed — replaced with wiggle animation triggered after typing) */
 
 /* Pop Up Animation for Process Steps */
 @keyframes popUp {
@@ -1259,13 +1242,20 @@ input, button {
     border-radius: 50px;
     font-weight: 600;
     display: inline-block;
-    animation: wiggle 5s ease-in-out;
+}
+
+/* One-shot wiggle helper class (used when we want the button to wiggle once) */
+.btn-wiggle-once,
+.nav-cta.btn-wiggle-once,
+.mobile-book-btn.btn-wiggle-once {
+    /* Slightly slower wiggle for more gentle emphasis */
+    animation: wiggle 2.2s ease-in-out 1;
 }
 
 .nav-cta::after {
     display: none;
 }
-
+ 
 .nav-cta:hover {
     background-color: var(--primary-red);
     transform: translateY(-2px);
