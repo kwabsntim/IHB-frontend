@@ -605,7 +605,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isMobile()) {
             // small timeout so layout has settled
             setTimeout(() => {
-                scrollToElement(typingContainer, 120);
+                // Ensure it's visible and not hidden by parent overflow
+                typingContainer.style.visibility = 'visible';
+                typingContainer.style.opacity = '1';
+                try {
+                    // Prefer a native scrollIntoView; fallback to scrollToElement
+                    typingContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } catch (e) {
+                    scrollToElement(typingContainer, 120);
+                }
             }, 120);
         }
 

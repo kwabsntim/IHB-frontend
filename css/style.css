@@ -2314,8 +2314,9 @@ input, button {
     
     .toggle-btn {
         width: 100%;
-        justify-content: space-between;
+        justify-content: center;
         position: relative;
+        text-align: center;
     }
     
     .toggle-btn::after {
