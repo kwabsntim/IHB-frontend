@@ -431,6 +431,18 @@ html {
     animation: blink 1s infinite;
 }
 
+/* Fallback for mobile browsers that don't support background-clip text reliably */
+@media (max-width: 768px) {
+    .typing-text {
+        background: none !important;
+        -webkit-background-clip: initial !important;
+        -webkit-text-fill-color: var(--primary-red) !important;
+        color: var(--primary-red) !important;
+        text-shadow: 0 2px 6px rgba(220,38,38,0.12);
+    }
+    .typing-container { z-index: 2; }
+}
+
 @keyframes blink {
     0%, 50% {
         border-color: var(--primary-red);
@@ -2033,6 +2045,7 @@ input, button {
 
 .toggle-btn {
     display: flex;
+    justify-content: center;
     align-items: center;
     gap: 0.5rem;
     padding: 1rem 2rem;
@@ -2311,9 +2324,9 @@ input, button {
         font-weight: 900;
         transition: transform 0.3s ease;
     }
-    
-    .toggle-btn.active::after {
-        transform: rotate(180deg);
+    /* On mobile we don't want accordion arrows; show simple button UI */
+    .toggle-btn::after {
+        display: none;
     }
     
     /* Mobile accordion behavior */
@@ -2330,6 +2343,21 @@ input, button {
         display: grid;
         max-height: 5000px;
         margin-bottom: 2rem;
+    }
+
+    /* Ensure typing text is visible and properly spaced on mobile */
+    .typing-container {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        padding: 0.8rem 0;
+        min-height: 48px;
+        visibility: visible;
+    }
+    .typing-text {
+        font-size: 1.05rem;
+        -webkit-text-fill-color: var(--primary-red) !important;
+        color: var(--primary-red) !important;
     }
     
     .pricing-card {

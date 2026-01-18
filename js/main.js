@@ -279,27 +279,10 @@ if (toggleBtns.length > 0) {
         btn.addEventListener('click', function() {
             const period = this.getAttribute('data-period');
             
-            // Check if we're on mobile (window width <= 768px)
-            const isMobile = window.innerWidth <= 768;
-            
-            if (isMobile) {
-                // ACCORDION MODE: Toggle the clicked section, allow both to be open
-                this.classList.toggle('active');
-                
-                if (period === 'weekday') {
-                    weekdayPricing.classList.toggle('active');
-                } else if (period === 'weekend') {
-                    weekendPricing.classList.toggle('active');
-                }
-            } else {
-                // DESKTOP MODE: Toggle between sections (only one open at a time)
-                // Remove active class from all buttons
+                // Unified toggle behavior for all viewports: show selected period, hide the other
                 toggleBtns.forEach(b => b.classList.remove('active'));
-                
-                // Add active class to clicked button
                 this.classList.add('active');
-                
-                // Toggle pricing grids
+
                 if (period === 'weekday') {
                     if (weekdayPricing) weekdayPricing.classList.add('active');
                     if (weekendPricing) weekendPricing.classList.remove('active');
@@ -307,7 +290,6 @@ if (toggleBtns.length > 0) {
                     if (weekdayPricing) weekdayPricing.classList.remove('active');
                     if (weekendPricing) weekendPricing.classList.add('active');
                 }
-            }
         });
     });
 } else {
@@ -620,7 +602,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // On mobile, make sure the typing area is visible by scrolling it into view
-        if (isMobileDevice) {
+        if (isMobile()) {
             // small timeout so layout has settled
             setTimeout(() => {
                 scrollToElement(typingContainer, 120);
