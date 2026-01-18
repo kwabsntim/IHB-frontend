@@ -619,6 +619,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        // On mobile, make sure the typing area is visible by scrolling it into view
+        if (isMobileDevice) {
+            // small timeout so layout has settled
+            setTimeout(() => {
+                scrollToElement(typingContainer, 120);
+            }, 120);
+        }
+
         // Start typing animation
         const text = "🚚 Interested in the service? Click Book Now at the top!";
         const typingText = typingContainer.querySelector('.typing-text');
