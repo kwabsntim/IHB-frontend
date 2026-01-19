@@ -277,15 +277,19 @@ document.addEventListener('DOMContentLoaded', () => {
         overlay.classList.add('visible');
 
         try {
+            console.log('Booking payload:', payload);
             const res = await fetch('https://ihb-transport-dk.onrender.com/api/public/deliveries', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
 
+            console.log('Fetch response status:', res.status);
+            const responseText = await res.text();
+            console.log('Fetch response body:', responseText);
+
             if (!res.ok) {
-                const text = await res.text();
-                throw new Error(text || `Server responded with ${res.status}`);
+                throw new Error(responseText || `Server responded with ${res.status}`);
             }
 
             // On success show a confirm dialog: OK = stay, Cancel = go to homepage
