@@ -399,6 +399,37 @@ html {
     }
 }
 
+/* Booking form loading overlay and error styles */
+.booking-loading-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.45);
+    z-index: 9999;
+}
+.booking-loading-overlay.visible { display: flex; }
+.booking-loading-inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(0,0,0,0.25);
+    padding: 18px 22px;
+    border-radius: 8px;
+}
+.booking-spinner {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 5px solid rgba(255,255,255,0.15);
+    border-top-color: #ffffff;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.booking-loading-text { color: #fff; font-weight: 700; }
+.booking-error { color: #b91c1c; margin-bottom: 12px; font-weight: 700; }
+
 /* Pop Up Animation for Process Steps */
 @keyframes popUp {
     0% {

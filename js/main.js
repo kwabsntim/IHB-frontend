@@ -126,6 +126,117 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Booking form submission handler - validation, loading overlay and confirmation
+document.addEventListener('DOMContentLoaded', () => {
+    const bookingForm = document.querySelector('.booking-form');
+    if (!bookingForm) return;
+
+    // Insert or find an error box at top of the form
+    let errorBox = bookingForm.querySelector('.booking-error');
+    if (!errorBox) {
+        errorBox = document.createElement('div');
+        errorBox.className = 'booking-error';
+        bookingForm.insertBefore(errorBox, bookingForm.firstChild);
+    }
+
+    // Create a global loading overlay element (hidden by default)
+    let overlay = document.querySelector('.booking-loading-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'booking-loading-overlay';
+        overlay.innerHTML = `
+            <div class="booking-loading-inner">
+                <div class="booking-spinner" aria-hidden="true"></div>
+                <div class="booking-loading-text">Sending booking...</div>
+            </div>`;
+        document.body.appendChild(overlay);
+    }
+
+    bookingForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorBox.textContent = '';
+
+        const submitBtn = bookingForm.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+
+        const get = (id) => document.getElementById(id)?.value.trim() || '';
+        const payload = {
+            client_name: get('client_name'),
+            client_email: get('client_email'),
+            pickup_address: {
+                street: get('pickup_street'),
+                city: get('pickup_city'),
+                post_code: get('pickup_post_code'),
+                country: get('pickup_country')
+            },
+            service_address: {
+                street: get('dropoff_street'),
+                city: get('dropoff_city'),
+                post_code: get('dropoff_post_code'),
+                country: get('dropoff_country')
+            },
+            item_description: get('item_description'),
+            items: get('items'),
+            weight: get('weight'),
+            service: document.getElementById('service')?.value || '',
+            service_date: document.getElementById('service_date')?.value || ''
+        };
+
+        // Basic client-side validation: required fields must be present
+        const required = [
+            { val: payload.client_name, name: 'Name' },
+            { val: payload.client_email, name: 'Email' },
+            { val: payload.pickup_address.street, name: 'Pickup street' },
+            { val: payload.pickup_address.city, name: 'Pickup city' },
+            { val: payload.pickup_address.post_code, name: 'Pickup post code' },
+            { val: payload.service_address.street, name: 'Service street' },
+            { val: payload.service_address.city, name: 'Service city' },
+            { val: payload.service_address.post_code, name: 'Service post code' },
+            { val: payload.item_description, name: 'Item description' },
+            { val: payload.items, name: 'Items' },
+            { val: payload.weight, name: 'Weight' },
+            { val: payload.service, name: 'Service type' },
+            { val: payload.service_date, name: 'Service date' }
+        ];
+
+        const missing = required.filter(r => !r.val).map(r => r.name);
+        if (missing.length) {
+            errorBox.textContent = 'Please fill the following fields: ' + missing.join(', ');
+            if (submitBtn) submitBtn.disabled = false;
+            return;
+        }
+
+        // Show loading overlay
+        overlay.classList.add('visible');
+
+        try {
+            const res = await fetch('https://ihb-transport-dk.onrender.com/api/public/deliveries', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text || `Server responded with ${res.status}`);
+            }
+
+            // On success show a confirm dialog: OK = stay, Cancel = go to homepage
+            const stay = window.confirm('Booking submitted successfully. Click OK to remain on this page, or Cancel to return to the homepage.');
+            bookingForm.reset();
+            if (!stay) {
+                window.location.href = 'index.html';
+            }
+        } catch (err) {
+            console.error('Booking submit error:', err);
+            errorBox.textContent = 'Failed to submit booking: ' + (err.message || 'Unknown error');
+        } finally {
+            overlay.classList.remove('visible');
+            if (submitBtn) submitBtn.disabled = false;
+        }
+    });
+});
+
 // ==================== NAVBAR SCROLL EFFECT ====================
 const navbar = document.getElementById('navbar');
 
