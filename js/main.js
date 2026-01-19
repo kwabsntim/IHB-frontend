@@ -24,6 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
     }
 });
+// Central wiggle duration so it's easy to tweak
+const WIGGLE_DURATION = 2200; // milliseconds (2.2s)
 // ==================== PRICING CARDS ROTATE-IN ANIMATION (MOBILE) ====================
 document.addEventListener('DOMContentLoaded', () => {
     if (window.innerWidth > 768) return;
@@ -46,12 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mobile Book Now Button Slide Down and Wiggle
     const mobileBookBtn = document.querySelector('.mobile-book-btn');
     if (mobileBookBtn) {
-        mobileBookBtn.classList.remove('btn-wiggle');
         mobileBookBtn.classList.remove('slide-in-down');
         setTimeout(() => {
             mobileBookBtn.classList.add('slide-in-down');
             setTimeout(() => {
-                mobileBookBtn.classList.add('btn-wiggle');
+                // single wiggle after slide-in
+                wiggleOnceGlobal(mobileBookBtn, WIGGLE_DURATION);
             }, 700); // Start wiggle after slide in
         }, 300); // Small delay after DOMContentLoaded
     }
@@ -84,26 +86,71 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==================== BUTTON WIGGLE ANIMATION ====================
 window.addEventListener('load', () => {
     const navBookButton = document.querySelector('.nav-cta');
-    setTimeout(() => {
-        if (navBookButton) {
-            navBookButton.classList.add('btn-wiggle');
-        } else {
-        }
-    }, 5000);
+        // Give the nav book button a single wiggle after a short delay, then wiggle the "Get Quote" button
+        const NAV_WIGGLE_DELAY = 1000; // reduced to 1s per request
+        const NAV_WIGGLE_DURATION = WIGGLE_DURATION;
+        setTimeout(() => {
+            if (navBookButton) {
+                // trigger nav wiggle and mark done after its duration
+                wiggleOnceGlobal(navBookButton, NAV_WIGGLE_DURATION);
+                ensureNavWigglePromise();
+                setTimeout(() => {
+                    navWiggleDone = true;
+                    if (navWigglePromiseResolve) navWigglePromiseResolve();
+                }, NAV_WIGGLE_DURATION + 50);
+            } else {
+                // no nav button - mark as done so others don't wait forever
+                navWiggleDone = true;
+            }
+
+            // After the nav wiggle completes, wiggle the Get Quote button (if present)
+            const getQuoteButton = document.querySelector('.quote-form button.btn-primary');
+            if (getQuoteButton) {
+                if (navWiggleDone) wiggleOnceGlobal(getQuoteButton, WIGGLE_DURATION);
+                else {
+                    ensureNavWigglePromise();
+                    navWigglePromise.then(() => wiggleOnceGlobal(getQuoteButton, WIGGLE_DURATION));
+                }
+                // mark as wiggled so the intersection observer won't repeat it
+                getQuoteButton.dataset.wiggled = '1';
+            }
+
+            // Start the footer "Interested" typing animation after nav and get-quote wiggles finish
+            // (only start if not already present)
+            const TYPING_START_DELAY = NAV_WIGGLE_DURATION + 250 + WIGGLE_DURATION + 250; // nav + gap + get-quote + gap
+            setTimeout(() => {
+                if (!document.querySelector('.typing-container')) {
+                    // createTypingText is global; call it to start typing
+                    try { createTypingText(); } catch (e) { /* no-op if unavailable */ }
+                }
+            }, TYPING_START_DELAY);
+        }, NAV_WIGGLE_DELAY);
 });
 // ========== GET QUOTE BUTTON WIGGLE ON IN-VIEW ==========
 document.addEventListener('DOMContentLoaded', () => {
     const getQuoteButton = document.querySelector('.quote-form button.btn-primary');
     if (!getQuoteButton) return;
     const wiggleOnce = (el) => {
-        el.classList.remove('btn-wiggle');
-        void el.offsetWidth;
-        el.classList.add('btn-wiggle');
-        setTimeout(() => el.classList.remove('btn-wiggle'), 2000);
+        // Skip if already wiggled on load
+        if (el.dataset && el.dataset.wiggled === '1') return;
+        // Ensure nav wiggle happens first. If nav wiggle already done, wiggle immediately.
+        if (navWiggleDone) {
+            wiggleOnceGlobal(el, WIGGLE_DURATION);
+        } else {
+            ensureNavWigglePromise();
+            navWigglePromise.then(() => wiggleOnceGlobal(el, WIGGLE_DURATION));
+        }
+        // mark as wiggled so it doesn't trigger twice
+        if (el.dataset) el.dataset.wiggled = '1';
     };
     const observer = new window.IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
+                // If it was already wiggled on page load, just unobserve and skip
+                if (entry.target.dataset && entry.target.dataset.wiggled === '1') {
+                    observer.unobserve(entry.target);
+                    return;
+                }
                 wiggleOnce(entry.target);
                 observer.unobserve(entry.target);
             }
@@ -111,6 +158,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { threshold: 0.5 });
     observer.observe(getQuoteButton);
 });
+
+// Global helper to wiggle a button once (re-usable)
+function wiggleOnceGlobal(el, duration = WIGGLE_DURATION) {
+    if (!el) return;
+    // remove any lingering one-shot class and force reflow
+    el.classList.remove('btn-wiggle-once');
+    void el.offsetWidth; // force reflow to restart animation
+    el.classList.add('btn-wiggle-once');
+    setTimeout(() => el.classList.remove('btn-wiggle-once'), duration + 50);
+}
+
+// Track whether the nav Book Now has completed its first wiggle
+let navWiggleDone = false;
+let navWigglePromise = null;
+let navWigglePromiseResolve = null;
+function ensureNavWigglePromise() {
+    if (!navWigglePromise) {
+        navWigglePromise = new Promise(resolve => { navWigglePromiseResolve = resolve; });
+    }
+}
 
 // Contact form submission handler (send mail)
 document.addEventListener('DOMContentLoaded', () => {
@@ -323,27 +390,10 @@ if (toggleBtns.length > 0) {
         btn.addEventListener('click', function() {
             const period = this.getAttribute('data-period');
             
-            // Check if we're on mobile (window width <= 768px)
-            const isMobile = window.innerWidth <= 768;
-            
-            if (isMobile) {
-                // ACCORDION MODE: Toggle the clicked section, allow both to be open
-                this.classList.toggle('active');
-                
-                if (period === 'weekday') {
-                    weekdayPricing.classList.toggle('active');
-                } else if (period === 'weekend') {
-                    weekendPricing.classList.toggle('active');
-                }
-            } else {
-                // DESKTOP MODE: Toggle between sections (only one open at a time)
-                // Remove active class from all buttons
+                // Unified toggle behavior for all viewports: show selected period, hide the other
                 toggleBtns.forEach(b => b.classList.remove('active'));
-                
-                // Add active class to clicked button
                 this.classList.add('active');
-                
-                // Toggle pricing grids
+
                 if (period === 'weekday') {
                     if (weekdayPricing) weekdayPricing.classList.add('active');
                     if (weekendPricing) weekendPricing.classList.remove('active');
@@ -351,7 +401,6 @@ if (toggleBtns.length > 0) {
                     if (weekdayPricing) weekdayPricing.classList.remove('active');
                     if (weekendPricing) weekendPricing.classList.add('active');
                 }
-            }
         });
     });
 } else {
@@ -454,63 +503,24 @@ function triggerBookNowGlow() {
 
 // Function to trigger glow after typing is complete
 function triggerGlowAfterTyping() {
+    // Instead of the old glow effect, wiggle the Book Now buttons once
     const bookNowBtn = document.querySelector('.nav-cta');
     const mobileBookBtn = document.querySelector('.mobile-book-btn');
-
-    // Add glow effect to both buttons
     if (bookNowBtn) {
-        bookNowBtn.classList.add('glow-effect');
-        // Remove the class after the animation duration so the glow stops
-        setTimeout(() => bookNowBtn.classList.remove('glow-effect'), 2100);
-    }
-    if (mobileBookBtn) {
-        mobileBookBtn.classList.add('glow-effect');
-        setTimeout(() => mobileBookBtn.classList.remove('glow-effect'), 2100);
-    }
-}
-
-// Function to create and animate typing text
-function createTypingText() {
-    // Create container for typing text
-    const typingContainer = document.createElement('div');
-    typingContainer.className = 'typing-container';
-    typingContainer.innerHTML = `
-        <div class="typing-text"></div>
-    `;
-
-    // Insert after the process container
-    const processContainer = document.querySelector('.process-container');
-    if (processContainer) {
-        processContainer.parentNode.insertBefore(typingContainer, processContainer.nextSibling);
+        wiggleOnceGlobal(bookNowBtn, WIGGLE_DURATION);
+        // mark nav wiggle as completed so other wiggles can wait on it
+        ensureNavWigglePromise();
+        setTimeout(() => {
+            navWiggleDone = true;
+            if (navWigglePromiseResolve) navWigglePromiseResolve();
+        }, WIGGLE_DURATION + 50);
     } else {
-        // Fallback: insert at end of how-it-works section
-        const howItWorksSection = document.querySelector('.how-it-works-section');
-        if (howItWorksSection) {
-            howItWorksSection.appendChild(typingContainer);
-        }
+        navWiggleDone = true;
     }
-
-    // Start typing animation
-    const text = "🚚 Interested in the service? Click Book Now at the top!";
-    const typingText = typingContainer.querySelector('.typing-text');
-    let charIndex = 0;
-
-    function typeWriter() {
-        if (charIndex < text.length) {
-            typingText.textContent += text.charAt(charIndex);
-            charIndex++;
-            setTimeout(typeWriter, 140); // Faster typing for engagement
-        } else {
-            // Typing complete - add blinking cursor effect
-            typingText.innerHTML += '<span class="cursor">|</span>';
-            setTimeout(() => {
-                triggerGlowAfterTyping(); // Trigger glow after typing is done
-            }, 500);
-        }
-    }
-
-    typeWriter();
+    if (mobileBookBtn) wiggleOnceGlobal(mobileBookBtn, WIGGLE_DURATION);
 }
+
+// (The createTypingText function is defined later once; calls to it will use that single implementation.)
 
 // ==================== MOBILE SCROLL-BASED ANIMATION ====================
 // Function to animate steps based on scroll position (mobile only)
@@ -642,12 +652,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             triggerBookNowGlow();
 
-            // Start glow only after How It Works animation is done
-            const bookNowBtn = document.querySelector('.nav-cta');
-            const mobileBookBtn = document.querySelector('.mobile-book-btn');
-            if (bookNowBtn) bookNowBtn.classList.add('glow-effect');
-            if (mobileBookBtn) mobileBookBtn.classList.add('glow-effect');
-
             // Scroll to typing text on mobile
             if (isMobileDevice) {
                 setTimeout(() => {
@@ -668,23 +672,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to trigger glow after typing is complete
     function triggerGlowAfterTyping() {
+        // When typing finishes, wiggle the Book Now buttons once (no glow)
         const bookNowBtn = document.querySelector('.nav-cta');
         const mobileBookBtn = document.querySelector('.mobile-book-btn');
-
-        // Add glow effect to both buttons
         if (bookNowBtn) {
-            bookNowBtn.classList.add('glow-effect');
-            // remove after 2s so glow only lasts 2 seconds
-            setTimeout(() => bookNowBtn.classList.remove('glow-effect'), 2000);
+            wiggleOnceGlobal(bookNowBtn, WIGGLE_DURATION);
+            // mark nav wiggle as completed so other wiggles can wait on it
+            ensureNavWigglePromise();
+            setTimeout(() => {
+                navWiggleDone = true;
+                if (navWigglePromiseResolve) navWigglePromiseResolve();
+            }, WIGGLE_DURATION + 50);
+        } else {
+            navWiggleDone = true;
         }
-        if (mobileBookBtn) {
-            mobileBookBtn.classList.add('glow-effect');
-            setTimeout(() => mobileBookBtn.classList.remove('glow-effect'), 2000);
-        }
+        if (mobileBookBtn) wiggleOnceGlobal(mobileBookBtn, WIGGLE_DURATION);
     }
 
     // Function to create and animate typing text
     function createTypingText() {
+        // Prevent multiple typing containers if function is called more than once
+        if (document.querySelector('.typing-container')) return;
         // Create container for typing text
         const typingContainer = document.createElement('div');
         typingContainer.className = 'typing-container';
@@ -702,6 +710,22 @@ document.addEventListener('DOMContentLoaded', () => {
             if (howItWorksSection) {
                 howItWorksSection.appendChild(typingContainer);
             }
+        }
+
+        // On mobile, make sure the typing area is visible by scrolling it into view
+        if (isMobile()) {
+            // small timeout so layout has settled
+            setTimeout(() => {
+                // Ensure it's visible and not hidden by parent overflow
+                typingContainer.style.visibility = 'visible';
+                typingContainer.style.opacity = '1';
+                try {
+                    // Prefer a native scrollIntoView; fallback to scrollToElement
+                    typingContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } catch (e) {
+                    scrollToElement(typingContainer, 120);
+                }
+            }, 120);
         }
 
         // Start typing animation
@@ -748,27 +772,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==================== STOP GLOW WHEN PRICES SECTION IS VISIBLE ====================
-document.addEventListener('DOMContentLoaded', () => {
-    const pricesSection = document.getElementById('pricing');
-    const bookNowBtn = document.querySelector('.nav-cta');
-    const mobileBookBtn = document.querySelector('.mobile-book-btn');
-
-    if (pricesSection && (bookNowBtn || mobileBookBtn)) {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    // Remove glow effect when prices section comes into view
-                    if (bookNowBtn) {
-                        bookNowBtn.classList.remove('glow-effect');
-                    }
-                    if (mobileBookBtn) {
-                        mobileBookBtn.classList.remove('glow-effect');
-                    }
-                    observer.disconnect(); // Disconnect after triggering to free up resources
-                }
-            });
-        }, { threshold: 0.1 }); // Trigger when 10% of the section is visible
-
-        observer.observe(pricesSection);
-    }
-});
+// (Glow removal observer removed — glow behavior deprecated in favor of wiggle-on-typing)

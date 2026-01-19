@@ -1,0 +1,151 @@
+/* Booking page specific styles */
+
+.form-container {
+    /* Remove card look so form sits on the page */
+    background: transparent;
+    width: 100%;
+    max-width: 900px;
+    margin: 2.5rem auto;
+    padding: 0 16px; /* small page padding, not card padding */
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* Admin page: center the login form vertically and horizontally */
+.booking-main.admin-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+}
+
+.booking-main.admin-page .form-container {
+    max-width: 420px; /* narrower for forms */
+    padding: 24px;
+}
+
+.booking-title {
+    text-align: center;
+    color:#DC2626;
+    font-size: 18px;
+    margin-bottom: 18px;
+    font-weight: 700;
+}
+
+/* Header for booking page (logo + title) */
+.booking-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.booking-logo-img {
+    width: 140px;
+    height: auto;
+    display: block;
+}
+
+.booking-form h2 {
+    display: block;
+    font-weight: 700;
+    margin: 14px 0 6px;
+    font-size: 14px;
+    color: #111827;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 6px 0 0;
+    color: #374151;
+}
+
+.booking-form input,
+.booking-form textarea,
+.booking-form select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cfcfcf;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+    font-family: 'Quicksand', Arial, sans-serif;
+}
+
+/* Ensure booking form inputs use red focus styles (override blue browser focus) */
+.booking-form input:focus,
+.booking-form textarea:focus,
+.booking-form select:focus,
+.booking-form .form-input:focus {
+    outline: none;
+    border-color: #DC2626;
+    box-shadow: none; /* only show red border, no shadow */
+}
+
+/* Visible focus for keyboard users */
+.booking-form input:focus-visible,
+.booking-form textarea:focus-visible,
+.booking-form select:focus-visible {
+    outline: none;
+    box-shadow: none;
+}
+
+.phone-group { display: flex; gap: 8px; }
+.phone-group select { width: 45%; }
+.phone-group input { width: 55%; }
+
+.form-container button.btn-primary {
+    margin-top: 18px;
+    background: #DC2626;
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    width: auto;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+.form-container button.btn-primary:hover {
+    background: #000;
+    color: #fff;
+}
+
+/* Apply the same hover/focus styles to any buttons/links inside the booking form */
+.booking-form button:hover,
+.booking-form .btn-primary:hover,
+.booking-form .btn:hover,
+.booking-form a.btn-primary:hover,
+.booking-form input[type="submit"]:hover {
+    background: #000 !important;
+    color: #fff !important;
+    border-color: #000 !important;
+}
+
+.booking-form button:focus,
+.booking-form .btn:focus,
+.booking-form .btn-primary:focus,
+.booking-form a.btn-primary:focus,
+.booking-form input[type="submit"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.12);
+    background: #000;
+    color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .form-container { width: 94%; padding: 18px; margin: 1.2rem auto; }
+    .form-container button.btn-primary { width: 100%; }
+    .booking-logo-img { width: 110px; }
+}

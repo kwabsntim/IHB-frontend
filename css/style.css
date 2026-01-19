@@ -380,24 +380,7 @@ html {
     max-width: 140px;
 }
 
-/* Book Now Button Glow Effect */
-.nav-cta.glow-effect,
-.mobile-book-btn.glow-effect {
-    /* Play the glow animation once (2s). Do not persist final state.
-       The keyframes provide the temporary box-shadow during animation. */
-    animation: buttonGlow 2s ease-in-out 1;
-}
-
-@keyframes buttonGlow {
-    0% {
-        box-shadow: 0 0 8px rgba(255,215,0,0.6);
-        transform: scale(1);
-    }
-    100% {
-        box-shadow: 0 0 24px rgba(255,215,0,1), 0 0 48px rgba(255,215,0,0.6);
-        transform: scale(1.03);
-    }
-}
+/* (Glow effect removed — replaced with wiggle animation triggered after typing) */
 
 /* Booking form loading overlay and error styles */
 .booking-loading-overlay {
@@ -477,6 +460,18 @@ html {
 
 .cursor {
     animation: blink 1s infinite;
+}
+
+/* Fallback for mobile browsers that don't support background-clip text reliably */
+@media (max-width: 768px) {
+    .typing-text {
+        background: none !important;
+        -webkit-background-clip: initial !important;
+        -webkit-text-fill-color: var(--primary-red) !important;
+        color: var(--primary-red) !important;
+        text-shadow: 0 2px 6px rgba(220,38,38,0.12);
+    }
+    .typing-container { z-index: 2; }
 }
 
 @keyframes blink {
@@ -1290,13 +1285,20 @@ input, button {
     border-radius: 50px;
     font-weight: 600;
     display: inline-block;
-    animation: wiggle 5s ease-in-out;
+}
+
+/* One-shot wiggle helper class (used when we want the button to wiggle once) */
+.btn-wiggle-once,
+.nav-cta.btn-wiggle-once,
+.mobile-book-btn.btn-wiggle-once {
+    /* Slightly slower wiggle for more gentle emphasis */
+    animation: wiggle 2.2s ease-in-out 1;
 }
 
 .nav-cta::after {
     display: none;
 }
-
+ 
 .nav-cta:hover {
     background-color: var(--primary-red);
     transform: translateY(-2px);
@@ -2074,6 +2076,7 @@ input, button {
 
 .toggle-btn {
     display: flex;
+    justify-content: center;
     align-items: center;
     gap: 0.5rem;
     padding: 1rem 2rem;
@@ -2342,8 +2345,9 @@ input, button {
     
     .toggle-btn {
         width: 100%;
-        justify-content: space-between;
+        justify-content: center;
         position: relative;
+        text-align: center;
     }
     
     .toggle-btn::after {
@@ -2352,9 +2356,9 @@ input, button {
         font-weight: 900;
         transition: transform 0.3s ease;
     }
-    
-    .toggle-btn.active::after {
-        transform: rotate(180deg);
+    /* On mobile we don't want accordion arrows; show simple button UI */
+    .toggle-btn::after {
+        display: none;
     }
     
     /* Mobile accordion behavior */
@@ -2371,6 +2375,21 @@ input, button {
         display: grid;
         max-height: 5000px;
         margin-bottom: 2rem;
+    }
+
+    /* Ensure typing text is visible and properly spaced on mobile */
+    .typing-container {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        padding: 0.8rem 0;
+        min-height: 48px;
+        visibility: visible;
+    }
+    .typing-text {
+        font-size: 1.05rem;
+        -webkit-text-fill-color: var(--primary-red) !important;
+        color: var(--primary-red) !important;
     }
     
     .pricing-card {
@@ -2431,6 +2450,31 @@ input, button {
 
 .testimonial-image {
     flex-shrink: 0;
+}
+
+/* Ensure testimonial images are circular and consistent */
+.testimonial-image img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    border: 3px solid #fff; /* subtle white ring to separate from card */
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+.testimonial-image .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+}
+
+@media (max-width: 768px) {
+    .testimonial-image img,
+    .testimonial-image .avatar {
+        width: 64px;
+        height: 64px;
+    }
 }
 
 .avatar {
