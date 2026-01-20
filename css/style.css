@@ -412,6 +412,18 @@ html {
 @keyframes spin { to { transform: rotate(360deg); } }
 .booking-loading-text { color: #fff; font-weight: 700; }
 .booking-error { color: #b91c1c; margin-bottom: 12px; font-weight: 700; }
+/* Success message for booking */
+.booking-success {
+    color: #065f46; /* green-800 */
+    background: rgba(6,95,70,0.06);
+    border: 1px solid rgba(6,95,70,0.12);
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    font-weight: 700;
+}
+.booking-success-actions { display:flex; gap:8px; margin-top:8px; }
+.booking-success .btn-secondary { background: transparent; border: 1px solid rgba(0,0,0,0.08); color: #374151; padding:6px 10px; border-radius:6px; }
 
 /* Pop Up Animation for Process Steps */
 @keyframes popUp {
