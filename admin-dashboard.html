@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin:0; padding:24px; background:#f7fafc; }
+    .wrap { max-width:1100px; margin:0 auto; }
+    .header { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .logo-small { height:42px; }
+    .card { background:#fff; border-radius:8px; padding:16px; box-shadow:0 6px 18px rgba(0,0,0,0.06); margin-top:18px; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { text-align:left; padding:8px 12px; border-bottom:1px solid #eee; font-size:14px; }
+    th { background:#fafafa; font-weight:600; }
+    .actions { display:flex; gap:8px; }
+    .btn { padding:8px 12px; border-radius:6px; background:#111827; color:#fff; text-decoration:none; display:inline-block; }
+    .success { background:#16a34a; }
+    .danger { background:#b91c1c; }
+    .muted { color:#6b7280; }
+    .empty { text-align:center; padding:36px; color:#6b7280; }
+    /* Enhanced UI styles for dashboard */
+    .card { border-radius:12px; padding:20px; box-shadow:0 8px 28px rgba(17,24,39,0.06); border:1px solid rgba(15,23,42,0.04); }
+    table { border-radius:8px; overflow:hidden; background:linear-gradient(180deg,#fff,#fbfdff); }
+    th, td { padding:12px 14px; }
+    tbody tr { transition: background .12s ease, transform .06s ease; }
+    tbody tr:hover { background: #fbfdff; transform: translateY(-1px); }
+    .actions { display:flex; gap:10px; align-items:center; }
+    .btn { padding:8px 12px; border-radius:10px; background:#111827; color:#fff; border:none; box-shadow:0 6px 14px rgba(17,24,39,0.08); cursor:pointer; transition:transform .08s ease, box-shadow .12s ease, opacity .08s ease; font-weight:600; }
+    .btn:hover { transform: translateY(-2px); box-shadow:0 10px 22px rgba(17,24,39,0.12); opacity:0.98; }
+    .btn:active { transform: translateY(0); box-shadow:0 6px 12px rgba(17,24,39,0.08); }
+    .btn.small { padding:6px 10px; font-size:13px; }
+    .btn.success { background: linear-gradient(180deg,#22c55e,#15803d); }
+    .btn.danger { background: linear-gradient(180deg,#ef4444,#b91c1c); }
+    .btn.secondary { background: linear-gradient(180deg,#64748b,#374151); }
+    .muted { color:#6b7280; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <img src="static/logo2.png" alt="IHB" class="logo-small">
+        <div>
+          <h1 style="margin:0; font-size:20px;">Admin Dashboard</h1>
+          <div class="muted">Manage deliveries</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button id="refreshBtn" class="btn">Refresh</button>
+        <button id="logoutBtn" class="btn danger">Logout</button>
+      </div>
+    </div>
+
+    <div id="deliveriesCard" class="card">
+      <h2 style="margin-top:0; font-size:16px;">Deliveries</h2>
+      <div id="deliveriesContainer">Loading…</div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      // Use explicit backend admin base per project configuration
+      const ADMIN_BASE = 'https://ihb-transport-dk.onrender.com/api/admin';
+      const API_BASE = 'https://ihb-transport-dk.onrender.com';
+      const token = localStorage.getItem('ihb_admin_token');
+
+      function ensureAuth() {
+        if (!token) {
+          window.location.href = 'admin.html';
+          return false;
+        }
+        return true;
+      }
+
+      function authFetch(path, opts = {}) {
+        opts.headers = opts.headers || {};
+        opts.headers['Authorization'] = 'Bearer ' + token;
+        opts.headers['Accept'] = 'application/json';
+        return fetch(path, opts);
+      }
+
+      // helper to POST to non-admin API endpoints (driver/public) with auth when possible
+      function authPostApi(path, body) {
+        const headers = { 'Accept': 'application/json' };
+        if (body !== undefined) headers['Content-Type'] = 'application/json';
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+        return fetch(API_BASE + path, { method: 'POST', headers, body: body !== undefined ? JSON.stringify(body) : undefined });
+      }
+
+      function fmtDate(s) {
+        try { const d = new Date(s); if (isNaN(d)) return s; return d.toLocaleString(); } catch(e){return s}
+      }
+
+      function renderTable(items) {
+        if (!items || !items.length) {
+          return '<div class="empty">No deliveries found.</div>';
+        }
+
+        const rows = items.map(it => {
+          const id = it.id || it._id || it.delivery_id || it.uuid || '';
+          const status = it.status || '-';
+          const statusLower = String(status).toLowerCase();
+          const created = fmtDate(it.created_at || it.createdAt || it.created || '');
+          const client = (it.client_name || it.client || it.customer_name) || '';
+          // Build actions depending on status
+          let actionBtn = '';
+          if (statusLower === 'accepted') {
+            // Accepted deliveries: Start Delivery (green) — calls driver pickup endpoint
+            actionBtn = `<button data-id="${id}" class="btn success start-delivery">Start Service</button>`;
+          } else if (statusLower === 'in progress' || statusLower === 'in_progress' || statusLower === 'inprogress') {
+            // In-progress deliveries: Mark as done
+            actionBtn = `<button data-id="${id}" class="btn danger mark-done">Mark as done</button>`;
+          } else {
+            // default: allow setting price
+            actionBtn = `<button data-id="${id}" class="btn set-price">Set Price</button>`;
+          }
+
+          return `
+            <tr>
+              <td style="width:200px;"><strong>${id}</strong><div class="muted" style="font-size:12px">${created}</div></td>
+              <td>${client}</td>
+              <td>${status}</td>
+              <td style="width:260px"><div class="actions">
+                <button data-id="${id}" class="btn open-public">Details</button>
+                ${actionBtn}
+              </div></td>
+            </tr>
+          `;
+        }).join('');
+
+        return `<table><thead><tr><th>Delivery</th><th>Client</th><th>Status</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table>`;
+      }
+
+      async function loadDeliveries() {
+        if (!ensureAuth()) return;
+        const container = document.getElementById('deliveriesContainer');
+        container.innerHTML = 'Loading…';
+        try {
+          const res = await authFetch(ADMIN_BASE + '/deliveries');
+          if (!res.ok) {
+            if (res.status === 401 || res.status === 403) { localStorage.removeItem('ihb_admin_token'); window.location.href = 'admin.html'; return; }
+            const txt = await res.text(); container.innerHTML = '<div class="error">Failed to load: ' + (txt||res.status) + '</div>'; return;
+          }
+          const data = await res.json();
+          // Some APIs return { deliveries: [...] }
+          const items = Array.isArray(data) ? data : (data.deliveries || data.data || []);
+          document.getElementById('deliveriesContainer').innerHTML = renderTable(items);
+          attachActions();
+        } catch (err) {
+          container.innerHTML = '<div class="error">Network error: ' + (err.message||err) + '</div>';
+        }
+      }
+
+      /* Modal builder and renderer for delivery details (styled like track.html) */
+      function createDeliveryModal() {
+        if (document.getElementById('deliveryModal')) return document.getElementById('deliveryModal');
+        const modal = document.createElement('div');
+        modal.id = 'deliveryModal';
+        modal.style.position = 'fixed';
+        modal.style.inset = '0';
+        modal.style.display = 'none';
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center';
+        modal.style.background = 'rgba(0,0,0,0.35)';
+        modal.style.zIndex = '10000';
+
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.maxWidth = '760px';
+        card.style.width = 'calc(100% - 40px)';
+        card.style.maxHeight = '80vh';
+        card.style.overflow = 'auto';
+
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = 'Close';
+        closeBtn.className = 'btn';
+        closeBtn.style.float = 'right';
+        closeBtn.addEventListener('click', () => { modal.style.display = 'none'; });
+
+        const title = document.createElement('h2');
+        title.textContent = 'Delivery details';
+        title.style.marginTop = '0';
+
+        const content = document.createElement('div');
+        content.id = 'deliveryModalContent';
+
+        card.appendChild(closeBtn);
+        card.appendChild(title);
+        card.appendChild(content);
+        modal.appendChild(card);
+        document.body.appendChild(modal);
+        return modal;
+      }
+
+      function omitKey(key) {
+        const lower = String(key).toLowerCase();
+        if (lower === 'client_email') return true;
+        if (lower.endsWith('_logs') || lower.endsWith('_log')) return true;
+        if (/((email|status).*(log|logs|history))/.test(lower)) return true;
+        return false;
+      }
+
+      function looksLikeDate(s) {
+        if (typeof s !== 'string') return false;
+        return /^\d{4}-\d{2}-\d{2}(T|\s)?\d{0,2}:?\d{0,2}:?\d{0,2}/.test(s) || /^\d{4}-\d{2}-\d{2}$/.test(s);
+      }
+
+      function formatTimestamp(s) {
+        try {
+          const v = (typeof s === 'string' && /^\d+$/.test(s)) ? Number(s) : s;
+          let d = new Date(v);
+          if (isNaN(d.getTime())) return s;
+          const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+          const day = d.getDate();
+          const month = months[d.getMonth()];
+          const year = d.getFullYear();
+          const hours = String(d.getHours()).padStart(2,'0');
+          const minutes = String(d.getMinutes()).padStart(2,'0');
+          return `${day} ${month} ${year}, ${hours}:${minutes}`;
+        } catch (e) { return s; }
+      }
+
+      function renderObjectAsRows(obj) {
+        const wrap = document.createElement('div');
+        wrap.style.display = 'block';
+        Object.entries(obj).forEach(([key, value]) => {
+          if (omitKey(key)) return;
+          const row = document.createElement('div');
+          row.style.display = 'grid';
+          row.style.gridTemplateColumns = '180px 1fr';
+          row.style.gap = '12px';
+          row.style.padding = '8px 0';
+          row.style.borderBottom = '1px solid #eee';
+
+          const keyEl = document.createElement('div');
+          keyEl.style.color = '#666';
+          keyEl.textContent = key.replace(/_/g,' ');
+
+          const valueEl = document.createElement('div');
+          valueEl.style.color = '#111';
+          valueEl.style.fontWeight = '500';
+
+          if (Array.isArray(value)) {
+            valueEl.textContent = value.join(', ');
+          } else if (typeof value === 'object' && value !== null) {
+            const pre = document.createElement('pre');
+            pre.style.margin = '6px 0 0';
+            pre.textContent = JSON.stringify(value, null, 2);
+            valueEl.appendChild(pre);
+          } else {
+            if (looksLikeDate(value)) valueEl.textContent = formatTimestamp(value);
+            else if (typeof value === 'number') {
+              if (value > 1e12 || value > 1e9) valueEl.textContent = formatTimestamp(value);
+              else valueEl.textContent = String(value ?? '—');
+            } else valueEl.textContent = value ?? '—';
+          }
+
+          row.appendChild(keyEl);
+          row.appendChild(valueEl);
+          wrap.appendChild(row);
+        });
+        return wrap;
+      }
+
+      async function showDeliveryModalById(id) {
+        const modal = createDeliveryModal();
+        const content = document.getElementById('deliveryModalContent');
+        content.innerHTML = '<div style="padding:18px;">Loading…</div>';
+        modal.style.display = 'flex';
+        try {
+          // Try admin API first
+          let res = await authFetch(ADMIN_BASE + '/deliveries/' + encodeURIComponent(id));
+          if (!res.ok) {
+            // fallback to public endpoint
+            const publicBase = 'https://ihb-transport-dk.onrender.com/api/public/deliveries';
+            res = await fetch(publicBase + '/' + encodeURIComponent(id));
+            if (!res.ok) throw new Error('Not found');
+          }
+          const data = await res.json();
+          let obj = data;
+          if (obj && typeof obj === 'object' && Object.keys(obj).length === 1 && obj.delivery) obj = obj.delivery;
+          content.innerHTML = '';
+          content.appendChild(renderObjectAsRows(obj));
+        } catch (err) {
+          content.innerHTML = '<div style="padding:12px; color:#b91c1c">Failed to load details</div>';
+        }
+      }
+
+      function attachActions() {
+        // Set price (for non-accepted deliveries)
+        document.querySelectorAll('.set-price').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const id = e.currentTarget.dataset.id;
+            const price = prompt('Enter price amount (e.g. 250):');
+            if (!price) return;
+            try {
+              const res = await authFetch(ADMIN_BASE + '/deliveries/' + encodeURIComponent(id) + '/price', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ price })
+              });
+              if (!res.ok) { alert('Failed to set price: ' + res.status); return; }
+              alert('Price set');
+              loadDeliveries();
+            } catch (err) { alert('Network error'); }
+          });
+        });
+
+        // Start delivery for Accepted deliveries -> calls driver pickup endpoint
+        document.querySelectorAll('.start-delivery').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const id = e.currentTarget.dataset.id;
+            if (!id) return;
+            if (!confirm('Start delivery for ' + id + '?')) return;
+            try {
+              const res = await authPostApi('/api/driver/deliveries/' + encodeURIComponent(id) + '/pickup');
+              if (!res.ok) {
+                const text = await res.text().catch(()=>res.status);
+                alert('Failed to start delivery: ' + text);
+                return;
+              }
+              alert('Delivery started');
+              loadDeliveries();
+            } catch (err) { alert('Network error'); }
+          });
+        });
+
+        // Mark as done for In progress deliveries -> calls completion endpoint
+        document.querySelectorAll('.mark-done').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const id = e.currentTarget.dataset.id;
+            if (!id) return;
+            if (!confirm('Mark delivery ' + id + ' as completed?')) return;
+            try {
+              const res = await authPostApi('/deliveries/' + encodeURIComponent(id) + '/complete');
+              if (!res.ok) {
+                const text = await res.text().catch(()=>res.status);
+                alert('Failed to mark completed: ' + text);
+                return;
+              }
+              alert('Delivery marked completed');
+              loadDeliveries();
+            } catch (err) { alert('Network error'); }
+          });
+        });
+
+        // Open public -> show modal with details
+        document.querySelectorAll('.open-public').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const id = e.currentTarget.dataset.id;
+            if (!id) return;
+            showDeliveryModalById(id);
+          });
+        });
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', function(){ localStorage.removeItem('ihb_admin_token'); window.location.href = 'admin.html'; });
+      document.getElementById('refreshBtn').addEventListener('click', loadDeliveries);
+
+      // initial load
+      loadDeliveries();
+    })();
+  </script>
+</body>
+</html>

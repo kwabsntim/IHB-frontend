@@ -9,6 +9,38 @@
     <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700&display=swap" rel="stylesheet">
     <!-- Prevent indexing of the admin page; route should be shared privately with client -->
     <meta name="robots" content="noindex, nofollow">
+        <style>
+            /* Admin preloader overlay */
+            #adminPreloader {
+                position: fixed;
+                inset: 0;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                background: rgba(0,0,0,0.35);
+                z-index: 9999;
+            }
+            .admin-preloader-inner {
+                background: #fff;
+                padding: 18px 22px;
+                border-radius: 8px;
+                display: flex;
+                gap: 12px;
+                align-items: center;
+                box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+            }
+            .spinner-dot {
+                width: 14px;
+                height: 14px;
+                border-radius: 50%;
+                background: #111827;
+                animation: spin-bounce 0.8s infinite ease-in-out;
+            }
+            @keyframes spin-bounce {
+                0%, 100% { transform: scale(1); opacity: 1; }
+                50% { transform: scale(0.5); opacity: 0.6; }
+            }
+        </style>
 </head>
 <body>
     <main class="booking-main admin-page">
@@ -16,12 +48,14 @@
             <form class="booking-form" id="adminLoginForm" autocomplete="on" novalidate>
                 <div class="booking-header">
                     <div class="booking-logo">
-                        <img src="static/newLogo.png" alt="IHB Transport Logo" class="booking-logo-img" loading="lazy">
+                        <img src="static/logo2.png" alt="IHB Transport Logo" class="booking-logo-img" loading="lazy">
                     </div>
                     <h1 class="booking-title">Administrator Login</h1>
                 </div>
 
-                <h2>Credentials</h2>
+                
+
+                <div id="adminError" class="form-error" style="display:none; color:#b91c1c; margin-bottom:12px;"></div>
 
                 <div class="form-group">
                     <label for="admin_email">Email</label>
@@ -38,20 +72,84 @@
         </div>
     </main>
 
-    <script>
-        // Minimal handler: prevent default and show brief feedback (replace with real auth later)
-        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Simple validation
-            const email = document.getElementById('admin_email').value.trim();
-            const pass = document.getElementById('admin_password').value.trim();
-            if (!email || !pass) {
-                alert('Please provide both email and password.');
-                return;
-            }
-            // Placeholder: replace with real auth flow
-            alert('Admin sign-in submitted (form behavior placeholder).');
-        });
-    </script>
+        <!-- Preloader shown while signing in -->
+        <div id="adminPreloader" aria-hidden="true">
+            <div class="admin-preloader-inner" role="status" aria-live="polite">
+                <div class="spinner-dot" aria-hidden="true"></div>
+                <div>Signing in…</div>
+            </div>
+        </div>
+
+        <script>
+            (function(){
+                // Use explicit backend login URL as requested
+                const LOGIN_URL = 'https://ihb-transport-dk.onrender.com/login';
+
+                const form = document.getElementById('adminLoginForm');
+                const emailEl = document.getElementById('admin_email');
+                const passEl = document.getElementById('admin_password');
+
+                function showError(msg) {
+                    alert(msg);
+                }
+
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+
+                    // Clear previous error
+                    const errorEl = document.getElementById('adminError');
+                    if (errorEl) { errorEl.style.display = 'none'; errorEl.textContent = ''; }
+
+                    const email = (emailEl.value || '').trim();
+                    const password = (passEl.value || '').trim();
+
+                    if (!email || !password) {
+                        if (errorEl) { errorEl.textContent = 'Please provide both email and password.'; errorEl.style.display = 'block'; }
+                        return;
+                    }
+
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    const originalBtnText = submitBtn ? submitBtn.textContent : 'Sign In';
+                      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Signing in...'; }
+                      const preloader = document.getElementById('adminPreloader');
+                      if (preloader) preloader.style.display = 'flex';
+
+                    try {
+                        const resp = await fetch(LOGIN_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email, password })
+                        });
+
+                        // Friendly errors: avoid showing raw server logs to the user
+                        if (!resp.ok) {
+                            if (resp.status === 401 || resp.status === 403) {
+                                if (errorEl) { errorEl.textContent = 'Invalid login credentials.'; errorEl.style.display = 'block'; }
+                            } else {
+                                if (errorEl) { errorEl.textContent = 'Login failed. Please try again.'; errorEl.style.display = 'block'; }
+                            }
+                            return;
+                        }
+
+                        // parse response for token but do not show server messages to user
+                        const data = await resp.json().catch(() => null);
+                        const token = (data && (data.token || data.access_token || data.accessToken || data.auth_token));
+                        if (!token) {
+                            if (errorEl) { errorEl.textContent = 'Login succeeded but no token was returned by the server.'; errorEl.style.display = 'block'; }
+                            return;
+                        }
+
+                        localStorage.setItem('ihb_admin_token', token);
+                        // Redirect to dashboard
+                        window.location.href = 'admin-dashboard.html';
+                    } catch (err) {
+                        if (errorEl) { errorEl.textContent = 'Network error. Please check your connection and try again.'; errorEl.style.display = 'block'; }
+                    } finally {
+                        if (preloader) preloader.style.display = 'none';
+                        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
+                    }
+                });
+            })();
+        </script>
 </body>
 </html>
