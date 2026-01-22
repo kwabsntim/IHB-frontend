@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tracking Result</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f3f4f6;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 720px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 8px;
+      font-size: 22px;
+    }
+
+    .status {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 16px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #111;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+
+    .row:last-child {
+      border-bottom: none;
+    }
+
+    .key {
+      color: #666;
+      word-break: break-word;
+    }
+
+    .value {
+      color: #111;
+      font-weight: 500;
+      word-break: break-word;
+    }
+
+    .nested {
+      margin-top: 8px;
+      padding-left: 16px;
+      border-left: 3px solid #e5e7eb;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #777;
+      font-size: 14px;
+    }
+
+    .logo {
+      height: 120px;
+      max-width: 80%;
+      display: block;
+      margin: 0 auto 16px;
+    }
+
+    .error {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <img src="static/logo2.png" alt="IHB Transport" class="logo">
+    <h2>Tracking Result</h2>
+    <div id="status" class="status">Loading…</div>
+    <div id="output"></div>
+  </div>
+
+  <script>
+    const API_BASE = 'https://ihb-transport-dk.onrender.com/api/public/deliveries';
+
+    function getParam(name) {
+      return new URLSearchParams(location.search).get(name);
+    }
+
+    const id = getParam('id');
+    const statusEl = document.getElementById('status');
+    const outputEl = document.getElementById('output');
+
+    const omitKey = (key) => {
+      const lower = String(key).toLowerCase();
+      if (lower === 'client_email') return true;
+      if (lower.endsWith('_logs') || lower.endsWith('_log')) return true;
+      if (/((email|status).*(log|logs|history))/.test(lower)) return true;
+      return false;
+    };
+
+    function renderObject(obj) {
+      const wrap = document.createElement('div');
+        wrap.className = 'plain-output';
+
+      // helper to detect ISO-like date strings
+      const looksLikeDate = (s) => {
+        if (typeof s !== 'string') return false;
+        // common ISO date/time or date-only patterns
+        return /^\d{4}-\d{2}-\d{2}(T|\s)?\d{0,2}:?\d{0,2}:?\d{0,2}/.test(s) || /^\d{4}-\d{2}-\d{2}$/.test(s);
+      };
+
+      const formatTimestamp = (s) => {
+        try {
+          // If numeric string, convert
+          const v = (typeof s === 'string' && /^\d+$/.test(s)) ? Number(s) : s;
+          let d = new Date(v);
+          if (isNaN(d.getTime())) return s;
+
+          const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+          const day = d.getDate();
+          const month = months[d.getMonth()];
+          const year = d.getFullYear();
+          const hours = String(d.getHours()).padStart(2,'0');
+          const minutes = String(d.getMinutes()).padStart(2,'0');
+          return `${day} ${month} ${year}, ${hours}:${minutes}`;
+        } catch (e) {
+          return s;
+        }
+      };
+
+      Object.entries(obj).forEach(([key, value]) => {
+        if (omitKey(key)) return;
+
+        const row = document.createElement('div');
+        row.className = 'row';
+
+        const keyEl = document.createElement('div');
+        keyEl.className = 'key';
+        keyEl.textContent = key.replace(/_/g, ' ');
+
+        const valueEl = document.createElement('div');
+        valueEl.className = 'value';
+
+        if (Array.isArray(value)) {
+          valueEl.textContent = value.join(', ');
+        } else if (typeof value === 'object' && value !== null) {
+          const nestedPre = document.createElement('pre');
+          nestedPre.className = 'nested';
+          nestedPre.textContent = JSON.stringify(value, null, 2);
+          valueEl.appendChild(nestedPre);
+        } else {
+          // format timestamps for human readability
+          if (looksLikeDate(value)) {
+            valueEl.textContent = formatTimestamp(value);
+          } else if (typeof value === 'number') {
+            // possible epoch seconds or ms — try to format if it looks like a timestamp
+            if (value > 1e12 || value > 1e9) {
+              valueEl.textContent = formatTimestamp(value);
+            } else {
+              valueEl.textContent = String(value ?? '—');
+            }
+          } else {
+            valueEl.textContent = value ?? '—';
+          }
+        }
+
+        row.appendChild(keyEl);
+        row.appendChild(valueEl);
+        wrap.appendChild(row);
+      });
+
+      return wrap;
+    }
+
+    if (!id) {
+      statusEl.textContent = 'No tracking ID provided.';
+      outputEl.innerHTML = '<div class="error">Missing tracking ID in URL.</div>';
+    } else {
+      const url = `${API_BASE}/${encodeURIComponent(id)}`;
+      // show a preloader message while requesting
+      statusEl.innerHTML = '<div class="loading">Requesting tracking data…</div>';
+
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          // clear preloader when data is ready
+          statusEl.innerHTML = '';
+          outputEl.innerHTML = '';
+          // If API wraps delivery inside a top-level `delivery` key, unwrap it
+          if (data && typeof data === 'object' && Object.keys(data).length === 1 && data.delivery && typeof data.delivery === 'object') {
+            data = data.delivery;
+          }
+          outputEl.appendChild(renderObject(data));
+        })
+        .catch(err => {
+          statusEl.textContent = 'Error fetching data';
+          outputEl.innerHTML = `<div class="error">${err.message || 'Request failed'}</div>`;
+        });
+    }
+  </script>
+
+</body>
+</html>

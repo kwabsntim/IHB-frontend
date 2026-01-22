@@ -17,7 +17,7 @@
         <form class="booking-form">
             <div class="booking-header">
                 <div class="booking-logo">
-                    <img src="static/logo2.png" alt="IHB Transport Logo" class="booking-logo-img" loading="lazy">
+                    <img src="static/newLogo.png" alt="IHB Transport Logo" class="booking-logo-img" loading="lazy">
                 </div>
                 <h1 class="booking-title">Fill out this form to create a booking</h1>
             </div>
@@ -105,6 +105,11 @@
 
     <!-- Booking styles moved to head -->
     <!-- Include site JS so form handlers (booking submit) run on this page -->
-    <script src="js/main.js"></script>
+        <script src="js/main.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Main.init();
+            });
+        </script>
 </body>
 </html>

@@ -243,8 +243,19 @@ const FormHandlers = {
       e.preventDefault();
       const requestId = document.getElementById('requestId')?.value.trim();
       
-      if (requestId) {
-        alert(`Tracking request for ID: ${requestId}\n\nThis feature will be implemented with real tracking functionality.`);
+      if (!requestId) return;
+
+      // Open a simple tracking result page in a new tab which will fetch
+      // the server output for the given delivery id and display raw JSON.
+      const url = `track.html?id=${encodeURIComponent(requestId)}`;
+      window.open(url, '_blank');
+      // Clear the input so the user sees the form reset immediately
+      try {
+        trackingForm.reset();
+        const reqInput = document.getElementById('requestId');
+        if (reqInput) reqInput.blur();
+      } catch (e) {
+        // ignore
       }
     });
   },
@@ -253,6 +264,7 @@ const FormHandlers = {
     const bookingForm = document.querySelector('.booking-form');
     if (!bookingForm) return;
 
+    // insert or find an error box at top of the form
     let errorBox = bookingForm.querySelector('.booking-error');
     if (!errorBox) {
       errorBox = document.createElement('div');
@@ -260,17 +272,89 @@ const FormHandlers = {
       bookingForm.insertBefore(errorBox, bookingForm.firstChild);
     }
 
+    // Create or find a global loading overlay element (hidden by default)
     let overlay = document.querySelector('.booking-loading-overlay');
-    if (!overlay) {
-      overlay = this.createLoadingOverlay();
-    }
+    if (!overlay) overlay = this.createLoadingOverlay();
+
+    // Processing modal helpers (autonomous stepper popup)
+    const getProcessModal = () => document.querySelector('.booking-process-modal');
+    const createProcessModal = () => {
+      let modal = getProcessModal();
+      if (modal) return modal;
+      modal = document.createElement('div');
+      modal.className = 'booking-process-modal';
+      modal.innerHTML = `
+        <div class="modal-card">
+          <div class="modal-steps">
+            <div class="step" data-step="0"><div class="dot"></div><div class="label">Parsing request</div></div>
+            <div class="step" data-step="1"><div class="dot"></div><div class="label">Analysing booking info</div></div>
+            <div class="step" data-step="2"><div class="dot"></div><div class="label">Sending booking request</div></div>
+          </div>
+          <div class="modal-result" aria-hidden="true"></div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      return modal;
+    };
+
+    const showModalStep = (index, state = 'active') => {
+      const m = createProcessModal();
+      const steps = Array.from(m.querySelectorAll('.step'));
+      steps.forEach((s, i) => {
+        s.classList.remove('active', 'done');
+        if (i < index) s.classList.add('done');
+        if (i === index && state === 'active') s.classList.add('active');
+        if (i === index && state === 'done') s.classList.add('done');
+      });
+      m.style.display = 'flex';
+    };
+
+    const showModalResult = (html) => {
+      const m = createProcessModal();
+      const result = m.querySelector('.modal-result');
+      if (result) {
+        result.setAttribute('aria-hidden', 'false');
+        result.innerHTML = html;
+      }
+    };
+
+    const hideProcessModal = () => { const m = getProcessModal(); if (m) m.style.display = 'none'; };
+
+    // Run the stepper sequence on a timer independent of server response.
+    // Returns a handle with a `cancel()` method.
+    const startProcessSequence = () => {
+      const modal = createProcessModal();
+      modal.style.display = 'flex';
+      showModalStep(0);
+
+      let cancelled = false;
+      const timers = [];
+
+      // parsing -> analysing -> sending -> success message -> hide
+      timers.push(setTimeout(() => { if (!cancelled) showModalStep(1); }, 1200));
+      timers.push(setTimeout(() => { if (!cancelled) showModalStep(2); }, 1200 + 1400));
+      timers.push(setTimeout(() => { if (!cancelled) {
+        // show final 'Booking sent' success result
+        showModalResult('<div class="success">Booking sent<br><small>Please check your mail for further steps</small></div>');
+      } }, 1200 + 1400 + 1800));
+      // hide after showing success for a while
+      timers.push(setTimeout(() => { if (!cancelled) hideProcessModal(); }, 1200 + 1400 + 1800 + 2200));
+
+      return {
+        cancel() {
+          cancelled = true;
+          timers.forEach(t => clearTimeout(t));
+          hideProcessModal();
+        }
+      };
+    };
 
     let isSubmitting = false;
 
     bookingForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       console.log('Submit handler entered, current isSubmitting=', isSubmitting);
-      
+
       if (isSubmitting) return;
       isSubmitting = true;
 
@@ -278,7 +362,7 @@ const FormHandlers = {
       const originalText = submitBtn?.textContent || '';
 
       errorBox.textContent = '';
-      
+
       if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.textContent = 'Sending...';
@@ -297,53 +381,53 @@ const FormHandlers = {
         return;
       }
 
-      // Show loading overlay
+      // Show loading overlay briefly, then run autonomous modal stepper (independent of server)
       overlay.classList.add('visible');
+      // Kick off the autonomous step sequence
+      const seqHandle = startProcessSequence();
 
       try {
-        const response = await this.submitBooking(payload);
-        
-        // Stop loader immediately when response is received
+        // Start the network request in background - do not await it for UX
+        const responsePromise = this.submitBooking(payload).catch(err => {
+          // Log server/network errors but do not block the UI sequence
+          console.error('Background booking request failed:', err);
+        });
+
+        // Hide blocking overlay immediately while modal stepper shows
         overlay.classList.remove('visible');
 
-        if (response.success) {
-          this.showBookingSuccess(bookingForm, submitBtn, originalText, () => {
-            // noop for backward compatibility; we now auto-unblock below
-          });
-
-          bookingForm.reset();
-
-          // Allow new submissions immediately and restore button after short delay
-          isSubmitting = false;
-          if (submitBtn) {
-            // keep 'Submitted' visible briefly, then restore
-            setTimeout(() => {
-              submitBtn.disabled = false;
-              submitBtn.textContent = originalText;
-            }, 2000);
-          }
-
-          // Auto-hide success box after 6s
-          const successBox = bookingForm.querySelector('.booking-success');
-          if (successBox) {
-            setTimeout(() => { try { successBox.style.display = 'none'; } catch(e){} }, 6000);
-          }
-        } else {
-          throw new Error(response.error || 'Submission failed');
+        // When the autonomous stepper completes it will hide itself.
+        // Meanwhile allow new submissions after short cooldown.
+        isSubmitting = false;
+        if (submitBtn) {
+          setTimeout(() => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+          }, 2000);
         }
 
+        // show booking success box in-form after the modal finishes (delayed)
+        setTimeout(() => {
+          try {
+            this.showBookingSuccess(bookingForm, submitBtn, originalText, () => {});
+            bookingForm.reset();
+            const successBox = bookingForm.querySelector('.booking-success');
+            if (successBox) setTimeout(() => { try { successBox.style.display = 'none'; } catch (e) {} }, 6000);
+          } catch (e) {
+            console.error('Failed to show in-form success:', e);
+          }
+        }, 1200 + 1400 + 1800); // show when modal reaches final state
+
       } catch (err) {
-        console.error('Booking error:', err);
-        
-        // Ensure loader is stopped on error
+        console.error('Booking error during start:', err);
         overlay.classList.remove('visible');
-        
         errorBox.textContent = 'Failed to submit booking: ' + (err.message || 'Unknown error');
-        
         if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.textContent = originalText;
         }
+        // cancel modal sequence if something went catastrophically wrong
+        try { seqHandle.cancel(); } catch (e) {}
         isSubmitting = false;
       }
     });
@@ -433,49 +517,18 @@ const FormHandlers = {
   },
 
   showBookingSuccess(form, submitBtn, originalText, onStay) {
+    // Simple success message (no 'Go to homepage' action)
     let successBox = form.querySelector('.booking-success');
-    
+
     if (!successBox) {
       successBox = document.createElement('div');
       successBox.className = 'booking-success';
-      
-      const actions = document.createElement('div');
-      actions.className = 'booking-success-actions';
-      
-      const stayBtn = document.createElement('button');
-      stayBtn.type = 'button';
-      stayBtn.className = 'btn-primary booking-success-stay';
-      stayBtn.textContent = 'Stay on page';
-      
-      const homeBtn = document.createElement('button');
-      homeBtn.type = 'button';
-      homeBtn.className = 'btn-secondary booking-success-home';
-      homeBtn.textContent = 'Go to homepage';
-      
-      actions.appendChild(stayBtn);
-      actions.appendChild(homeBtn);
-      
       const messageDiv = document.createElement('div');
       successBox.appendChild(messageDiv);
-      successBox.appendChild(actions);
-      
       form.insertBefore(successBox, form.firstChild);
-
-      stayBtn.addEventListener('click', () => {
-        successBox.style.display = 'none';
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = originalText || 'Submit Booking';
-        }
-        onStay();
-      });
-
-      homeBtn.addEventListener('click', () => {
-        window.location.href = 'index.html';
-      });
     }
 
-    successBox.firstChild.textContent = 'Booking submitted successfully.';
+    successBox.firstChild.textContent = 'Booking submitted successfully. Please check your mail for further steps.';
     successBox.style.display = 'block';
 
     if (submitBtn) {
@@ -773,6 +826,14 @@ const HowItWorksHandler = {
 // ==================== INITIALIZATION ====================
 const App = {
   init() {
+    // Cleanup any leftover inline tracking output that may be present from earlier edits
+    try {
+      const leftover = document.getElementById('trackingOutput');
+      if (leftover) leftover.remove();
+      const alt = document.getElementById('output');
+      if (alt && alt.parentElement && alt.parentElement.id === 'track') alt.remove();
+    } catch (e) {}
+
     // Initialize all modules on DOMContentLoaded
     NavbarHandler.init();
     MobileMenuHandler.init();

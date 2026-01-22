@@ -448,6 +448,38 @@ html {
 /* small spinner inside toast */
 .booking-process-toast .spinner { width:14px; height:14px; border:2px solid rgba(255,255,255,0.15); border-top-color:#fff; border-radius:50%; animation: spin 0.9s linear infinite; }
 
+/* Modal-style Processing Stepper (centered popup) */
+.booking-process-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.35);
+    z-index: 10002;
+}
+.booking-process-modal .modal-card {
+    background: #fff;
+    padding: 18px 20px;
+    border-radius: 12px;
+    width: 340px;
+    box-shadow: 0 12px 40px rgba(2,6,23,0.35);
+    text-align: left;
+}
+.booking-process-modal .modal-steps { display:flex; flex-direction:column; gap:10px; }
+.booking-process-modal .step { display:flex; align-items:center; gap:12px; padding:8px 6px; border-radius:8px; }
+.booking-process-modal .step .dot { width:12px; height:12px; border-radius:50%; background:#eef2ff; transition: all .25s ease; }
+.booking-process-modal .step.active { background: rgba(13,110,253,0.06); }
+.booking-process-modal .step.active .dot { background: #0d6efd; box-shadow: 0 0 6px rgba(13,110,253,0.25); transform: scale(1.15); }
+.booking-process-modal .step.done .dot { background: #28a745; }
+.booking-process-modal .label { flex:1; font-weight:700; color:#111827; }
+.booking-process-modal .modal-result { margin-top:12px; min-height:44px; text-align:center; }
+.booking-process-modal .modal-result .success { color: #065f46; background: rgba(6,95,70,0.06); border: 1px solid rgba(6,95,70,0.12); padding:10px; border-radius:8px; font-weight:700; }
+
+@media (max-width:420px) {
+    .booking-process-modal .modal-card { width: 92%; padding:14px; }
+}
+
 /* Pop Up Animation for Process Steps */
 @keyframes popUp {
     0% {
