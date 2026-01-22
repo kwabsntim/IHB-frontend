@@ -69,12 +69,14 @@
     .key {
       color: #666;
       word-break: break-word;
+      text-align: left;
     }
 
     .value {
       color: #111;
       font-weight: 500;
       word-break: break-word;
+      text-align: left;
     }
 
     .nested {
@@ -106,8 +108,9 @@
     }
 
     @media (max-width: 600px) {
+      /* On small screens keep a two-column layout: field on left, value on right */
       .row {
-        grid-template-columns: 1fr;
+        grid-template-columns: 120px 1fr;
       }
     }
   </style>
