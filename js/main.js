@@ -35,15 +35,12 @@ const Utils = {
 
   scrollToElement(element, offset = 100) {
     if (!this.isMobile()) return;
-    
+
     const elementRect = element.getBoundingClientRect();
     const absoluteElementTop = elementRect.top + window.pageYOffset;
     const middle = absoluteElementTop - (window.innerHeight / 2) + (elementRect.height / 2);
 
-    window.scrollTo({
-      top: middle - offset,
-      behavior: 'smooth'
-    });
+    window.scrollTo({ top: middle - offset, behavior: 'smooth' });
   },
 
   createIntersectionObserver(callback, options = {}) {
@@ -57,14 +54,6 @@ const AnimationManager = {
   navWiggleDone: false,
   navWigglePromise: null,
   navWigglePromiseResolve: null,
-
-  ensureNavWigglePromise() {
-    if (!this.navWigglePromise) {
-      this.navWigglePromise = new Promise(resolve => {
-        this.navWigglePromiseResolve = resolve;
-      });
-    }
-  },
 
   wiggleOnce(element, duration = CONFIG.WIGGLE_DURATION) {
     if (!element) return;
@@ -280,6 +269,7 @@ const FormHandlers = {
 
     bookingForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      console.log('Submit handler entered, current isSubmitting=', isSubmitting);
       
       if (isSubmitting) return;
       isSubmitting = true;
@@ -318,9 +308,26 @@ const FormHandlers = {
 
         if (response.success) {
           this.showBookingSuccess(bookingForm, submitBtn, originalText, () => {
-            isSubmitting = false;
+            // noop for backward compatibility; we now auto-unblock below
           });
+
           bookingForm.reset();
+
+          // Allow new submissions immediately and restore button after short delay
+          isSubmitting = false;
+          if (submitBtn) {
+            // keep 'Submitted' visible briefly, then restore
+            setTimeout(() => {
+              submitBtn.disabled = false;
+              submitBtn.textContent = originalText;
+            }, 2000);
+          }
+
+          // Auto-hide success box after 6s
+          const successBox = bookingForm.querySelector('.booking-success');
+          if (successBox) {
+            setTimeout(() => { try { successBox.style.display = 'none'; } catch(e){} }, 6000);
+          }
         } else {
           throw new Error(response.error || 'Submission failed');
         }
