@@ -30,12 +30,12 @@
             
             <!-- Nav Links -->
             <ul class="nav-menu" id="navMenu">
-                <li class="nav-item"><a href="#services" class="nav-link">Services</a></li>
-                <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
-                <li class="nav-item"><a href="#how-it-works" class="nav-link">How It Works</a></li>
-                <li class="nav-item"><a href="#track" class="nav-link">Track</a></li>
+                <li class="nav-item"><a href="#services" class="nav-link" data-i18n="nav.services">Services</a></li>
+                <li class="nav-item"><a href="#about" class="nav-link" data-i18n="nav.about">About</a></li>
+                <li class="nav-item"><a href="#how-it-works" class="nav-link" data-i18n="nav.how">How It Works</a></li>
+                <li class="nav-item"><a href="#track" class="nav-link" data-i18n="nav.track">Track</a></li>
                 <li class="nav-item nav-item-desktop">
-                    <a href="book-now.html" class="nav-link nav-cta">Book Now</a>
+                    <a href="book-now.html" class="nav-link nav-cta" data-i18n="nav.book">Book Now</a>
                 </li>
             </ul>
             <div class="nav-phone" style="display: flex; align-items: center; gap: 0.5rem; margin-left: 1.5rem; font-size: 1.08rem; font-weight: 500; color: #d90429;">
@@ -62,20 +62,20 @@
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <div class="hero-text">
-                <h1 class="hero-title">Fast & Reliable Logistics Service</h1>
-                <p class="hero-subtitle">From moving and international shipping to junk removal and storage—we handle it all with care and precision across Denmark & EU</p>
+                <h1 class="hero-title" data-i18n="hero.title">Fast & Reliable Logistics Service</h1>
+                <p class="hero-subtitle" data-i18n="hero.subtitle">From moving and international shipping to junk removal and storage—we handle it all with care and precision across Denmark & EU</p>
                 <div class="hero-badges">
                     <div class="badge">
                         <i class="fas fa-check-circle"></i>
-                        <span>Real-time Tracking</span>
+                        <span data-i18n="badge.tracking">Real-time Tracking</span>
                     </div>
                     <div class="badge">
                         <i class="fas fa-shield-alt"></i>
-                        <span>Secure Handling</span>
+                        <span data-i18n="badge.secure">Secure Handling</span>
                     </div>
                     <div class="badge">
                         <i class="fas fa-clock"></i>
-                        <span>Same-Day Available</span>
+                        <span data-i18n="badge.same_day">Same-Day Available</span>
                     </div>
                 </div>
             </div>
@@ -84,19 +84,20 @@
             <div class="quote-form-container">
                 <div class="form-header">
                     <i class="fas fa-box"></i>
-                    <h2>Quick Price Estimate</h2>
+                    <h2 data-i18n="quote.header">Quick Price Estimate</h2>
                 </div>
                 
                 <form class="quote-form" id="quoteForm">
                     <div class="form-group">
                         <label for="pickup">
                             <i class="fas fa-map-marker-alt"></i>
-                            Pickup Location
+                            <span data-i18n="quote.pickup.label">Pickup Location</span>
                         </label>
                         <input 
                             type="text" 
                             id="pickup" 
                             name="pickup" 
+                            data-i18n-placeholder="quote.pickup.placeholder"
                             placeholder="Enter pickup address"
                             required
                         >
@@ -105,12 +106,13 @@
                     <div class="form-group">
                         <label for="dropoff">
                             <i class="fas fa-location-dot"></i>
-                            Delivery Location
+                            <span data-i18n="quote.dropoff.label">Delivery Location</span>
                         </label>
                         <input 
                             type="text" 
                             id="dropoff" 
                             name="dropoff" 
+                            data-i18n-placeholder="quote.dropoff.placeholder"
                             placeholder="Enter delivery address"
                             required
                         >
@@ -119,12 +121,13 @@
                     <div class="form-group">
                         <label for="weight">
                             <i class="fas fa-weight-hanging"></i>
-                            Package Weight (kg)
+                            <span data-i18n="quote.weight.label">Package Weight (kg)</span>
                         </label>
                         <input 
                             type="number" 
                             id="weight" 
                             name="weight" 
+                            data-i18n-placeholder="quote.weight.placeholder"
                             placeholder="0.0"
                             step="0.1"
                             min="0"
@@ -132,7 +135,7 @@
                         >
                     </div>
 
-                        <button type="submit" class="btn-primary" onsubmit="event.preventDefault(); window.location.href='book-now.html';">
+                        <button type="submit" class="btn-primary" onsubmit="event.preventDefault(); window.location.href='book-now.html';" data-i18n="quote.button">
                             Get Instant Quote
                             <i class="fas fa-arrow-right"></i>
                         </button>
@@ -154,33 +157,33 @@
         <div class="about-container">
             <!-- About Text -->
             <div class="about-content">
-                <h2 class="section-title">About Us</h2>
-                <h3 class="about-subtitle">Professional Moving & Logistics Solutions Across Denmark & Europe</h3>
+                <h2 class="section-title" data-i18n="about.title">Om os</h2>
+                <h3 class="about-subtitle" data-i18n="about.subtitle">Professionelle flytte- og logistikløsninger i hele Danmark og Europa</h3>
                 <p class="about-text">
-                    IHB Transport is your comprehensive logistics partner, offering professional moving services, international shipping, and complete storage solutions throughout Denmark and Europe. From furniture assembly and junk removal to international shipping and secure storage, we handle every aspect of your moving needs with care and efficiency.
+                    IHB Transport er din komplette logistikpartner. Vi tilbyder professionelle flyttetjenester, international fragt samt sikre opbevaringsløsninger i hele Danmark og Europa. Fra møbelmontering og -demontering til bortskaffelse og opbevaring — vi varetager alle aspekter af din flytning med omhu, sikkerhed og effektivitet.
                 </p>
-                
+
                 <!-- About Features -->
                 <div class="about-features">
                     <div class="about-feature">
                         <i class="fas fa-truck-moving"></i>
                         <div>
-                            <h4>Moving Services</h4>
-                            <p>Local & international relocations across Denmark & EU</p>
+                            <h4>Flyttetjenester</h4>
+                            <p>Lokale og internationale flytninger i hele Danmark og EU</p>
                         </div>
                     </div>
                     <div class="about-feature">
                         <i class="fas fa-warehouse"></i>
                         <div>
-                            <h4>Storage Solutions</h4>
-                            <p>Secure storage facilities for short & long-term needs</p>
+                            <h4>Opbevaringsløsninger</h4>
+                            <p>Sikre opbevaringsfaciliteter til kort- og langtidsbehov</p>
                         </div>
                     </div>
                     <div class="about-feature">
                         <i class="fas fa-couch"></i>
                         <div>
-                            <h4>Furniture & Junk Services</h4>
-                            <p>Professional assembly, disassembly & junk removal</p>
+                            <h4>Møbel- og bortskaffelsesservice</h4>
+                            <p>Professionel montering, demontering og bortskaffelse</p>
                         </div>
                     </div>
                 </div>
@@ -192,7 +195,7 @@
     <section class="how-it-works-section" id="how-it-works">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">How It Works</h2>
+                <h2 class="section-title" data-i18n="how.title">How It Works</h2>
                 <p class="section-subtitle">From booking request to final payment - our complete service process</p>
             </div>
             
@@ -209,8 +212,8 @@
                         </div>
                     </div>
                     <div class="step-content">
-                        <h3 class="step-title">Request Service</h3>
-                        <p class="step-description">Customer clicks "Book Now" button to request a service</p>
+                        <h3 class="step-title">Anmod om service</h3>
+                        <p class="step-description">Kunden klikker på "Bestil nu" for at anmode om en service</p>
                     </div>
                 </div>
                 
@@ -226,8 +229,8 @@
                         </div>
                     </div>
                     <div class="step-content">
-                        <h3 class="step-title">Email Confirmation</h3>
-                        <p class="step-description">Confirmation email is sent to acknowledge the request</p>
+                        <h3 class="step-title">E-mailbekræftelse</h3>
+                        <p class="step-description">En bekræftelses-e-mail sendes for at bekræfte modtagelsen af anmodningen</p>
                     </div>
                 </div>
                 
@@ -243,8 +246,8 @@
                         </div>
                     </div>
                     <div class="step-content">
-                        <h3 class="step-title">Price Quotation</h3>
-                        <p class="step-description">Detailed price quotation is sent to the customer</p>
+                        <h3 class="step-title">Prisoverslag</h3>
+                        <p class="step-description">Et detaljeret prisoverslag sendes til kunden</p>
                     </div>
                 </div>
                 
@@ -260,8 +263,8 @@
                         </div>
                     </div>
                     <div class="step-content">
-                        <h3 class="step-title">Price Confirmation</h3>
-                        <p class="step-description">Customer reviews and confirms the quoted price</p>
+                        <h3 class="step-title">Bekræftelse af pris</h3>
+                        <p class="step-description">Kunden gennemgår og bekræfter det tilbudte beløb</p>
                     </div>
                 </div>
                 
@@ -277,8 +280,8 @@
                         </div>
                     </div>
                     <div class="step-content">
-                        <h3 class="step-title">Service Begins</h3>
-                        <p class="step-description">Professional service team starts the requested work</p>
+                        <h3 class="step-title">Service starter</h3>
+                        <p class="step-description">Det professionelle team påbegynder den bestilte service</p>
                     </div>
                 </div>
                 
@@ -294,8 +297,8 @@
                         </div>
                     </div>
                     <div class="step-content">
-                        <h3 class="step-title">Service Completed</h3>
-                        <p class="step-description">Service is completed to customer satisfaction</p>
+                        <h3 class="step-title">Service fuldført</h3>
+                        <p class="step-description">Servicen er afsluttet til kundens tilfredshed</p>
                     </div>
                 </div>
                 
@@ -305,8 +308,8 @@
                         <i class="fas fa-credit-card"></i>
                     </div>
                     <div class="step-content">
-                        <h3 class="step-title">Confirmation & Payment</h3>
-                        <p class="step-description">Customer confirms completion and processes final payment</p>
+                        <h3 class="step-title">Bekræftelse & Betaling</h3>
+                        <p class="step-description">Kunden bekræfter fuldførelsen og gennemfører den endelige betaling</p>
                     </div>
                 </div>
             </div>
@@ -319,11 +322,11 @@
             
             <!-- Section Header -->
             <div class="section-header">
-                <h2 class="section-title">Prices</h2>
-                <p class="section-subtitle">Competitive hourly rates with no hidden fees</p>
+                <h2 class="section-title" data-i18n="pricing.title">Prices</h2>
+                <p class="section-subtitle" data-i18n="pricing.subtitle">Competitive hourly rates with no hidden fees</p>
                 <p class="mobile-notice">
                     <i class="fas fa-info-circle"></i>
-                    Click buttons below to view weekday and weekend prices
+                    <span data-i18n="pricing.note">Click buttons below to view weekday and weekend prices</span>
                 </p>
             </div>
 
@@ -331,11 +334,11 @@
             <div class="pricing-toggle">
                 <button class="toggle-btn active" data-period="weekday">
                     <i class="fas fa-briefcase"></i>
-                    Weekdays (Mon-Fri)
+                    <span data-i18n="pricing.weekdays">Weekdays (Mon-Fri)</span>
                 </button>
                 <button class="toggle-btn" data-period="weekend">
                     <i class="fas fa-calendar-week"></i>
-                    Weekend (Sat-Sun)
+                    <span data-i18n="pricing.weekend">Weekend (Sat-Sun)</span>
                 </button>
             </div>
 
@@ -615,7 +618,7 @@
 
             <!-- Book Now Button -->
             <div class="pricing-cta">
-                <a href="book-now.html" class="btn-primary btn-large">
+                <a href="book-now.html" class="btn-primary btn-large" data-i18n="pricing.book">
                     Book Now
                     <i class="fas fa-arrow-right"></i>
                 </a>
@@ -626,7 +629,7 @@
 
         <!-- Testimonials Section -->
         <main class="testimonials" aria-labelledby="testimonial-heading">
-            <h2 id="testimonial-heading">What our customers say</h2>
+            <h2 id="testimonial-heading" data-i18n="testimonials.title">What our customers say</h2>
 
             <section class="cards" id="testimonials" aria-label="Testimonials list">
                 <!-- Card 1 -->
@@ -690,9 +693,9 @@
                 <div class="tracking-content">
                     <h2 class="section-title tracking-title">
                         <i class="fas fa-map-marker-alt location-icon"></i>
-                        Track Your Request
+                        <span data-i18n="track.title">Track Your Request</span>
                     </h2>
-                    <p class="tracking-desc">
+                    <p class="tracking-desc" data-i18n="track.desc">
                         Enter your request ID below to track the status of your delivery. You'll receive an email after submitting your request ID.This will tell you the status of your request.Thank you for choosing IHB Transport!
                     </p>
                     <form class="tracking-form" id="trackingForm">
@@ -701,11 +704,12 @@
                                 type="text" 
                                 id="requestId" 
                                 name="requestId" 
+                                data-i18n-placeholder="track.placeholder"
                                 placeholder="Enter your request ID"
                                 required
                             >
                         </div>
-                        <button type="submit" class="btn-primary tracking-btn">
+                        <button type="submit" class="btn-primary tracking-btn" data-i18n="track.button">
                             Track Request
                             <i class="fas fa-search"></i>
                         </button>
@@ -719,9 +723,9 @@
         <div class="contact-content" style="flex:1; text-align: center;">
             <h2 class="section-title" style="color: var(--dark-gray); display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
                 <i class="fas fa-phone wiggle-icon"></i>
-                Contact Us
+                <span data-i18n="contact.title">Contact Us</span>
             </h2>
-            <p class="contact-desc">
+            <p class="contact-desc" data-i18n="contact.desc">
                 Have questions or want to reach us directly? Send us a message below and we'll get back to you!
             </p>
             
@@ -736,7 +740,7 @@
                         required
                     ></textarea>
                 </div>
-                <button type="submit" class="btn-primary contact-btn">
+                <button type="submit" class="btn-primary contact-btn" data-i18n="contact.button">
                     Send Message
                     <i class="fas fa-paper-plane"></i>
                 </button>
@@ -754,9 +758,7 @@
             <h3 class="footer-text">
                 <span class="typing-text" id="typingText"></span>
             </h3>
-            <p class="footer-info">
-                CVR 44621592 | ©2026
-            </p>
+            <p class="footer-info" data-i18n="footer.cvr">CVR 44621592 | ©2026</p>
         </div>
     </div>
 </footer>

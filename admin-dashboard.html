@@ -48,6 +48,10 @@
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:8px;">
+        <select id="langSelect" style="border-radius:8px; padding:6px 8px; font-weight:600;">
+          <option value="da">🇩🇰 Dansk</option>
+          <option value="en">🇬🇧 English</option>
+        </select>
         <button id="refreshBtn" class="btn">Refresh</button>
         <button id="logoutBtn" class="btn danger">Logout</button>
       </div>
@@ -309,38 +313,70 @@
         // Start delivery for Accepted deliveries -> calls driver pickup endpoint
         document.querySelectorAll('.start-delivery').forEach(btn => {
           btn.addEventListener('click', async (e) => {
-            const id = e.currentTarget.dataset.id;
+            const el = e.currentTarget;
+            const id = el.dataset.id;
             if (!id) return;
             if (!confirm('Start delivery for ' + id + '?')) return;
+            el.disabled = true;
+            const originalText = el.textContent;
+            el.textContent = 'Starting...';
             try {
-              const res = await authPostApi('/api/driver/deliveries/' + encodeURIComponent(id) + '/pickup');
+              // Try admin endpoint first
+              let res = await authFetch(ADMIN_BASE + '/deliveries/' + encodeURIComponent(id) + '/pickup', { method: 'POST' }).catch(()=>({ ok:false }));
+              if (!res || !res.ok) {
+                // fallback to public/driver endpoint
+                res = await authPostApi('/api/driver/deliveries/' + encodeURIComponent(id) + '/pickup');
+              }
               if (!res.ok) {
                 const text = await res.text().catch(()=>res.status);
                 alert('Failed to start delivery: ' + text);
+                el.disabled = false;
+                el.textContent = originalText;
                 return;
               }
-              alert('Delivery started');
+              // success
+              el.textContent = 'Started';
               loadDeliveries();
-            } catch (err) { alert('Network error'); }
+            } catch (err) {
+              alert('Network error');
+              el.disabled = false;
+              el.textContent = originalText;
+            }
           });
         });
 
         // Mark as done for In progress deliveries -> calls completion endpoint
         document.querySelectorAll('.mark-done').forEach(btn => {
           btn.addEventListener('click', async (e) => {
-            const id = e.currentTarget.dataset.id;
+            const el = e.currentTarget;
+            const id = el.dataset.id;
             if (!id) return;
             if (!confirm('Mark delivery ' + id + ' as completed?')) return;
+            el.disabled = true;
+            const originalText = el.textContent;
+            el.textContent = 'Marking...';
             try {
-              const res = await authPostApi('/deliveries/' + encodeURIComponent(id) + '/complete');
+              // Try admin endpoint first
+              let res = await authFetch(ADMIN_BASE + '/deliveries/' + encodeURIComponent(id) + '/complete', { method: 'POST' }).catch(()=>({ ok:false }));
+              if (!res || !res.ok) {
+                // fallback to root deliveries complete
+                res = await authPostApi('/deliveries/' + encodeURIComponent(id) + '/complete');
+              }
               if (!res.ok) {
                 const text = await res.text().catch(()=>res.status);
                 alert('Failed to mark completed: ' + text);
+                el.disabled = false;
+                el.textContent = originalText;
                 return;
               }
-              alert('Delivery marked completed');
+              // success
+              el.textContent = 'Completed';
               loadDeliveries();
-            } catch (err) { alert('Network error'); }
+            } catch (err) {
+              alert('Network error');
+              el.disabled = false;
+              el.textContent = originalText;
+            }
           });
         });
 
@@ -359,6 +395,61 @@
 
       // initial load
       loadDeliveries();
+
+      // --- Local i18n for this page (loads i18next and applies translations) ---
+      (function(){
+        function loadI18nLocal() {
+          if (window.i18next) return Promise.resolve(window.i18next);
+          return new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = 'https://unpkg.com/i18next@21.9.1/dist/umd/i18next.min.js';
+            s.onload = () => resolve(window.i18next);
+            s.onerror = reject;
+            document.head.appendChild(s);
+          });
+        }
+
+        const resources = {
+          en: { translation: { 'admin.title':'Admin Dashboard','admin.subtitle':'Manage deliveries','button.refresh':'Refresh','button.logout':'Logout','table.delivery':'Delivery','table.client':'Client','table.status':'Status','table.actions':'Actions','button.details':'Details','button.start':'Start Delivery','button.set_price':'Set Price','button.mark_done':'Mark as done','loading':'Loading…' } },
+          da: { translation: { 'admin.title':'Administrator Panel','admin.subtitle':'Administrer leverancer','button.refresh':'Opdater','button.logout':'Log ud','table.delivery':'Levering','table.client':'Kunde','table.status':'Status','table.actions':'Handlinger','button.details':'Detaljer','button.start':'Start levering','button.set_price':'Sæt pris','button.mark_done':'Marker som færdig','loading':'Indlæser…' } }
+        };
+
+        function applyLocal(i18n) {
+          try {
+            const h1 = document.querySelector('.header h1'); if (h1) h1.textContent = i18n.t('admin.title');
+            const sub = document.querySelector('.header .muted'); if (sub) sub.textContent = i18n.t('admin.subtitle');
+            const refresh = document.getElementById('refreshBtn'); if (refresh) refresh.textContent = i18n.t('button.refresh');
+            const logout = document.getElementById('logoutBtn'); if (logout) logout.textContent = i18n.t('button.logout');
+            document.querySelectorAll('table thead th').forEach((th, idx) => {
+              const keys = ['table.delivery','table.client','table.status','table.actions']; if (keys[idx]) th.textContent = i18n.t(keys[idx]);
+            });
+            document.querySelectorAll('.open-public').forEach(b => b.textContent = i18n.t('button.details'));
+            document.querySelectorAll('.set-price').forEach(b => b.textContent = i18n.t('button.set_price'));
+            document.querySelectorAll('.start-delivery').forEach(b => b.textContent = i18n.t('button.start'));
+            document.querySelectorAll('.mark-done').forEach(b => b.textContent = i18n.t('button.mark_done'));
+          } catch (e) { console.warn('i18n apply failed', e); }
+        }
+
+        loadI18nLocal().then(() => {
+          if (!window.i18next || !window.i18next.init) return;
+          window.i18next.init({ lng: localStorage.getItem('i18n_lang')||'da', resources }, () => applyLocal(window.i18next));
+        }).catch(err => console.warn('i18n load failed', err));
+
+        const sel = document.getElementById('langSelect');
+        if (sel) {
+          sel.value = localStorage.getItem('i18n_lang') || 'da';
+          sel.addEventListener('change', (e) => {
+            const lng = e.target.value;
+            localStorage.setItem('i18n_lang', lng);
+            if (window.i18next && window.i18next.changeLanguage) {
+              window.i18next.changeLanguage(lng, () => applyLocal(window.i18next));
+            } else {
+              // load and apply
+              loadI18nLocal().then(() => window.i18next.init({ lng, resources }, () => applyLocal(window.i18next)));
+            }
+          });
+        }
+      })();
     })();
   </script>
 </body>

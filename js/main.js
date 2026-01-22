@@ -8,6 +8,211 @@ const CONFIG = {
   API_ENDPOINT: 'https://ihb-transport-dk.onrender.com/api/public/deliveries'
 };
 
+// ==================== I18N (i18next) ====================
+// Loads i18next via CDN and initializes translations for 'en' and 'da'.
+function initI18n() {
+  if (window.i18next) return Promise.resolve(window.i18next);
+
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://unpkg.com/i18next@21.9.1/dist/umd/i18next.min.js';
+    s.onload = () => {
+      const resources = {
+        en: {
+          translation: {
+            'admin.title': 'Admin Dashboard',
+            'admin.subtitle': 'Manage deliveries',
+            'button.refresh': 'Refresh',
+            'button.logout': 'Logout',
+            'table.delivery': 'Delivery',
+            'table.client': 'Client',
+            'table.status': 'Status',
+            'table.actions': 'Actions',
+            'button.details': 'Details',
+            'button.start': 'Start Delivery',
+            'button.set_price': 'Set Price',
+            'button.mark_done': 'Mark as done',
+            'loading': 'Loading…'
+            // index page keys will be added below
+          }
+        },
+        da: {
+          translation: {
+            'admin.title': 'Administrator Panel',
+            'admin.subtitle': 'Administrer leverancer',
+            'button.refresh': 'Opdater',
+            'button.logout': 'Log ud',
+            'table.delivery': 'Levering',
+            'table.client': 'Kunde',
+            'table.status': 'Status',
+            'table.actions': 'Handlinger',
+            'button.details': 'Detaljer',
+            'button.start': 'Start levering',
+            'button.set_price': 'Sæt pris',
+            'button.mark_done': 'Marker som færdig',
+            'loading': 'Indlæser…'
+            // index page keys will be added below
+          }
+        }
+      };
+
+      // Add index page translations (common keys) to both locales
+      const indexKeysEn = {
+        'nav.services': 'Services',
+        'nav.about': 'About',
+        'nav.how': 'How It Works',
+        'nav.track': 'Track',
+        'nav.book': 'Book Now',
+        'hero.title': 'Fast & Reliable Logistics Service',
+        'hero.subtitle': 'From moving and international shipping to junk removal and storage—we handle it all with care and precision across Denmark & EU',
+        'badge.tracking': 'Real-time Tracking',
+        'badge.secure': 'Secure Handling',
+        'badge.same_day': 'Same-Day Available',
+        'quote.header': 'Quick Price Estimate',
+        'quote.pickup.label': 'Pickup Location',
+        'quote.dropoff.label': 'Delivery Location',
+        'quote.weight.label': 'Package Weight (kg)',
+        'quote.button': 'Get Instant Quote',
+        'quote.pickup.placeholder': 'Enter pickup address',
+        'quote.dropoff.placeholder': 'Enter delivery address',
+        'quote.weight.placeholder': '0.0',
+        'about.title': 'About Us',
+        'about.subtitle': 'Professional Moving & Logistics Solutions Across Denmark & Europe',
+        'how.title': 'How It Works',
+        'pricing.title': 'Prices',
+        'pricing.subtitle': 'Competitive hourly rates with no hidden fees',
+        'pricing.weekdays': 'Weekdays (Mon-Fri)',
+        'pricing.weekend': 'Weekend (Sat-Sun)',
+        'pricing.note': 'Click buttons below to view weekday and weekend prices',
+        'pricing.book': 'Book Now',
+        'testimonials.title': 'What our customers say',
+        'track.title': 'Track Your Request',
+        'track.desc': 'Enter your request ID below to track the status of your delivery.',
+          'track.button': 'Track Request',
+          'track.placeholder': 'Enter your request ID',
+        'contact.title': 'Contact Us',
+        'contact.desc': 'Have questions or want to reach us directly? Send us a message below and we\'ll get back to you!',
+        'contact.button': 'Send Message',
+        'footer.cvr': 'CVR 44621592 | ©2026'
+      };
+
+      const indexKeysDa = {
+        'nav.services': 'Tjenester',
+        'nav.about': 'Om os',
+        'nav.how': 'Hvordan det virker',
+        'nav.track': 'Spor',
+        'nav.book': 'Bestil nu',
+        'hero.title': 'Hurtig og Pålidelig Logistikservice',
+        'hero.subtitle': 'Fra flytning og international forsendelse til bortskaffelse og opbevaring – vi klarer det med omhu og præcision i hele Danmark og EU',
+        'badge.tracking': 'Realtids sporing',
+        'badge.secure': 'Sikker håndtering',
+        'badge.same_day': 'Samme dag tilgængelig',
+        'quote.header': 'Hurtigt prisoverslag',
+        'quote.pickup.label': 'Afhentningssted',
+        'quote.dropoff.label': 'Leveringsadresse',
+        'quote.weight.label': 'Pakkens vægt (kg)',
+        'quote.button': 'Få øjeblikkeligt tilbud',
+        'quote.pickup.placeholder': 'Indtast afhentningsadresse',
+        'quote.dropoff.placeholder': 'Indtast leveringsadresse',
+        'quote.weight.placeholder': '0.0',
+        'about.title': 'Om os',
+        'about.subtitle': 'Professionelle flytte- og logistikløsninger i hele Danmark og Europa',
+        'how.title': 'Hvordan det virker',
+        'pricing.title': 'Priser',
+        'pricing.subtitle': 'Konkurrencedygtige timepriser uden skjulte gebyrer',
+        'pricing.weekdays': 'Hverdag (Man-Fre)',
+        'pricing.weekend': 'Weekend (Lør-Søn)',
+        'pricing.note': 'Klik på knapperne nedenfor for at se priser for hverdag og weekend',
+        'pricing.book': 'Bestil nu',
+        'testimonials.title': 'Hvad vores kunder siger',
+        'track.title': 'Spor din forespørgsel',
+        'track.desc': 'Indtast dit anmodnings-id nedenfor for at spore status for din levering.',
+          'track.button': 'Spor forespørgsel',
+          'track.placeholder': 'Indtast dit anmodnings-id',
+        'contact.title': 'Kontakt os',
+        'contact.desc': 'Har du spørgsmål eller vil du kontakte os direkte? Send os en besked nedenfor, så vender vi tilbage!',
+        'contact.button': 'Send besked',
+        'footer.cvr': 'CVR 44621592 | ©2026'
+      };
+
+      Object.assign(resources.en.translation, indexKeysEn);
+      Object.assign(resources.da.translation, indexKeysDa);
+
+      window.i18next.init({ lng: localStorage.getItem('i18n_lang') || 'da', resources }, () => {
+        resolve(window.i18next);
+      });
+    };
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+function applyTranslations(i18n) {
+  if (!i18n) return;
+  // Admin header
+  const h1 = document.querySelector('.header h1');
+  if (h1) h1.textContent = i18n.t('admin.title');
+  const sub = document.querySelector('.header .muted');
+  if (sub) sub.textContent = i18n.t('admin.subtitle');
+  const refresh = document.getElementById('refreshBtn');
+  if (refresh) refresh.textContent = i18n.t('button.refresh');
+  const logout = document.getElementById('logoutBtn');
+  if (logout) logout.textContent = i18n.t('button.logout');
+
+  // Table headers (if present)
+  document.querySelectorAll('table thead th').forEach((th, idx) => {
+    const keys = ['table.delivery','table.client','table.status','table.actions'];
+    if (keys[idx]) th.textContent = i18n.t(keys[idx]);
+  });
+
+  // Buttons inside table rows
+  document.querySelectorAll('.open-public').forEach(b => b.textContent = i18n.t('button.details'));
+  document.querySelectorAll('.set-price').forEach(b => b.textContent = i18n.t('button.set_price'));
+  document.querySelectorAll('.start-delivery').forEach(b => b.textContent = i18n.t('button.start'));
+  document.querySelectorAll('.mark-done').forEach(b => b.textContent = i18n.t('button.mark_done'));
+
+  // Generic loading texts
+  document.querySelectorAll('[data-i18n-loading]').forEach(el => el.textContent = i18n.t('loading'));
+
+  // Generic data-i18n attributes: set textContent for elements with data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (!key) return;
+    // If element is input/textarea, set placeholder instead
+    const tag = el.tagName && el.tagName.toLowerCase();
+    if (tag === 'input' || tag === 'textarea') {
+      const placeholder = i18n.t(key);
+      if (placeholder) el.setAttribute('placeholder', placeholder);
+    } else {
+      el.textContent = i18n.t(key);
+    }
+  });
+
+  // data-i18n-placeholder: explicitly set placeholder
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (!key) return;
+    el.setAttribute('placeholder', i18n.t(key));
+  });
+
+  // data-i18n-html: set innerHTML (use sparingly)
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    if (!key) return;
+    el.innerHTML = i18n.t(key);
+  });
+}
+
+function changeLanguage(lng) {
+  localStorage.setItem('i18n_lang', lng);
+  if (window.i18next) {
+    window.i18next.changeLanguage(lng, () => applyTranslations(window.i18next));
+  }
+}
+
+// Initialize i18n early
+initI18n().then(i18n => applyTranslations(i18n)).catch(err => console.warn('i18n load failed', err));
+
 // ==================== UTILITY FUNCTIONS ====================
 const Utils = {
   debounce(func, wait) {
