@@ -3,7 +3,7 @@ const CONFIG = {
   WIGGLE_DURATION: 2200,
   NAV_WIGGLE_DELAY: 1000,
   TYPING_SPEED: 100,
-  TYPING_TEXT: "🚚 Interested in the service? Click Book Now at the top!",
+  TYPING_TEXT: "🚚 Interesseret i vores service? Klik på 'Bestil nu' øverst!",
   MOBILE_BREAKPOINT: 768,
   API_ENDPOINT: 'https://ihb-transport-dk.onrender.com/api/public/deliveries'
 };
