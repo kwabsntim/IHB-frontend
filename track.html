@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="da">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tracking Result</title>
+  <title data-i18n="track.page.title">Sporingsresultat</title>
 
   <style>
     * {
@@ -120,12 +120,14 @@
 
   <div class="container">
     <img src="static/logo2.png" alt="IHB Transport" class="logo">
-    <h2>Tracking Result</h2>
-    <div id="status" class="status">Loading…</div>
+    <h2 data-i18n="track.page.heading">Sporingsresultat</h2>
+    <div id="status" class="status" data-i18n="track.page.loading">Indlæser…</div>
     <div id="output"></div>
   </div>
+  <script src="js/main.js"></script>
 
   <script>
+    const t = (k) => (window.i18next ? window.i18next.t(k) : k);
     const API_BASE = 'https://ihb-transport-dk.onrender.com/api/public/deliveries';
 
     function getParam(name) {
@@ -219,12 +221,12 @@
     }
 
     if (!id) {
-      statusEl.textContent = 'No tracking ID provided.';
-      outputEl.innerHTML = '<div class="error">Missing tracking ID in URL.</div>';
+      statusEl.textContent = t('track.page.no_id');
+      outputEl.innerHTML = `<div class="error">${t('track.page.missing')}</div>`;
     } else {
       const url = `${API_BASE}/${encodeURIComponent(id)}`;
       // show a preloader message while requesting
-      statusEl.innerHTML = '<div class="loading">Requesting tracking data…</div>';
+      statusEl.innerHTML = `<div class="loading">${t('track.page.requesting')}</div>`;
 
       fetch(url)
         .then(res => res.json())
@@ -239,8 +241,8 @@
           outputEl.appendChild(renderObject(data));
         })
         .catch(err => {
-          statusEl.textContent = 'Error fetching data';
-          outputEl.innerHTML = `<div class="error">${err.message || 'Request failed'}</div>`;
+          statusEl.textContent = t('track.page.error');
+          outputEl.innerHTML = `<div class="error">${err.message || t('track.page.request_failed')}</div>`;
         });
     }
   </script>

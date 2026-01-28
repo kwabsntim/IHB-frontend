@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="da">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Now</title>
+    <title>Bestil nu</title>
     <link rel="stylesheet" href="css/style.css">
     <!-- Quicksand font -->
     <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700&display=swap" rel="stylesheet">
@@ -19,86 +19,86 @@
                 <div class="booking-logo">
                     <img src="static/newLogo.png" alt="IHB Transport Logo" class="booking-logo-img" loading="lazy">
                 </div>
-                <h1 class="booking-title">Fill out this form to create a booking</h1>
+                <h1 class="booking-title">Udfyld formularen for at oprette en booking</h1>
             </div>
             <!-- Client Details -->
-            <h2>Client Details</h2>
+            <h2>Kundeoplysninger</h2>
             <div class="form-group">
-                <label for="client_name">Name</label>
+                <label for="client_name">Navn</label>
                 <input class="form-input" type="text" id="client_name" name="client_name" maxlength="120" required>
             </div>
             <div class="form-group">
-                <label for="client_email">Email</label>
+                <label for="client_email">E-mail</label>
                 <input type="email" id="client_email" name="client_email" maxlength="120" required>
             </div>
             <!-- Pickup Address Details -->
-            <h2>Address Details</h2>
+            <h2>Adresseoplysninger</h2>
             <div class="form-group">
-                <label for="pickup_street">Street</label>
+                <label for="pickup_street">Vej</label>
                 <input type="text" id="pickup_street" name="pickup_street" maxlength="255" required>
             </div>
             <div class="form-group">
-                <label for="pickup_city">City</label>
+                <label for="pickup_city">By</label>
                 <input type="text" id="pickup_city" name="pickup_city" maxlength="100" required>
             </div>
             <div class="form-group">
-                <label for="pickup_post_code">Post Code</label>
+                <label for="pickup_post_code">Postnummer</label>
                 <input type="text" id="pickup_post_code" name="pickup_post_code" maxlength="20" required>
             </div>
             <div class="form-group">
-                <label for="pickup_country">Country</label>
+                <label for="pickup_country">Land</label>
                 <input type="text" id="pickup_country" name="pickup_country" maxlength="100" required>
             </div>
             <!-- Service Address Details -->
-            <h2>Service Address Details</h2>
+            <h2>Serviceadresse</h2>
             <div class="form-group">
-                <label for="dropoff_street">Street</label>
+                <label for="dropoff_street">Vej</label>
                 <input type="text" id="dropoff_street" name="dropoff_street" maxlength="255" required>
             </div>
             <div class="form-group">
-                <label for="dropoff_city">City</label>
+                <label for="dropoff_city">By</label>
                 <input type="text" id="dropoff_city" name="dropoff_city" maxlength="100" required>
             </div>
             <div class="form-group">
-                <label for="dropoff_post_code">Post Code</label>
+                <label for="dropoff_post_code">Postnummer</label>
                 <input type="text" id="dropoff_post_code" name="dropoff_post_code" maxlength="20" required>
             </div>
             <div class="form-group">
-                <label for="dropoff_country">Country</label>
+                <label for="dropoff_country">Land</label>
                 <input type="text" id="dropoff_country" name="dropoff_country" maxlength="100" required>
             </div>
             <!-- Item Details -->
-            <h2>Item Details</h2>
+            <h2>Vareoplysninger</h2>
             <div class="form-group">
-                <label for="item_description">Item Description</label>
+                <label for="item_description">Varebeskrivelse</label>
                 <input type="text" id="item_description" name="item_description" maxlength="255" required>
             </div>
             <div class="form-group">
-                <label for="items">Items</label>
+                <label for="items">Genstande</label>
                 <textarea id="items" name="items" rows="2" required></textarea>
             </div>
             <div class="form-group">
-                <label for="weight">Weight</label>
+                <label for="weight">Vægt</label>
                 <input type="text" id="weight" name="weight" maxlength="50" required>
             </div>
             <!-- Service Details -->
-            <h2>Service Details</h2>
+            <h2>Servicedetaljer</h2>
             <div class="form-group">
-                <label for="service">Service Type</label>
+                <label for="service">Service type</label>
                 <select id="service" name="service" required>
-                    <option value="">Select a service</option>
-                    <option value="Moving Services">Moving Services</option>
-                    <option value="Storage Solutions">Storage Solutions</option>
-                    <option value="Furniture & Junk Services">Furniture & Junk Services</option>
-                    <option value="International Shipping">International Shipping</option>
+                    <option value="">Vælg en service</option>
+                    <option value="Moving Services">Flyttetjenester</option>
+                    <option value="Storage Solutions">Opbevaringsløsninger</option>
+                    <option value="Furniture & Junk Services">Møbel- og bortskaffelsesservice</option>
+                    <option value="International Shipping">International forsendelse</option>
                 </select>
             </div>
             <div class="form-group">
-                <label for="service_date">Service Date</label>
+                <label for="service_date">Service dato</label>
                 <input type="date" id="service_date" name="service_date" required>
             </div>
             <!-- Submit Button -->
-            <button type="submit" class="btn-primary">Submit Booking</button>
+            <button type="submit" class="btn-primary">Send bestilling</button>
         </form>
         </div>
     </main>

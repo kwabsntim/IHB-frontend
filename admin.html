@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="da">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login</title>
+    <title>Administrator - Log ind</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/booking.css">
     <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700&display=swap" rel="stylesheet">
@@ -50,24 +50,24 @@
                     <div class="booking-logo">
                         <img src="static/logo2.png" alt="IHB Transport Logo" class="booking-logo-img" loading="lazy">
                     </div>
-                    <h1 class="booking-title">Administrator Login</h1>
+                    <h1 class="booking-title" data-i18n="admin.login.title">Administrator - Log ind</h1>
                 </div>
 
                 
 
-                <div id="adminError" class="form-error" style="display:none; color:#b91c1c; margin-bottom:12px;"></div>
+                <div id="adminError" class="form-error" role="alert" aria-live="assertive" style="display:none; color:#b91c1c; margin-bottom:12px;"></div>
 
                 <div class="form-group">
-                    <label for="admin_email">Email</label>
-                    <input id="admin_email" name="admin_email" type="email" required placeholder="admin@example.com">
+                    <label for="admin_email" data-i18n="admin.login.email_label">E-mail</label>
+                    <input id="admin_email" name="admin_email" type="email" required data-i18n-placeholder="admin.login.email_placeholder" placeholder="admin@eksempel.dk">
                 </div>
 
                 <div class="form-group">
-                    <label for="admin_password">Password</label>
-                    <input id="admin_password" name="admin_password" type="password" required placeholder="Enter your password">
+                    <label for="admin_password" data-i18n="admin.login.password_label">Adgangskode</label>
+                    <input id="admin_password" name="admin_password" type="password" required data-i18n-placeholder="admin.login.password_placeholder" placeholder="Indtast din adgangskode">
                 </div>
 
-                <button type="submit" class="btn-primary">Sign In</button>
+                <button type="submit" class="btn-primary" data-i18n="admin.login.sign_in">Log ind</button>
             </form>
         </div>
     </main>
@@ -75,13 +75,17 @@
         <!-- Preloader shown while signing in -->
         <div id="adminPreloader" aria-hidden="true">
             <div class="admin-preloader-inner" role="status" aria-live="polite">
-                <div class="spinner-dot" aria-hidden="true"></div>
-                <div>Signing in…</div>
-            </div>
+                    <div class="spinner-dot" aria-hidden="true"></div>
+                    <div data-i18n="admin.login.signing_in">Logger ind…</div>
+                </div>
         </div>
+
+            <script src="js/main.js"></script>
 
         <script>
             (function(){
+                // Resolve translations at call time so i18n can load asynchronously
+                const t = (k) => (window.i18next ? window.i18next.t(k) : k);
                 // Use explicit backend login URL as requested
                 const LOGIN_URL = 'https://ihb-transport-dk.onrender.com/login';
 
@@ -104,13 +108,13 @@
                     const password = (passEl.value || '').trim();
 
                     if (!email || !password) {
-                        if (errorEl) { errorEl.textContent = 'Please provide both email and password.'; errorEl.style.display = 'block'; }
+                        if (errorEl) { errorEl.textContent = t('admin.login.error_missing'); errorEl.style.display = 'block'; }
                         return;
                     }
 
                     const submitBtn = form.querySelector('button[type="submit"]');
                     const originalBtnText = submitBtn ? submitBtn.textContent : 'Sign In';
-                      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Signing in...'; }
+                      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = t('admin.login.signing_in'); }
                       const preloader = document.getElementById('adminPreloader');
                       if (preloader) preloader.style.display = 'flex';
 
@@ -124,9 +128,9 @@
                         // Friendly errors: avoid showing raw server logs to the user
                         if (!resp.ok) {
                             if (resp.status === 401 || resp.status === 403) {
-                                if (errorEl) { errorEl.textContent = 'Invalid login credentials.'; errorEl.style.display = 'block'; }
+                                if (errorEl) { errorEl.textContent = t('admin.login.error_invalid'); errorEl.style.display = 'block'; }
                             } else {
-                                if (errorEl) { errorEl.textContent = 'Login failed. Please try again.'; errorEl.style.display = 'block'; }
+                                if (errorEl) { errorEl.textContent = t('admin.login.error_network'); errorEl.style.display = 'block'; }
                             }
                             return;
                         }
@@ -135,7 +139,7 @@
                         const data = await resp.json().catch(() => null);
                         const token = (data && (data.token || data.access_token || data.accessToken || data.auth_token));
                         if (!token) {
-                            if (errorEl) { errorEl.textContent = 'Login succeeded but no token was returned by the server.'; errorEl.style.display = 'block'; }
+                            if (errorEl) { errorEl.textContent = t('admin.login.error_no_token'); errorEl.style.display = 'block'; }
                             return;
                         }
 
@@ -143,7 +147,7 @@
                         // Redirect to dashboard
                         window.location.href = 'admin-dashboard.html';
                     } catch (err) {
-                        if (errorEl) { errorEl.textContent = 'Network error. Please check your connection and try again.'; errorEl.style.display = 'block'; }
+                        if (errorEl) { errorEl.textContent = t('admin.login.error_network'); errorEl.style.display = 'block'; }
                     } finally {
                         if (preloader) preloader.style.display = 'none';
                         if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }

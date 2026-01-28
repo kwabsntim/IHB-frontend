@@ -24,6 +24,24 @@ function initI18n() {
             'admin.subtitle': 'Manage deliveries',
             'button.refresh': 'Refresh',
             'button.logout': 'Logout',
+              'admin.login.title': 'Administrator Login',
+              'admin.login.email_label': 'Email',
+              'admin.login.email_placeholder': 'admin@example.com',
+              'admin.login.password_label': 'Password',
+              'admin.login.password_placeholder': 'Enter your password',
+              'admin.login.sign_in': 'Sign In',
+              'admin.login.signing_in': 'Signing in…',
+              'admin.login.error_missing': 'Please provide both email and password.',
+              'admin.login.error_invalid': 'Invalid login credentials.',
+              'admin.login.error_no_token': 'Login succeeded but no token was returned by the server.',
+              'admin.login.error_network': 'Network error. Please check your connection and try again.',
+              'admin.dashboard.title': 'Admin Dashboard',
+              'admin.dashboard.subtitle': 'Manage deliveries',
+              'admin.deliveries.title': 'Deliveries',
+              'admin.delivery.none': 'No deliveries found.',
+              'admin.deliveries.loading': 'Loading…',
+              'admin.modal.close': 'Close',
+              'admin.modal.title': 'Delivery details',
             'table.delivery': 'Delivery',
             'table.client': 'Client',
             'table.status': 'Status',
@@ -87,13 +105,46 @@ function initI18n() {
         'pricing.book': 'Book Now',
         'testimonials.title': 'What our customers say',
         'track.title': 'Track Your Request',
-        'track.desc': 'Enter your request ID below to track the status of your delivery.',
+          'track.desc': 'Enter your request ID below to track the status of your delivery.',
+          'track.page.title': 'Tracking Result',
+          'track.page.heading': 'Tracking Result',
+          'track.page.loading': 'Loading…',
+          'track.page.no_id': 'No tracking ID provided.',
+          'track.page.missing': 'Missing tracking ID in URL.',
+          'track.page.requesting': 'Requesting tracking data…',
+          'track.page.error': 'Error fetching data',
+          'track.page.request_failed': 'Request failed',
           'track.button': 'Track Request',
           'track.placeholder': 'Enter your request ID',
         'contact.title': 'Contact Us',
         'contact.desc': 'Have questions or want to reach us directly? Send us a message below and we\'ll get back to you!',
+        'contact.name_label': 'Name',
+        'contact.name_placeholder': 'Your name (optional)',
+        'contact.email_label': 'Email',
+        'contact.email_placeholder': 'you@example.com (optional)',
         'contact.button': 'Send Message',
+        'contact.email_subject': 'Contact Request',
         'footer.cvr': 'CVR 44621592 | ©2026'
+        ,
+        // Admin translations (da)
+        'admin.login.title': 'Administrator Login',
+        'admin.login.email_label': 'E-mail',
+        'admin.login.email_placeholder': 'admin@eksempel.dk',
+        'admin.login.password_label': 'Adgangskode',
+        'admin.login.password_placeholder': 'Indtast din adgangskode',
+        'admin.login.sign_in': 'Log ind',
+        'admin.login.signing_in': 'Logger ind…',
+        'admin.login.error_missing': 'Angiv både e-mail og adgangskode.',
+        'admin.login.error_invalid': 'Ugyldige loginoplysninger.',
+        'admin.login.error_no_token': 'Login lykkedes, men serveren returnerede ingen token.',
+        'admin.login.error_network': 'Netværksfejl. Tjek din forbindelse og prøv igen.',
+        'admin.dashboard.title': 'Administrator Panel',
+        'admin.dashboard.subtitle': 'Administrer leverancer',
+        'admin.deliveries.title': 'Leverancer',
+        'admin.delivery.none': 'Ingen leverancer fundet.',
+        'admin.deliveries.loading': 'Indlæser…',
+        'admin.modal.close': 'Luk',
+        'admin.modal.title': 'Leveringsdetaljer'
       };
 
       const indexKeysDa = {
@@ -127,11 +178,24 @@ function initI18n() {
         'testimonials.title': 'Hvad vores kunder siger',
         'track.title': 'Spor din forespørgsel',
         'track.desc': 'Indtast dit anmodnings-id nedenfor for at spore status for din levering.',
+        'track.page.title': 'Sporingsresultat',
+        'track.page.heading': 'Sporingsresultat',
+        'track.page.loading': 'Indlæser…',
+        'track.page.no_id': 'Der er ikke angivet noget sporings-id.',
+        'track.page.missing': 'Manglende sporings-id i URL.',
+        'track.page.requesting': 'Anmoder om sporingsdata…',
+        'track.page.error': 'Fejl ved hentning af data',
+        'track.page.request_failed': 'Anmodningen mislykkedes',
           'track.button': 'Spor forespørgsel',
           'track.placeholder': 'Indtast dit anmodnings-id',
         'contact.title': 'Kontakt os',
         'contact.desc': 'Har du spørgsmål eller vil du kontakte os direkte? Send os en besked nedenfor, så vender vi tilbage!',
+        'contact.name_label': 'Navn',
+        'contact.name_placeholder': 'Dit navn (valgfrit)',
+        'contact.email_label': 'E-mail',
+        'contact.email_placeholder': 'dig@eksempel.dk (valgfrit)',
         'contact.button': 'Send besked',
+        'contact.email_subject': 'Kontaktforespørgsel',
         'footer.cvr': 'CVR 44621592 | ©2026'
       };
 
@@ -182,9 +246,12 @@ function applyTranslations(i18n) {
     const tag = el.tagName && el.tagName.toLowerCase();
     if (tag === 'input' || tag === 'textarea') {
       const placeholder = i18n.t(key);
-      if (placeholder) el.setAttribute('placeholder', placeholder);
+      // Only override placeholder when a translation exists (i18n.t returns key when missing)
+      if (placeholder && placeholder !== key) el.setAttribute('placeholder', placeholder);
     } else {
-      el.textContent = i18n.t(key);
+      const val = i18n.t(key);
+      // Only override when a proper translation exists; otherwise keep existing DOM text
+      if (val && val !== key) el.textContent = val;
     }
   });
 
@@ -192,14 +259,16 @@ function applyTranslations(i18n) {
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
     const key = el.getAttribute('data-i18n-placeholder');
     if (!key) return;
-    el.setAttribute('placeholder', i18n.t(key));
+    const val = i18n.t(key);
+    if (val && val !== key) el.setAttribute('placeholder', val);
   });
 
   // data-i18n-html: set innerHTML (use sparingly)
   document.querySelectorAll('[data-i18n-html]').forEach(el => {
     const key = el.getAttribute('data-i18n-html');
     if (!key) return;
-    el.innerHTML = i18n.t(key);
+    const val = i18n.t(key);
+    if (val && val !== key) el.innerHTML = val;
   });
 }
 
@@ -208,10 +277,14 @@ function changeLanguage(lng) {
   if (window.i18next) {
     window.i18next.changeLanguage(lng, () => applyTranslations(window.i18next));
   }
+  try { document.documentElement.lang = lng; } catch (e) {}
 }
 
 // Initialize i18n early
-initI18n().then(i18n => applyTranslations(i18n)).catch(err => console.warn('i18n load failed', err));
+initI18n().then(i18n => {
+  applyTranslations(i18n);
+  try { document.documentElement.lang = i18n.language || localStorage.getItem('i18n_lang') || 'da'; } catch (e) {}
+}).catch(err => console.warn('i18n load failed', err));
 
 // ==================== UTILITY FUNCTIONS ====================
 const Utils = {
@@ -259,6 +332,24 @@ const AnimationManager = {
   navWiggleDone: false,
   navWigglePromise: null,
   navWigglePromiseResolve: null,
+
+  ensureNavWigglePromise() {
+    // If the nav wiggle already completed, return a resolved promise
+    if (this.navWiggleDone) {
+      this.navWigglePromise = Promise.resolve();
+      this.navWigglePromiseResolve = null;
+      return this.navWigglePromise;
+    }
+
+    // Otherwise create the promise if it doesn't exist and return it
+    if (!this.navWigglePromise) {
+      this.navWigglePromise = new Promise((resolve) => {
+        this.navWigglePromiseResolve = resolve;
+      });
+    }
+
+    return this.navWigglePromise;
+  },
 
   wiggleOnce(element, duration = CONFIG.WIGGLE_DURATION) {
     if (!element) return;
@@ -333,6 +424,23 @@ const AnimationManager = {
     }
 
     if (mobileBookBtn) this.wiggleOnce(mobileBookBtn);
+    
+    // On mobile, also add a ripple glow effect to emphasize the Book Now button.
+    if (Utils.isMobile()) {
+      const rippleTargets = [];
+      if (bookNowBtn) rippleTargets.push(bookNowBtn);
+      if (mobileBookBtn && rippleTargets.indexOf(mobileBookBtn) === -1) rippleTargets.push(mobileBookBtn);
+
+      rippleTargets.forEach(el => {
+        el.classList.add('ripple-glow');
+      });
+
+      // Remove ripple class after animation completes (animation: 2s * 3 repeats + small buffer)
+      const removeAfter = 2 * 3 * 1000 + 250;
+      setTimeout(() => {
+        rippleTargets.forEach(el => el.classList.remove('ripple-glow'));
+      }, removeAfter);
+    }
   }
 };
 
@@ -430,12 +538,36 @@ const FormHandlers = {
     const contactForm = document.getElementById('contactForm');
     if (!contactForm) return;
 
+    // Clear any leftover values on load so form is empty when page is (re)loaded
+    try { contactForm.reset(); } catch (e) {}
+
     contactForm.addEventListener('submit', (e) => {
       e.preventDefault();
+      const name = document.getElementById('contactName')?.value.trim() || '';
+      const email = document.getElementById('contactEmail')?.value.trim() || '';
       const message = document.getElementById('contactMessage')?.value.trim();
-      
-      if (message) {
-        window.location.href = `mailto:info@ihbtransport.com?subject=Contact%20Request&body=${encodeURIComponent(message)}`;
+
+      if (!message) return;
+
+      const subject = (window.i18next ? window.i18next.t('contact.email_subject') : 'Contact Request');
+      // Build body with optional name/email header and message
+      let body = '';
+      if (name) body += `Name: ${name}\n`;
+      if (email) body += `Email: ${email}\n`;
+      if (body) body += '\n';
+      body += message;
+
+      const mailto = `mailto:info@ihbtransport.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      // Try to open mail client in new tab/window, fallback to navigation
+      try {
+        const opened = window.open(mailto, '_blank');
+        // Reset form after attempting to open mail client so fields are cleared
+        try { contactForm.reset(); } catch (e) {}
+        if (!opened) window.location.href = mailto;
+      } catch (e) {
+        // Reset before navigating away
+        try { contactForm.reset(); } catch (err) {}
+        window.location.href = mailto;
       }
     });
   },

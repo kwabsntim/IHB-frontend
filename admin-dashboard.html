@@ -41,12 +41,12 @@
   <div class="wrap">
     <div class="header">
       <div style="display:flex; align-items:center; gap:12px;">
-        <img src="static/logo2.png" alt="IHB" class="logo-small">
-        <div>
-          <h1 style="margin:0; font-size:20px;">Admin Dashboard</h1>
-          <div class="muted">Manage deliveries</div>
+          <img src="static/logo2.png" alt="IHB" class="logo-small">
+          <div>
+            <h1 style="margin:0; font-size:20px;" data-i18n="admin.dashboard.title">Admin Dashboard</h1>
+            <div class="muted" data-i18n="admin.dashboard.subtitle">Manage deliveries</div>
+          </div>
         </div>
-      </div>
       <div style="display:flex; align-items:center; gap:8px;">
         <select id="langSelect" style="border-radius:8px; padding:6px 8px; font-weight:600;">
           <option value="da">🇩🇰 Dansk</option>
@@ -58,10 +58,12 @@
     </div>
 
     <div id="deliveriesCard" class="card">
-      <h2 style="margin-top:0; font-size:16px;">Deliveries</h2>
-      <div id="deliveriesContainer">Loading…</div>
+      <h2 style="margin-top:0; font-size:16px;" data-i18n="admin.deliveries.title">Deliveries</h2>
+      <div id="deliveriesContainer" data-i18n-loading>Loading…</div>
     </div>
   </div>
+
+  <script src="js/main.js"></script>
 
   <script>
     (function(){
@@ -98,8 +100,9 @@
       }
 
       function renderTable(items) {
+        const t = window.i18next ? window.i18next.t.bind(window.i18next) : (k) => k;
         if (!items || !items.length) {
-          return '<div class="empty">No deliveries found.</div>';
+          return `<div class="empty">${t('admin.delivery.none')}</div>`;
         }
 
         const rows = items.map(it => {
@@ -112,13 +115,13 @@
           let actionBtn = '';
           if (statusLower === 'accepted') {
             // Accepted deliveries: Start Delivery (green) — calls driver pickup endpoint
-            actionBtn = `<button data-id="${id}" class="btn success start-delivery">Start Service</button>`;
+            actionBtn = `<button data-id="${id}" class="btn success start-delivery">${t('button.start')}</button>`;
           } else if (statusLower === 'in progress' || statusLower === 'in_progress' || statusLower === 'inprogress') {
             // In-progress deliveries: Mark as done
-            actionBtn = `<button data-id="${id}" class="btn danger mark-done">Mark as done</button>`;
+            actionBtn = `<button data-id="${id}" class="btn danger mark-done">${t('button.mark_done')}</button>`;
           } else {
             // default: allow setting price
-            actionBtn = `<button data-id="${id}" class="btn set-price">Set Price</button>`;
+            actionBtn = `<button data-id="${id}" class="btn set-price">${t('button.set_price')}</button>`;
           }
 
           return `
@@ -127,20 +130,21 @@
               <td>${client}</td>
               <td>${status}</td>
               <td style="width:260px"><div class="actions">
-                <button data-id="${id}" class="btn open-public">Details</button>
+                <button data-id="${id}" class="btn open-public">${t('button.details')}</button>
                 ${actionBtn}
               </div></td>
             </tr>
           `;
         }).join('');
 
-        return `<table><thead><tr><th>Delivery</th><th>Client</th><th>Status</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table>`;
+        return `<table><thead><tr><th>${t('table.delivery')}</th><th>${t('table.client')}</th><th>${t('table.status')}</th><th>${t('table.actions')}</th></tr></thead><tbody>${rows}</tbody></table>`;
       }
 
       async function loadDeliveries() {
         if (!ensureAuth()) return;
         const container = document.getElementById('deliveriesContainer');
-        container.innerHTML = 'Loading…';
+        const t = window.i18next ? window.i18next.t.bind(window.i18next) : (k) => k;
+        container.innerHTML = t('admin.deliveries.loading');
         try {
           const res = await authFetch(ADMIN_BASE + '/deliveries');
           if (!res.ok) {
@@ -178,13 +182,14 @@
         card.style.overflow = 'auto';
 
         const closeBtn = document.createElement('button');
-        closeBtn.textContent = 'Close';
+        const t = window.i18next ? window.i18next.t.bind(window.i18next) : (k) => k;
+        closeBtn.textContent = t('admin.modal.close');
         closeBtn.className = 'btn';
         closeBtn.style.float = 'right';
         closeBtn.addEventListener('click', () => { modal.style.display = 'none'; });
 
         const title = document.createElement('h2');
-        title.textContent = 'Delivery details';
+        title.textContent = t('admin.modal.title');
         title.style.marginTop = '0';
 
         const content = document.createElement('div');

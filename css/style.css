@@ -739,6 +739,29 @@ html {
     margin-bottom: 1.5rem;
 }
 
+/* Ensure text inputs match textarea sizing and padding */
+.contact-form input[type="text"],
+.contact-form input[type="email"],
+.contact-form input[type="tel"],
+.contact-form input[type="number"],
+.contact-form select {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: var(--transition);
+    box-sizing: border-box;
+}
+
+.contact-form input:focus,
+.contact-form select:focus {
+    outline: none;
+    border-color: var(--primary-red);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
 .contact-form textarea {
     width: 100%;
     padding: 1rem;
@@ -828,6 +851,13 @@ html {
         font-size: 0.95rem;
         padding: 0.8rem;
         min-height: 100px;
+    }
+
+    .contact-form input[type="text"],
+    .contact-form input[type="email"],
+    .contact-form select {
+        font-size: 0.95rem;
+        padding: 0.8rem;
     }
     
     .contact-form .contact-btn {
@@ -1360,6 +1390,43 @@ input, button {
 .mobile-book-btn.btn-wiggle-once {
     /* Slightly slower wiggle for more gentle emphasis */
     animation: wiggle 2.2s ease-in-out 1;
+}
+
+/* Ripple glow used on mobile when typing animation completes */
+.ripple-glow {
+    position: relative;
+    z-index: 1105; /* bring above nav/backdrop */
+    overflow: visible;
+}
+.ripple-glow::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(0.2);
+    width: 160%;
+    height: 160%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.45) 20%, rgba(220,38,38,0.18) 45%, transparent 65%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1106;
+    animation: ripple-pulse 2s ease-out 3;
+}
+
+@keyframes ripple-pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0.2);
+        opacity: 0.95;
+    }
+    60% {
+        transform: translate(-50%, -50%) scale(1.3);
+        opacity: 0.08;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.6);
+        opacity: 0;
+    }
 }
 
 .nav-cta::after {
