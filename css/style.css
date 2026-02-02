@@ -2725,13 +2725,13 @@ input, button {
 .btn-review {
     background-color: var(--primary-red);
     color: white;
-    padding:20px;
-    font-size: 1.1rem;
+    padding: 1.2rem 3rem;
+    font-size: 1.2rem;
     font-weight: 600;
     border: none;
     border-radius: 30px;
     cursor: pointer;
-    display: block;
+    display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     transition: all 0.3s ease;
