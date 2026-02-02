@@ -207,7 +207,7 @@ function initI18n() {
         'delivery.declined_success': 'Delivery declined.',
         'delivery.action_failed': 'Action failed: {{msg}}',
         'delivery.view_tracking': 'View Tracking',
-        'delivery.home': 'Home'
+        'delivery.home': 'Home',
         // Admin translations (da)
         'admin.login.title': 'Administrator Login',
         'admin.login.email_label': 'E-mail',
