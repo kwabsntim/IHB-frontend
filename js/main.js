@@ -103,6 +103,17 @@ function initI18n() {
         'pricing.weekend': 'Weekend (Sat-Sun)',
         'pricing.note': 'Click buttons below to view weekday and weekend prices',
         'pricing.book': 'Book Now',
+        'service.appliance': 'Appliance delivery & installation',
+        'service.end_of_tenancy': 'End-of-tenancy / deep cleaning',
+        'service.handyman': 'Handyman / minor repairs',
+        'service.garden_waste': 'Garden waste removal',
+        'service.snow_removal': 'Snow removal (seasonal)',
+        'service.office_moves': 'Office moves & office clearing',
+        'service.retail_warehouse': 'Retail & warehouse deliveries',
+        'service.eco_recycling': 'Eco-friendly recycling service',
+        'service.pickup_storage_redelivery': 'Pickup + storage + redelivery',
+        'service.packing_unpacking': 'Packing & unpacking services',
+        'service.donation_pickup': 'Donation pickup',
         'testimonials.title': 'What our customers say',
         'track.title': 'Track Your Request',
           'track.desc': 'Enter your request ID below to track the status of your delivery.',
@@ -175,6 +186,17 @@ function initI18n() {
         'pricing.weekend': 'Weekend (Lør-Søn)',
         'pricing.note': 'Klik på knapperne nedenfor for at se priser for hverdag og weekend',
         'pricing.book': 'Bestil nu',
+        'service.appliance': 'Levering og installation af apparater',
+        'service.end_of_tenancy': 'Fraflytnings- / dybderengøring',
+        'service.handyman': 'Håndværker / mindre reparationer',
+        'service.garden_waste': 'Bortskaffelse af haveaffald',
+        'service.snow_removal': 'Snerydning (sæsonbestemt)',
+        'service.office_moves': 'Kontorflytning & kontoroprydning',
+        'service.retail_warehouse': 'Detail- og lagerleverancer',
+        'service.eco_recycling': 'Miljøvenlig genbrugsservice',
+        'service.pickup_storage_redelivery': 'Afhentning + opbevaring + genlevering',
+        'service.packing_unpacking': 'Pakke- og udpakkeservice',
+        'service.donation_pickup': 'Afhentning af donationer',
         'testimonials.title': 'Hvad vores kunder siger',
         'track.title': 'Spor din forespørgsel',
         'track.desc': 'Indtast dit anmodnings-id nedenfor for at spore status for din levering.',
@@ -1236,9 +1258,101 @@ const App = {
 };
 
 // ==================== EVENT LISTENERS ====================
-document.addEventListener('DOMContentLoaded', () => App.init());
+document.addEventListener('DOMContentLoaded', () => {
+  // If the current URL is an email action link like /deliveries/:id/accept
+  // or /deliveries/:id/decline, handle it first so the user sees a focused
+  // confirmation UI. If not, proceed with normal app init.
+  const handled = handleDeliveryActionRoute();
+  if (!handled) App.init();
+});
 window.addEventListener('load', () => App.initOnLoad());
 
 // Export for global access if needed
 window.AnimationManager = AnimationManager;
 window.wiggleOnceGlobal = (el, duration) => AnimationManager.wiggleOnce(el, duration);
+
+// ==================== DELIVERY ACTION ROUTES (accept/decline) ====================
+function handleDeliveryActionRoute() {
+  try {
+    const path = window.location.pathname || '';
+    const m = path.match(/^\/deliveries\/([^\/]+)\/(accept|decline)\/?$/i);
+    if (!m) return false;
+
+    const id = decodeURIComponent(m[1]);
+    const action = m[2].toLowerCase(); // 'accept' or 'decline'
+
+    // Minimal full-viewport UI to show progress and result
+    document.title = action === 'accept' ? 'Accepting delivery…' : 'Declining delivery…';
+    document.documentElement.lang = document.documentElement.lang || (window.i18next && window.i18next.language) || 'en';
+
+    // Clear existing body and render a simple card
+    document.body.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.style.minHeight = '100vh';
+    wrap.style.display = 'flex';
+    wrap.style.alignItems = 'center';
+    wrap.style.justifyContent = 'center';
+    wrap.style.padding = '28px';
+    wrap.style.boxSizing = 'border-box';
+    wrap.innerHTML = `
+      <div style="max-width:720px; width:100%; text-align:center; background:#fff; border-radius:12px; padding:28px; box-shadow:0 12px 40px rgba(2,6,23,0.08);">
+        <h1 style="margin:0 0 8px; font-size:20px">${action === 'accept' ? 'Accepting delivery' : 'Declining delivery'}</h1>
+        <p id="deliveryActionMessage" style="color:#555; margin:8px 0 18px">Processing request for ID <strong>${id}</strong>…</p>
+        <div id="deliveryActionLoading" style="margin:18px 0"><svg width="44" height="44" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="22" r="18" stroke="#e6eefb" stroke-width="6" fill="none"/><path d="M22 4 a18 18 0 0 1 0 36" stroke="#2563eb" stroke-width="6" stroke-linecap="round" fill="none"><animateTransform attributeName="transform" type="rotate" from="0 22 22" to="360 22 22" dur="1s" repeatCount="indefinite"/></path></svg></div>
+        <div style="display:flex; gap:10px; justify-content:center; margin-top:8px">
+          <a id="openTrackingLink" href="#" style="display:none; text-decoration:none; padding:8px 12px; border-radius:8px; background:#111827; color:#fff">View Tracking</a>
+          <a id="backHome" href="/" style="text-decoration:none; padding:8px 12px; border-radius:8px; background:#64748b; color:#fff">Home</a>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(wrap);
+
+    // Derive public API root from CONFIG.API_ENDPOINT
+    let apiRoot = CONFIG.API_ENDPOINT || '';
+    try { apiRoot = apiRoot.replace(/\/api\/public\/deliveries.*$/i, ''); } catch (e) {}
+    if (!apiRoot) apiRoot = window.location.origin;
+
+    const endpoint = `${apiRoot}/api/public/deliveries/${encodeURIComponent(id)}/${action}`;
+
+    // Prefer POST (server supports GET and POST); use POST for idempotent action
+    fetch(endpoint, { method: 'POST', headers: { 'Accept': 'application/json' } })
+      .then(async res => {
+        const msgEl = document.getElementById('deliveryActionMessage');
+        const loadingEl = document.getElementById('deliveryActionLoading');
+        const trackLink = document.getElementById('openTrackingLink');
+        loadingEl && (loadingEl.style.display = 'none');
+
+        let text;
+        try { text = await res.text(); } catch (e) { text = String(res.status); }
+
+        if (!res.ok) {
+          msgEl.innerHTML = `<span style="color:#b91c1c">Action failed: ${text || res.status}</span>`;
+          console.warn('Delivery action failed', res.status, text);
+          return;
+        }
+
+        // Try to parse JSON body for nicer messaging
+        let body = null;
+        try { body = JSON.parse(text); } catch (e) {}
+
+        const successMsg = (body && body.message) ? body.message : (action === 'accept' ? 'Delivery accepted. Thank you.' : 'Delivery declined.');
+        msgEl.innerHTML = `<span style="color:#064e3b">${successMsg}</span>`;
+
+        // Show a link to the tracking/landing page if available
+        trackLink.href = `/track.html?id=${encodeURIComponent(id)}`;
+        trackLink.style.display = 'inline-block';
+      })
+      .catch(err => {
+        const msgEl = document.getElementById('deliveryActionMessage');
+        const loadingEl = document.getElementById('deliveryActionLoading');
+        loadingEl && (loadingEl.style.display = 'none');
+        msgEl.innerHTML = `<span style="color:#b91c1c">Network error: ${err && err.message ? err.message : err}</span>`;
+        console.error('Delivery action network error', err);
+      });
+
+    return true;
+  } catch (e) {
+    console.error('handleDeliveryActionRoute failed', e);
+    return false;
+  }
+}

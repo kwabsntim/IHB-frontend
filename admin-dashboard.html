@@ -302,16 +302,48 @@
         document.querySelectorAll('.set-price').forEach(btn => {
           btn.addEventListener('click', async (e) => {
             const id = e.currentTarget.dataset.id;
-            const price = prompt('Enter price amount (e.g. 250):');
-            if (!price) return;
+            const priceRaw = prompt('Enter price amount (e.g. 250):');
+            if (priceRaw === null) return; // cancelled
+            const priceClean = String(priceRaw).trim();
+            // normalize comma decimals to dot
+            const priceNum = Number(priceClean.replace(',', '.'));
+            if (!isFinite(priceNum) || priceNum <= 0) {
+              alert('Please enter a valid positive number for the price (e.g. 250).');
+              return;
+            }
             try {
-              const res = await authFetch(ADMIN_BASE + '/deliveries/' + encodeURIComponent(id) + '/price', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ price })
-              });
-              if (!res.ok) { alert('Failed to set price: ' + res.status); return; }
+              // Try admin API first
+              let res = await authFetch(ADMIN_BASE + '/deliveries/' + encodeURIComponent(id) + '/price', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ price: priceNum })
+              }).catch(() => null);
+
+              // If unauthorized, force re-auth and redirect
+              if (res && (res.status === 401 || res.status === 403)) {
+                localStorage.removeItem('ihb_admin_token');
+                alert('Authentication required. Please log in again.');
+                window.location.href = 'admin.html';
+                return;
+              }
+
+              // If admin endpoint failed, try a public/fallback API POST
+              if (!res || !res.ok) {
+                const fallback = await authPostApi('/deliveries/' + encodeURIComponent(id) + '/price', { price: priceNum }).catch(() => null);
+                if (fallback && fallback.ok) { alert('Price set'); loadDeliveries(); return; }
+
+                // Extract any response text for debugging
+                let debugText = 'No response';
+                try {
+                  if (res) debugText = await res.text().catch(() => String(res.status));
+                  else if (fallback) debugText = await fallback.text().catch(() => String(fallback.status));
+                } catch (e) { debugText = String(e); }
+                alert('Failed to set price: ' + debugText);
+                return;
+              }
+
+              // Success from admin endpoint
               alert('Price set');
               loadDeliveries();
-            } catch (err) { alert('Network error'); }
+            } catch (err) { alert('Network error: ' + (err && err.message ? err.message : err)); }
           });
         });
 
