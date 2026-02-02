@@ -137,6 +137,77 @@ function initI18n() {
         'contact.email_subject': 'Contact Request',
         'footer.cvr': 'CVR 44621592 | ©2026'
         ,
+        // About section features
+        'about.text': 'IHB Transport is your complete logistics partner. We offer professional moving services, international freight, and secure storage solutions across Denmark and Europe. From furniture assembly and disassembly to disposal and storage—we handle all aspects of your move with care, security, and efficiency.',
+        'about.feature1.title': 'Moving Services',
+        'about.feature1.desc': 'Local and international moves across Denmark and EU',
+        'about.feature2.title': 'Storage Solutions',
+        'about.feature2.desc': 'Secure storage facilities for short and long-term needs',
+        'about.feature3.title': 'Furniture & Disposal Service',
+        'about.feature3.desc': 'Professional assembly, disassembly, and disposal',
+        // How It Works section
+        'how.subtitle': 'From booking request to final payment - our complete service process',
+        'how.step1.title': 'Request Service',
+        'how.step1.desc': 'Customer clicks "Book Now" to request a service',
+        'how.step2.title': 'Email Confirmation',
+        'how.step2.desc': 'A confirmation email is sent to acknowledge receipt of the request',
+        'how.step3.title': 'Price Quote',
+        'how.step3.desc': 'A detailed price quote is sent to the customer',
+        'how.step4.title': 'Price Confirmation',
+        'how.step4.desc': 'Customer reviews and confirms the quoted amount',
+        'how.step5.title': 'Service Starts',
+        'how.step5.desc': 'The professional team begins the requested service',
+        'how.step6.title': 'Service Completed',
+        'how.step6.desc': 'Service is finished to customer satisfaction',
+        'how.step7.title': 'Confirmation & Payment',
+        'how.step7.desc': 'Customer confirms completion and makes final payment',
+        // Pricing cards content
+        'pricing.card1.title': 'One Man & Van',
+        'pricing.card1.schedule_weekday': 'Monday - Friday (07:00 - 16:00)',
+        'pricing.card1.schedule_weekend': 'Saturday - Sunday (07:00 - 16:00)',
+        'pricing.card1.feature1': 'Professional driver',
+        'pricing.card1.feature2': 'Standard van',
+        'pricing.card1.feature3': 'Basic moving equipment',
+        'pricing.card1.feature4': 'Insurance included',
+        'pricing.card2.title': 'Two Men & Van',
+        'pricing.card2.schedule_weekday': 'Monday - Friday (07:00 - 16:00)',
+        'pricing.card2.schedule_weekend': 'Saturday - Sunday (07:00 - 16:00)',
+        'pricing.card2.feature1': 'Two professional movers',
+        'pricing.card2.feature2': 'Large van',
+        'pricing.card2.feature3': 'Professional equipment',
+        'pricing.card2.feature4': 'Full insurance coverage',
+        'pricing.card2.feature5': 'Faster completion',
+        'pricing.card3.title': 'Three Men & Van',
+        'pricing.card3.schedule_weekday': 'Monday - Friday (07:00 - 16:00)',
+        'pricing.card3.schedule_weekend': 'Saturday - Sunday (07:00 - 16:00)',
+        'pricing.card3.feature1': 'Three professional movers',
+        'pricing.card3.feature2': 'Extra large van',
+        'pricing.card3.feature3': 'Premium equipment',
+        'pricing.card3.feature4': 'Comprehensive insurance',
+        'pricing.card3.feature5': 'Best for large moves',
+        // Testimonials
+        'testimonial1.quote': 'IHB Transport made our international move seamless. Professional team, timely delivery, and great communication throughout the process.',
+        'testimonial1.name': 'Julie Ingebrigtsen',
+        'testimonial1.title': 'Works at: Culture and Leisure Administration, Copenhagen Municipality',
+        'testimonial2.quote': 'Excellent service for our office relocation. The movers were careful with our equipment and everything arrived on time.',
+        'testimonial2.name': 'Aisha Khan',
+        'testimonial2.title': 'Head of Growth · Acme',
+        'testimonial3.quote': 'Fast, reliable, and affordable. IHB Transport handled our furniture assembly and junk removal perfectly.',
+        'testimonial3.name': 'Noah Reed',
+        'testimonial3.title': 'Product Designer · Nimbus',
+        // Contact and footer
+        'contact.message_placeholder': 'Type your message here...',
+        'footer.typing_text': '🚚 Interested in our service? Click "Book Now" at the top!'
+        ,
+        // Delivery action messages (email links)
+        'delivery.accepting': 'Accepting delivery…',
+        'delivery.declining': 'Declining delivery…',
+        'delivery.processing': 'Processing request for ID {{id}}…',
+        'delivery.accepted_success': 'Delivery accepted. Thank you.',
+        'delivery.declined_success': 'Delivery declined.',
+        'delivery.action_failed': 'Action failed: {{msg}}',
+        'delivery.view_tracking': 'View Tracking',
+        'delivery.home': 'Home'
         // Admin translations (da)
         'admin.login.title': 'Administrator Login',
         'admin.login.email_label': 'E-mail',
@@ -219,6 +290,78 @@ function initI18n() {
         'contact.button': 'Send besked',
         'contact.email_subject': 'Kontaktforespørgsel',
         'footer.cvr': 'CVR 44621592 | ©2026'
+      ,
+        // About section features - DA
+        'about.text': 'IHB Transport er din komplette logistikpartner. Vi tilbyder professionelle flyttetjenester, international fragt samt sikre opbevaringsløsninger i hele Danmark og Europa. Fra møbelmontering og -demontering til bortskaffelse og opbevaring — vi varetager alle aspekter af din flytning med omhu, sikkerhed og effektivitet.',
+        'about.feature1.title': 'Flyttetjenester',
+        'about.feature1.desc': 'Lokale og internationale flytninger i hele Danmark og EU',
+        'about.feature2.title': 'Opbevaringsløsninger',
+        'about.feature2.desc': 'Sikre opbevaringsfaciliteter til kort- og langtidsbehov',
+        'about.feature3.title': 'Møbel- og bortskaffelsesservice',
+        'about.feature3.desc': 'Professionel montering, demontering og bortskaffelse',
+        // How It Works section - DA
+        'how.subtitle': 'Fra bestillingsanmodning til endelig betaling - vores komplette serviceproces',
+        'how.step1.title': 'Anmod om service',
+        'how.step1.desc': 'Kunden klikker på "Bestil nu" for at anmode om en service',
+        'how.step2.title': 'E-mailbekræftelse',
+        'how.step2.desc': 'En bekræftelses-e-mail sendes for at bekræfte modtagelsen af anmodningen',
+        'how.step3.title': 'Prisoverslag',
+        'how.step3.desc': 'Et detaljeret prisoverslag sendes til kunden',
+        'how.step4.title': 'Bekræftelse af pris',
+        'how.step4.desc': 'Kunden gennemgår og bekræfter det tilbudte beløb',
+        'how.step5.title': 'Service starter',
+        'how.step5.desc': 'Det professionelle team påbegynder den bestilte service',
+        'how.step6.title': 'Service fuldført',
+        'how.step6.desc': 'Servicen er afsluttet til kundens tilfredshed',
+        'how.step7.title': 'Bekræftelse & Betaling',
+        'how.step7.desc': 'Kunden bekræfter fuldførelsen og gennemfører den endelige betaling',
+        // Pricing cards content - DA
+        'pricing.card1.title': 'Én mand & lastbil',
+        'pricing.card1.schedule_weekday': 'Mandag - Fredag (07:00 - 16:00)',
+        'pricing.card1.schedule_weekend': 'Lørdag - Søndag (07:00 - 16:00)',
+        'pricing.card1.feature1': 'Professionel chauffør',
+        'pricing.card1.feature2': 'Standard varevogn',
+        'pricing.card1.feature3': 'Grundlæggende flytteudstyr',
+        'pricing.card1.feature4': 'Forsikring inkluderet',
+        'pricing.card2.title': 'To mænd & lastbil',
+        'pricing.card2.schedule_weekday': 'Mandag - Fredag (07:00 - 16:00)',
+        'pricing.card2.schedule_weekend': 'Lørdag - Søndag (07:00 - 16:00)',
+        'pricing.card2.feature1': 'To professionelle flyttemænd',
+        'pricing.card2.feature2': 'Stor varevogn',
+        'pricing.card2.feature3': 'Professionelt udstyr',
+        'pricing.card2.feature4': 'Fuld forsikringsdækning',
+        'pricing.card2.feature5': 'Hurtigere afslutning',
+        'pricing.card3.title': 'Tre mænd & lastbil',
+        'pricing.card3.schedule_weekday': 'Mandag - Fredag (07:00 - 16:00)',
+        'pricing.card3.schedule_weekend': 'Lørdag - Søndag (07:00 - 16:00)',
+        'pricing.card3.feature1': 'Tre professionelle flyttemænd',
+        'pricing.card3.feature2': 'Ekstra stor varevogn',
+        'pricing.card3.feature3': 'Premium udstyr',
+        'pricing.card3.feature4': 'Omfattende forsikring',
+        'pricing.card3.feature5': 'Bedst til store flytninger',
+        // Testimonials - DA
+        'testimonial1.quote': 'IHB Transport gjorde vores internationale flytning problemfri. Professionelt team, rettidig levering og god kommunikation hele vejen.',
+        'testimonial1.name': 'Julie Ingebrigtsen',
+        'testimonial1.title': 'Arbejder her: Kultur- og Fritidsforvaltningen, Københavns Kommune',
+        'testimonial2.quote': 'Fremragende service til vores kontorflytning. Flyttemændene var omhyggelige med vores udstyr, og alt ankom til tiden.',
+        'testimonial2.name': 'Aisha Khan',
+        'testimonial2.title': 'Vækstchef · Acme',
+        'testimonial3.quote': 'Hurtig, pålidelig og overkommelig. IHB Transport håndterede vores møbelmontering og bortskaffelse perfekt.',
+        'testimonial3.name': 'Noah Reed',
+        'testimonial3.title': 'Produktdesigner · Nimbus',
+        // Contact and footer - DA
+        'contact.message_placeholder': 'Skriv din besked her...',
+        'footer.typing_text': '🚚 Interesseret i vores service? Klik på "Bestil nu" øverst!'
+      ,
+        // Delivery action messages (email links) - DA
+        'delivery.accepting': 'Accepterer levering…',
+        'delivery.declining': 'Afviser levering…',
+        'delivery.processing': 'Behandler forespørgsel for ID {{id}}…',
+        'delivery.accepted_success': 'Levering accepteret. Tak.',
+        'delivery.declined_success': 'Levering afvist.',
+        'delivery.action_failed': 'Handlingen mislykkedes: {{msg}}',
+        'delivery.view_tracking': 'Se sporing',
+        'delivery.home': 'Forside'
       };
 
       Object.assign(resources.en.translation, indexKeysEn);
@@ -417,7 +560,9 @@ const AnimationManager = {
       }, 120);
     }
 
-    this.typeWriter(container.querySelector('.typing-text'), CONFIG.TYPING_TEXT);
+    // Get localized text from i18n if available, otherwise fallback to CONFIG
+    const typingText = (window.i18next && window.i18next.t) ? window.i18next.t('footer.typing_text') : CONFIG.TYPING_TEXT;
+    this.typeWriter(container.querySelector('.typing-text'), typingText);
   },
 
   typeWriter(element, text, index = 0) {
@@ -1281,9 +1426,14 @@ function handleDeliveryActionRoute() {
     const id = decodeURIComponent(m[1]);
     const action = m[2].toLowerCase(); // 'accept' or 'decline'
 
-    // Minimal full-viewport UI to show progress and result
-    document.title = action === 'accept' ? 'Accepting delivery…' : 'Declining delivery…';
-    document.documentElement.lang = document.documentElement.lang || (window.i18next && window.i18next.language) || 'en';
+    // Use i18n if available for translated UI text and set page language
+    const i18n = (window.i18next && window.i18next.t) ? window.i18next : null;
+    const t = i18n ? i18n.t.bind(i18n) : (k, opts) => {
+      if (opts && opts.id) return (k.indexOf('{{id}}') >= 0) ? k.replace('{{id}}', opts.id) : `${k} ${opts.id}`;
+      return k;
+    };
+    document.title = t(action === 'accept' ? 'delivery.accepting' : 'delivery.declining');
+    try { document.documentElement.lang = (i18n && i18n.language) || localStorage.getItem('i18n_lang') || document.documentElement.lang || 'da'; } catch (e) {}
 
     // Clear existing body and render a simple card
     document.body.innerHTML = '';
@@ -1296,12 +1446,12 @@ function handleDeliveryActionRoute() {
     wrap.style.boxSizing = 'border-box';
     wrap.innerHTML = `
       <div style="max-width:720px; width:100%; text-align:center; background:#fff; border-radius:12px; padding:28px; box-shadow:0 12px 40px rgba(2,6,23,0.08);">
-        <h1 style="margin:0 0 8px; font-size:20px">${action === 'accept' ? 'Accepting delivery' : 'Declining delivery'}</h1>
-        <p id="deliveryActionMessage" style="color:#555; margin:8px 0 18px">Processing request for ID <strong>${id}</strong>…</p>
+        <h1 style="margin:0 0 8px; font-size:20px">${t(action === 'accept' ? 'delivery.accepting' : 'delivery.declining')}</h1>
+        <p id="deliveryActionMessage" style="color:#555; margin:8px 0 18px">${t('delivery.processing', { id })}</p>
         <div id="deliveryActionLoading" style="margin:18px 0"><svg width="44" height="44" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="22" r="18" stroke="#e6eefb" stroke-width="6" fill="none"/><path d="M22 4 a18 18 0 0 1 0 36" stroke="#2563eb" stroke-width="6" stroke-linecap="round" fill="none"><animateTransform attributeName="transform" type="rotate" from="0 22 22" to="360 22 22" dur="1s" repeatCount="indefinite"/></path></svg></div>
         <div style="display:flex; gap:10px; justify-content:center; margin-top:8px">
-          <a id="openTrackingLink" href="#" style="display:none; text-decoration:none; padding:8px 12px; border-radius:8px; background:#111827; color:#fff">View Tracking</a>
-          <a id="backHome" href="/" style="text-decoration:none; padding:8px 12px; border-radius:8px; background:#64748b; color:#fff">Home</a>
+          <a id="openTrackingLink" href="#" style="display:none; text-decoration:none; padding:8px 12px; border-radius:8px; background:#111827; color:#fff">${t('delivery.view_tracking')}</a>
+          <a id="backHome" href="/" style="text-decoration:none; padding:8px 12px; border-radius:8px; background:#64748b; color:#fff">${t('delivery.home')}</a>
         </div>
       </div>
     `;
@@ -1326,7 +1476,8 @@ function handleDeliveryActionRoute() {
         try { text = await res.text(); } catch (e) { text = String(res.status); }
 
         if (!res.ok) {
-          msgEl.innerHTML = `<span style="color:#b91c1c">Action failed: ${text || res.status}</span>`;
+          const failText = (i18n && i18n.t) ? i18n.t('delivery.action_failed', { msg: text || res.status }) : `Action failed: ${text || res.status}`;
+          msgEl.innerHTML = `<span style="color:#b91c1c">${failText}</span>`;
           console.warn('Delivery action failed', res.status, text);
           return;
         }
@@ -1335,7 +1486,8 @@ function handleDeliveryActionRoute() {
         let body = null;
         try { body = JSON.parse(text); } catch (e) {}
 
-        const successMsg = (body && body.message) ? body.message : (action === 'accept' ? 'Delivery accepted. Thank you.' : 'Delivery declined.');
+        const successFallback = action === 'accept' ? 'delivery.accepted_success' : 'delivery.declined_success';
+        const successMsg = (body && body.message) ? body.message : (i18n && i18n.t ? i18n.t(successFallback) : (action === 'accept' ? 'Delivery accepted. Thank you.' : 'Delivery declined.'));
         msgEl.innerHTML = `<span style="color:#064e3b">${successMsg}</span>`;
 
         // Show a link to the tracking/landing page if available

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="da">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -468,8 +468,26 @@
         }
 
         loadI18nLocal().then(() => {
-          if (!window.i18next || !window.i18next.init) return;
-          window.i18next.init({ lng: localStorage.getItem('i18n_lang')||'da', resources }, () => applyLocal(window.i18next));
+          try {
+            // If i18next is already present, merge these local resources rather than re-initializing
+            if (window.i18next && window.i18next.addResourceBundle) {
+              ['en','da'].forEach(lng => {
+                try {
+                  const bundle = resources[lng] && resources[lng].translation ? resources[lng].translation : {};
+                  window.i18next.addResourceBundle(lng, 'translation', bundle, true, true);
+                } catch (e) { /* ignore */ }
+              });
+              const lng = localStorage.getItem('i18n_lang') || 'da';
+              if (window.i18next.changeLanguage) window.i18next.changeLanguage(lng, () => applyLocal(window.i18next));
+              else applyLocal(window.i18next);
+              return;
+            }
+
+            // Otherwise initialize a local i18next instance
+            if (window.i18next && window.i18next.init) {
+              window.i18next.init({ lng: localStorage.getItem('i18n_lang')||'da', resources }, () => applyLocal(window.i18next));
+            }
+          } catch (err) { console.warn('i18n load/apply failed', err); }
         }).catch(err => console.warn('i18n load failed', err));
 
         const sel = document.getElementById('langSelect');
