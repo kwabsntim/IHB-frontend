@@ -682,7 +682,55 @@
                     </div>
                 </article>
             </section>
+
+            <!-- Write Review Button -->
+            <div class="testimonials-cta">
+                <button class="btn-primary btn-review" id="writeReviewBtn">
+                    <span data-i18n="testimonials.write_review">Skriv en anmeldelse</span>
+                    <i class="fas fa-pen"></i>
+                </button>
+            </div>
         </main>
+
+        <!-- Review Modal -->
+        <div class="review-modal" id="reviewModal">
+            <div class="review-modal-content">
+                <button class="review-modal-close" id="closeReviewModal">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h3 class="review-modal-title" data-i18n="review_modal.title">Skriv din anmeldelse</h3>
+                <form class="review-form" id="reviewForm">
+                    <div class="form-group">
+                        <label for="reviewName" data-i18n="review_modal.name_label">Dit navn</label>
+                        <input 
+                            type="text" 
+                            id="reviewName" 
+                            name="name" 
+                            data-i18n-placeholder="review_modal.name_placeholder"
+                            placeholder="Indtast dit navn"
+                            required
+                            maxlength="100"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewContent" data-i18n="review_modal.content_label">Din anmeldelse</label>
+                        <textarea 
+                            id="reviewContent" 
+                            name="content" 
+                            data-i18n-placeholder="review_modal.content_placeholder"
+                            placeholder="Del din oplevelse med os..."
+                            required
+                            rows="6"
+                            maxlength="500"
+                        ></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary btn-submit-review" data-i18n="review_modal.submit">
+                        Send anmeldelse
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
 
         <!-- Tracking Section -->
         <section class="tracking-section" id="track">

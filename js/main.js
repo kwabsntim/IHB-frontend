@@ -115,6 +115,13 @@ function initI18n() {
         'service.packing_unpacking': 'Packing & unpacking services',
         'service.donation_pickup': 'Donation pickup',
         'testimonials.title': 'What our customers say',
+        'testimonials.write_review': 'Write a Review',
+        'review_modal.title': 'Write Your Review',
+        'review_modal.name_label': 'Your Name',
+        'review_modal.name_placeholder': 'Enter your name',
+        'review_modal.content_label': 'Your Review',
+        'review_modal.content_placeholder': 'Share your experience with us...',
+        'review_modal.submit': 'Send Review',
         'track.title': 'Track Your Request',
           'track.desc': 'Enter your request ID below to track the status of your delivery.',
           'track.page.title': 'Tracking Result',
@@ -349,6 +356,13 @@ function initI18n() {
         'testimonial3.quote': 'Hurtig, pålidelig og overkommelig. IHB Transport håndterede vores møbelmontering og bortskaffelse perfekt.',
         'testimonial3.name': 'Noah Reed',
         'testimonial3.title': 'Produktdesigner · Nimbus',
+        'testimonials.write_review': 'Skriv en anmeldelse',
+        'review_modal.title': 'Skriv din anmeldelse',
+        'review_modal.name_label': 'Dit navn',
+        'review_modal.name_placeholder': 'Indtast dit navn',
+        'review_modal.content_label': 'Din anmeldelse',
+        'review_modal.content_placeholder': 'Del din oplevelse med os...',
+        'review_modal.submit': 'Send anmeldelse',
         // Contact and footer - DA
         'contact.message_placeholder': 'Skriv din besked her...',
         'footer.typing_text': '🚚 Interesseret i vores service? Klik på "Bestil nu" øverst!'
@@ -1241,6 +1255,67 @@ const AnimationObservers = {
   }
 };
 
+// ==================== REVIEW MODAL HANDLER ====================
+const ReviewModalHandler = {
+  init() {
+    const writeReviewBtn = document.getElementById('writeReviewBtn');
+    const reviewModal = document.getElementById('reviewModal');
+    const closeReviewModal = document.getElementById('closeReviewModal');
+    const reviewForm = document.getElementById('reviewForm');
+
+    if (!writeReviewBtn || !reviewModal || !closeReviewModal || !reviewForm) return;
+
+    // Open modal
+    writeReviewBtn.addEventListener('click', () => {
+      reviewModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+
+    // Close modal
+    const closeModal = () => {
+      reviewModal.classList.remove('active');
+      document.body.style.overflow = '';
+      reviewForm.reset();
+    };
+
+    closeReviewModal.addEventListener('click', closeModal);
+
+    // Close on backdrop click
+    reviewModal.addEventListener('click', (e) => {
+      if (e.target === reviewModal) {
+        closeModal();
+      }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && reviewModal.classList.contains('active')) {
+        closeModal();
+      }
+    });
+
+    // Handle form submission
+    reviewForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('reviewName').value.trim();
+      const content = document.getElementById('reviewContent').value.trim();
+
+      if (!name || !content) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      // TODO: Send to backend endpoint
+      console.log('Review submitted:', { name, content });
+      
+      // For now, show success message
+      alert('Thank you for your review! We appreciate your feedback.');
+      closeModal();
+    });
+  }
+};
+
 // ==================== HOW IT WORKS SECTION ====================
 const HowItWorksHandler = {
   init() {
@@ -1348,6 +1423,8 @@ const App = {
     FormHandlers.initContactForm();
     FormHandlers.initTrackingForm();
     FormHandlers.initBookingForm();
+    
+    ReviewModalHandler.init();
     
     AnimationObservers.initBottomButtonShake();
     AnimationObservers.initMobileAnimations();
