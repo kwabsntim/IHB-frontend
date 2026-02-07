@@ -1497,7 +1497,8 @@ window.wiggleOnceGlobal = (el, duration) => AnimationManager.wiggleOnce(el, dura
 function handleDeliveryActionRoute() {
   try {
     const path = window.location.pathname || '';
-    const m = path.match(/^\/deliveries\/([^\/]+)\/(accept|decline)\/?$/i);
+    // Match both /deliveries/:id/accept and /api/public/deliveries/:id/accept
+    const m = path.match(/^(?:\/api\/public)?\/deliveries\/([^\/]+)\/(accept|decline)\/?$/i);
     if (!m) return false;
 
     const id = decodeURIComponent(m[1]);
@@ -1539,6 +1540,7 @@ function handleDeliveryActionRoute() {
     try { apiRoot = apiRoot.replace(/\/api\/public\/deliveries.*$/i, ''); } catch (e) {}
     if (!apiRoot) apiRoot = window.location.origin;
 
+    // Backend expects /api/public/deliveries/:id/accept
     const endpoint = `${apiRoot}/api/public/deliveries/${encodeURIComponent(id)}/${action}`;
 
     // Prefer POST (server supports GET and POST); use POST for idempotent action
