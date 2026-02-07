@@ -1,0 +1,28 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/public/deliveries/:id/accept",
+      "destination": "/delivery-action.html"
+    },
+    {
+      "source": "/api/public/deliveries/:id/decline",
+      "destination": "/delivery-action.html"
+    },
+    {
+      "source": "/api/public/deliveries/:id/quote",
+      "destination": "/delivery-action.html"
+    },
+    {
+      "source": "/deliveries/:id/accept",
+      "destination": "/delivery-action.html"
+    },
+    {
+      "source": "/deliveries/:id/decline",
+      "destination": "/delivery-action.html"
+    },
+    {
+      "source": "/deliveries/:id/quote",
+      "destination": "/delivery-action.html"
+    }
+  ]
+}
