@@ -416,10 +416,13 @@
       }
 
       function attachActions() {
-        // Set price (for REQUESTED deliveries)
+        // Set price (for REQUESTED deliveries/quotes)
         document.querySelectorAll('.set-price').forEach(btn => {
           btn.addEventListener('click', async (e) => {
             const id = e.currentTarget.dataset.id;
+            const type = e.currentTarget.dataset.type; // 'quote' or undefined
+            const endpoint = type === 'quote' ? 'instant-quotes' : 'deliveries';
+            
             const priceRaw = prompt('Enter price amount (e.g. 250):');
             if (priceRaw === null) return; // cancelled
             const priceClean = String(priceRaw).trim();
@@ -431,7 +434,7 @@
             }
             try {
               // Try admin API first
-              let res = await authFetch(ADMIN_BASE + '/deliveries/' + encodeURIComponent(id) + '/price', {
+              let res = await authFetch(ADMIN_BASE + '/' + endpoint + '/' + encodeURIComponent(id) + '/price', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ price: priceNum })
               }).catch(() => null);
 
@@ -445,8 +448,8 @@
 
               // If admin endpoint failed, try a public/fallback API POST
               if (!res || !res.ok) {
-                const fallback = await authPostApi('/deliveries/' + encodeURIComponent(id) + '/price', { price: priceNum }).catch(() => null);
-                if (fallback && fallback.ok) { alert('Price set'); loadDeliveries(); return; }
+                const fallback = await authPostApi('/' + endpoint + '/' + encodeURIComponent(id) + '/price', { price: priceNum }).catch(() => null);
+                if (fallback && fallback.ok) { alert('Price set'); loadDeliveries(); loadInstantQuotes(); return; }
 
                 // Extract any response text for debugging
                 let debugText = 'No response';
@@ -461,6 +464,7 @@
               // Success from admin endpoint
               alert('Price set');
               loadDeliveries();
+              loadInstantQuotes();
             } catch (err) { alert('Network error: ' + (err && err.message ? err.message : err)); }
           });
         });
@@ -494,8 +498,8 @@
 
               // If admin endpoint failed, try a public/fallback API POST
               if (!res || !res.ok) {
-                const fallback = await authPostApi('/deliveries/' + encodeURIComponent(id) + '/price', { price: priceNum }).catch(() => null);
-                if (fallback && fallback.ok) { alert('Price revised'); loadDeliveries(); return; }
+                const fallback = await authPostApi('/deliveries/' + encodeURIComponent(id) + '/revise-price', { price: priceNum }).catch(() => null);
+                if (fallback && fallback.ok) { alert('Price revised'); loadDeliveries(); loadInstantQuotes(); return; }
 
                 // Extract any response text for debugging
                 let debugText = 'No response';
@@ -510,6 +514,7 @@
               // Success from admin endpoint
               alert('Price revised');
               loadDeliveries();
+              loadInstantQuotes();
             } catch (err) { alert('Network error: ' + (err && err.message ? err.message : err)); }
           });
         });
@@ -541,6 +546,7 @@
               // success
               el.textContent = 'Started';
               loadDeliveries();
+              loadInstantQuotes();
             } catch (err) {
               alert('Network error');
               el.disabled = false;
@@ -576,6 +582,7 @@
               // success
               el.textContent = 'Completed';
               loadDeliveries();
+              loadInstantQuotes();
             } catch (err) {
               alert('Network error');
               el.disabled = false;
@@ -595,10 +602,14 @@
       }
 
       document.getElementById('logoutBtn').addEventListener('click', function(){ localStorage.removeItem('ihb_admin_token'); window.location.href = 'admin.html'; });
-      document.getElementById('refreshBtn').addEventListener('click', loadDeliveries);
+      document.getElementById('refreshBtn').addEventListener('click', () => {
+        loadDeliveries();
+        loadInstantQuotes();
+      });
 
       // initial load
       loadDeliveries();
+      loadInstantQuotes();
 
       // --- Local i18n for this page (loads i18next and applies translations) ---
       (function(){
@@ -614,8 +625,8 @@
         }
 
         const resources = {
-          en: { translation: { 'admin.title':'Admin Dashboard','admin.subtitle':'Manage deliveries','button.refresh':'Refresh','button.logout':'Logout','table.delivery':'Delivery','table.client':'Client','table.status':'Status','table.actions':'Actions','button.details':'Details','button.start':'Start Delivery','button.set_price':'Set Price','button.revise_price':'Revise Price','button.mark_done':'Mark as done','badge.awaiting_response':'Awaiting response','badge.quote_accepted':'Quote accepted','badge.in_transit':'In transit','badge.delivered':'Delivered','loading':'Loading…' } },
-          da: { translation: { 'admin.title':'Administrator Panel','admin.subtitle':'Administrer leverancer','button.refresh':'Opdater','button.logout':'Log ud','table.delivery':'Levering','table.client':'Kunde','table.status':'Status','table.actions':'Handlinger','button.details':'Detaljer','button.start':'Start levering','button.set_price':'Sæt pris','button.revise_price':'Revider pris','button.mark_done':'Marker som færdig','badge.awaiting_response':'Afventer svar','badge.quote_accepted':'Tilbud accepteret','badge.in_transit':'Under transport','badge.delivered':'Leveret','loading':'Indlæser…' } }
+          en: { translation: { 'admin.title':'Admin Dashboard','admin.subtitle':'Manage deliveries','admin.deliveries.title':'Deliveries','admin.instant_quotes.title':'Instant Quotes','admin.deliveries.loading':'Loading…','admin.instant_quotes.none':'No instant quotes','button.refresh':'Refresh','button.logout':'Logout','table.delivery':'Delivery','table.quote':'Quote','table.client':'Client','table.status':'Status','table.actions':'Actions','button.details':'Details','button.start':'Start Delivery','button.set_price':'Set Price','button.revise_price':'Revise Price','button.mark_done':'Mark as done','badge.awaiting_response':'Awaiting response','badge.quote_accepted':'Quote accepted','badge.in_transit':'In transit','badge.delivered':'Delivered','loading':'Loading…' } },
+          da: { translation: { 'admin.title':'Administrator Panel','admin.subtitle':'Administrer leverancer','admin.deliveries.title':'Leverancer','admin.instant_quotes.title':'Hurtige Tilbud','admin.deliveries.loading':'Indlæser…','admin.instant_quotes.none':'Ingen hurtige tilbud','button.refresh':'Opdater','button.logout':'Log ud','table.delivery':'Levering','table.quote':'Tilbud','table.client':'Kunde','table.status':'Status','table.actions':'Handlinger','button.details':'Detaljer','button.start':'Start levering','button.set_price':'Sæt pris','button.revise_price':'Revider pris','button.mark_done':'Marker som færdig','badge.awaiting_response':'Afventer svar','badge.quote_accepted':'Tilbud accepteret','badge.in_transit':'Under transport','badge.delivered':'Leveret','loading':'Indlæser…' } }
         };
 
         function applyLocal(i18n) {
@@ -624,6 +635,13 @@
             const sub = document.querySelector('.header .muted'); if (sub) sub.textContent = i18n.t('admin.subtitle');
             const refresh = document.getElementById('refreshBtn'); if (refresh) refresh.textContent = i18n.t('button.refresh');
             const logout = document.getElementById('logoutBtn'); if (logout) logout.textContent = i18n.t('button.logout');
+            
+            // Translate section titles
+            const deliveriesTitle = document.querySelector('[data-i18n="admin.deliveries.title"]');
+            if (deliveriesTitle) deliveriesTitle.textContent = i18n.t('admin.deliveries.title');
+            const quotesTitle = document.querySelector('[data-i18n="admin.instant_quotes.title"]');
+            if (quotesTitle) quotesTitle.textContent = i18n.t('admin.instant_quotes.title');
+            
             document.querySelectorAll('table thead th').forEach((th, idx) => {
               const keys = ['table.delivery','table.client','table.status','table.actions']; if (keys[idx]) th.textContent = i18n.t(keys[idx]);
             });
