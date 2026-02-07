@@ -2584,6 +2584,7 @@ input, button {
 
 .testimonial-image {
     flex-shrink: 0;
+    position: relative;
 }
 
 /* Ensure testimonial images are circular and consistent */
@@ -2603,11 +2604,34 @@ input, button {
     border-radius: 50%;
 }
 
+/* Avatar fallback for reviews without images */
+.testimonial-image .avatar-fallback {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #DC2626, #991b1b);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid #fff;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+.testimonial-image .avatar-fallback i {
+    font-size: 36px;
+    color: #fff;
+}
+
 @media (max-width: 768px) {
     .testimonial-image img,
-    .testimonial-image .avatar {
+    .testimonial-image .avatar,
+    .testimonial-image .avatar-fallback {
         width: 64px;
         height: 64px;
+    }
+    
+    .testimonial-image .avatar-fallback i {
+        font-size: 28px;
     }
 }
 

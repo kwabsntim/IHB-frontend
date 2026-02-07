@@ -1415,6 +1415,74 @@ const ReviewModalHandler = {
   }
 };
 
+// ==================== LOAD REVIEWS FROM BACKEND ====================
+async function loadReviews() {
+  try {
+    const response = await fetch('https://ihb-transport-dk.onrender.com/api/public/reviews');
+    if (!response.ok) {
+      console.error('Failed to load reviews');
+      return;
+    }
+
+    const reviews = await response.json();
+    const reviewsContainer = document.getElementById('testimonials');
+    
+    if (!reviewsContainer || !reviews || reviews.length === 0) {
+      return;
+    }
+
+    // Get locally stored image URLs
+    const localImages = JSON.parse(localStorage.getItem('review_images') || '{}');
+    
+    // Clear existing dynamic reviews (keep static ones)
+    const existingCards = reviewsContainer.querySelectorAll('.testimonial-card');
+    existingCards.forEach(card => {
+      if (!card.dataset.static) {
+        card.remove();
+      }
+    });
+
+    // Render each review
+    reviews.forEach(review => {
+      const card = document.createElement('article');
+      card.className = 'testimonial-card';
+      
+      // Get image URL from localStorage or use default avatar
+      const imageUrl = localImages[review.id] || null;
+      const imageHTML = imageUrl 
+        ? `<img src="${imageUrl}" alt="${review.author_name}" loading="lazy" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+           <div class="avatar-fallback" style="display:none;">
+             <i class="fas fa-user"></i>
+           </div>`
+        : `<div class="avatar-fallback">
+             <i class="fas fa-user"></i>
+           </div>`;
+      
+      card.innerHTML = `
+        <div class="testimonial-image">
+          ${imageHTML}
+        </div>
+        <div class="testimonial-content">
+          <blockquote class="quote">
+            "${review.content}"
+          </blockquote>
+          <div class="author-meta">
+            <div class="name">${review.author_name}</div>
+            <div class="title">${new Date(review.created_at).toLocaleDateString()}</div>
+          </div>
+        </div>
+      `;
+      
+      reviewsContainer.appendChild(card);
+    });
+  } catch (error) {
+    console.error('Error loading reviews:', error);
+  }
+}
+
+// Make loadReviews available globally
+window.loadReviews = loadReviews;
+
 // ==================== HOW IT WORKS SECTION ====================
 const HowItWorksHandler = {
   init() {
@@ -1524,6 +1592,9 @@ const App = {
     FormHandlers.initBookingForm();
     
     ReviewModalHandler.init();
+    
+    // Load reviews from backend
+    loadReviews();
     
     AnimationObservers.initBottomButtonShake();
     AnimationObservers.initMobileAnimations();
