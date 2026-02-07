@@ -89,6 +89,8 @@ function initI18n() {
         'quote.header': 'Quick Price Estimate',
         'quote.pickup.label': 'Pickup Location',
         'quote.dropoff.label': 'Delivery Location',
+        'quote.email.label': 'Email Address',
+        'quote.email.placeholder': 'Enter your email',
         'quote.weight.label': 'Package Weight (kg)',
         'quote.button': 'Get Instant Quote',
         'quote.pickup.placeholder': 'Enter pickup address',
@@ -250,6 +252,8 @@ function initI18n() {
         'quote.header': 'Hurtigt prisoverslag',
         'quote.pickup.label': 'Afhentningssted',
         'quote.dropoff.label': 'Leveringsadresse',
+        'quote.email.label': 'E-mailadresse',
+        'quote.email.placeholder': 'Indtast din e-mail',
         'quote.weight.label': 'Pakkens vægt (kg)',
         'quote.button': 'Få øjeblikkeligt tilbud',
         'quote.pickup.placeholder': 'Indtast afhentningsadresse',
@@ -701,17 +705,64 @@ const FormHandlers = {
     const quoteForm = document.getElementById('quoteForm');
     if (!quoteForm) return;
 
-    quoteForm.addEventListener('submit', (e) => {
+    quoteForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       
+      const pickup = document.getElementById('pickup')?.value;
+      const dropoff = document.getElementById('dropoff')?.value;
+      const weight = document.getElementById('weight')?.value;
+      const email = document.getElementById('quote-email')?.value;
+      
+      if (!pickup || !dropoff || !weight || !email) {
+        alert('Please fill in all fields');
+        return;
+      }
+      
       const formData = {
-        pickup: document.getElementById('pickup')?.value,
-        dropoff: document.getElementById('dropoff')?.value,
-        weight: document.getElementById('weight')?.value
+        pickup_location: pickup,
+        dropoff_location: dropoff,
+        weight: parseFloat(weight),
+        email: email
       };
       
+      // Store for potential later use
       sessionStorage.setItem('quoteData', JSON.stringify(formData));
-      alert('Quote form submitted! Next: Show full booking form');
+      
+      const submitBtn = quoteForm.querySelector('button[type="submit"]');
+      const originalText = submitBtn?.textContent || 'Get Instant Quote';
+      
+      try {
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        }
+        
+        const response = await fetch('https://ihb-transport-dk.onrender.com/api/public/instant-quote', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          alert(data.message || 'Quote request received! We will send you an estimate via email shortly.');
+          quoteForm.reset();
+        } else {
+          const errorData = await response.json().catch(() => ({}));
+          alert(errorData.message || 'Failed to submit quote request. Please try again.');
+        }
+      } catch (error) {
+        console.error('Quote submission error:', error);
+        alert('Network error. Please check your connection and try again.');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalText;
+        }
+      }
     });
   },
 
