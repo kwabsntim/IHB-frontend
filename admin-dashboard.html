@@ -61,6 +61,11 @@
       <h2 style="margin-top:0; font-size:16px;" data-i18n="admin.deliveries.title">Deliveries</h2>
       <div id="deliveriesContainer" data-i18n-loading>Loading…</div>
     </div>
+    
+    <div id="instantQuotesCard" class="card">
+      <h2 style="margin-top:0; font-size:16px;" data-i18n="admin.instant_quotes.title">Instant Quotes</h2>
+      <div id="instantQuotesContainer" data-i18n-loading>Loading…</div>
+    </div>
   </div>
 
   <script src="js/main.js"></script>
@@ -187,6 +192,91 @@
         } catch (err) {
           container.innerHTML = '<div class="error">Network error: ' + (err.message||err) + '</div>';
         }
+      }
+
+      async function loadInstantQuotes() {
+        if (!ensureAuth()) return;
+        const container = document.getElementById('instantQuotesContainer');
+        const t = window.i18next ? window.i18next.t.bind(window.i18next) : (k) => k;
+        container.innerHTML = t('admin.deliveries.loading');
+        try {
+          const res = await authFetch(API_BASE + '/instant-quotes');
+          if (!res.ok) {
+            if (res.status === 401 || res.status === 403) { localStorage.removeItem('ihb_admin_token'); window.location.href = 'admin.html'; return; }
+            const txt = await res.text(); container.innerHTML = '<div class="error">Failed to load quotes: ' + (txt||res.status) + '</div>'; return;
+          }
+          const data = await res.json();
+          const items = Array.isArray(data) ? data : (data.quotes || data.data || []);
+          document.getElementById('instantQuotesContainer').innerHTML = renderInstantQuotesTable(items);
+          attachActions();
+        } catch (err) {
+          container.innerHTML = '<div class="error">Network error: ' + (err.message||err) + '</div>';
+        }
+      }
+
+      function renderInstantQuotesTable(items) {
+        const t = window.i18next ? window.i18next.t.bind(window.i18next) : (k) => k;
+        if (!items || !items.length) {
+          return `<div class="empty">${t('admin.instant_quotes.none')}</div>`;
+        }
+
+        const rows = items.map(it => {
+          const id = it.id || it._id || it.quote_id || it.uuid || '';
+          const status = it.status || 'REQUESTED';
+          const statusLower = String(status).toLowerCase().replace(/[\s_-]/g, '');
+          const created = fmtDate(it.created_at || it.createdAt || it.created || '');
+          const email = it.client_email || it.email || '';
+          const pickup = it.pickup_point || '-';
+          const delivery = it.delivery_address || '-';
+          const weight = it.weight || '-';
+          
+          // Build actions depending on status (same as deliveries)
+          let actionBtn = '';
+          
+          switch(statusLower) {
+            case 'requested':
+              actionBtn = `<button data-id="${id}" data-type="quote" class="btn set-price">${t('button.set_price')}</button>`;
+              break;
+              
+            case 'priced':
+              actionBtn = `<span style="background:#fef3c7;color:#92400e;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.awaiting_response')}</span>`;
+              break;
+              
+            case 'accepted':
+              actionBtn = `<span style="background:#d1fae5;color:#065f46;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.quote_accepted')}</span>`;
+              break;
+              
+            case 'declined':
+              actionBtn = `<button data-id="${id}" data-type="quote" class="btn secondary revise-price">${t('button.revise_price')}</button>`;
+              break;
+              
+            case 'inprogress':
+            case 'in_progress':
+              actionBtn = `<span style="background:#dbeafe;color:#1e40af;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.in_transit')}</span>`;
+              break;
+              
+            case 'delivered':
+              actionBtn = `<span style="background:#e0e7ff;color:#3730a3;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.delivered')}</span>`;
+              break;
+              
+            default:
+              actionBtn = `<button data-id="${id}" data-type="quote" class="btn set-price">${t('button.set_price')}</button>`;
+          }
+
+          return `
+            <tr>
+              <td style="width:200px;"><strong>${id}</strong><div class="muted" style="font-size:12px">${created}</div></td>
+              <td>${email}<div class="muted" style="font-size:12px">${pickup} → ${delivery}</div><div class="muted" style="font-size:12px">Weight: ${weight}</div></td>
+              <td>${status}</td>
+              <td style="width:280px"><div class="actions">
+                <button data-id="${id}" data-type="quote" class="btn open-public">${t('button.details')}</button>
+                ${actionBtn}
+              </div></td>
+            </tr>
+          `;
+        }).join('');
+
+        return `<table><thead><tr><th>${t('table.quote')}</th><th>${t('table.client')}</th><th>${t('table.status')}</th><th>${t('table.actions')}</th></tr></thead><tbody>${rows}</tbody></table>`;
       }
 
       /* Modal builder and renderer for delivery details (styled like track.html) */
