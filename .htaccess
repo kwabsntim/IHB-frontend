@@ -1,11 +1,11 @@
 # Enable rewrite engine
 RewriteEngine On
 
-# Redirect delivery action URLs to index.html while preserving the path
-# This handles URLs like /api/public/deliveries/:id/accept or /deliveries/:id/accept
+# Redirect delivery action URLs to delivery-action.html while preserving the path
+# This handles URLs like /api/public/deliveries/:id/accept, /deliveries/:id/decline, etc.
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(api/public/)?deliveries/([^/]+)/(accept|decline)/?$ index.html [L,QSA]
+RewriteRule ^(api/public/)?deliveries/([^/]+)/(accept|decline|quote)/?$ delivery-action.html [L,QSA]
 
 # General SPA routing - redirect all other non-file requests to index.html
 RewriteCond %{REQUEST_FILENAME} !-f
