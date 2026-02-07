@@ -214,9 +214,14 @@
               window.location.href = 'admin.html'; 
               return; 
             }
-            const txt = await res.text(); 
-            console.error('Failed to load instant quotes:', res.status, txt);
-            container.innerHTML = '<div class="error">Failed to load quotes: ' + (txt||res.status) + '</div>'; 
+            // Show friendly message if endpoint not implemented yet
+            console.error('Failed to load instant quotes:', res.status);
+            if (res.status === 404 || res.status === 500) {
+              container.innerHTML = '<div class="empty">Instant quotes endpoint is being set up on the server. Please contact the developer.</div>';
+            } else {
+              const txt = await res.text(); 
+              container.innerHTML = '<div class="error">Failed to load quotes: ' + (txt||res.status) + '</div>';
+            }
             return;
           }
           
@@ -227,7 +232,7 @@
           attachActions();
         } catch (err) {
           console.error('Network error loading instant quotes:', err);
-          container.innerHTML = '<div class="error">Network error: ' + (err.message||err) + '</div>';
+          container.innerHTML = '<div class="empty">Unable to load instant quotes. The backend endpoint may not be ready yet.</div>';
         }
       }
 
