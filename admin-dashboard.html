@@ -473,6 +473,8 @@
         document.querySelectorAll('.revise-price').forEach(btn => {
           btn.addEventListener('click', async (e) => {
             const id = e.currentTarget.dataset.id;
+            const type = e.currentTarget.dataset.type || 'delivery';
+            const endpoint = type === 'quote' ? 'instant-quotes' : 'deliveries';
             const priceRaw = prompt('Enter revised price amount (e.g. 250):');
             if (priceRaw === null) return; // cancelled
             const priceClean = String(priceRaw).trim();
@@ -484,7 +486,7 @@
             }
             try {
               // Try admin API first
-              let res = await authFetch(ADMIN_BASE + '/deliveries/' + encodeURIComponent(id) + '/price', {
+              let res = await authFetch(ADMIN_BASE + '/' + endpoint + '/' + encodeURIComponent(id) + '/price', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ price: priceNum })
               }).catch(() => null);
 
@@ -498,7 +500,7 @@
 
               // If admin endpoint failed, try a public/fallback API POST
               if (!res || !res.ok) {
-                const fallback = await authPostApi('/deliveries/' + encodeURIComponent(id) + '/revise-price', { price: priceNum }).catch(() => null);
+                const fallback = await authPostApi('/' + endpoint + '/' + encodeURIComponent(id) + '/revise-price', { price: priceNum }).catch(() => null);
                 if (fallback && fallback.ok) { alert('Price revised'); loadDeliveries(); loadInstantQuotes(); return; }
 
                 // Extract any response text for debugging
