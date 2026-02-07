@@ -108,20 +108,48 @@
         const rows = items.map(it => {
           const id = it.id || it._id || it.delivery_id || it.uuid || '';
           const status = it.status || '-';
-          const statusLower = String(status).toLowerCase();
+          const statusLower = String(status).toLowerCase().replace(/[\s_-]/g, '');
           const created = fmtDate(it.created_at || it.createdAt || it.created || '');
           const client = (it.client_name || it.client || it.customer_name) || '';
+          
           // Build actions depending on status
           let actionBtn = '';
-          if (statusLower === 'accepted') {
-            // Accepted deliveries: Start Delivery (green) — calls driver pickup endpoint
-            actionBtn = `<button data-id="${id}" class="btn success start-delivery">${t('button.start')}</button>`;
-          } else if (statusLower === 'in progress' || statusLower === 'in_progress' || statusLower === 'inprogress') {
-            // In-progress deliveries: Mark as done
-            actionBtn = `<button data-id="${id}" class="btn danger mark-done">${t('button.mark_done')}</button>`;
-          } else {
-            // default: allow setting price
-            actionBtn = `<button data-id="${id}" class="btn set-price">${t('button.set_price')}</button>`;
+          
+          switch(statusLower) {
+            case 'requested':
+              // Status: REQUESTED -> Show "Set Price" button
+              actionBtn = `<button data-id="${id}" class="btn set-price">${t('button.set_price')}</button>`;
+              break;
+              
+            case 'priced':
+              // Status: PRICED -> Show "Awaiting response" badge (no action button)
+              actionBtn = `<span style="background:#fef3c7;color:#92400e;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.awaiting_response')}</span>`;
+              break;
+              
+            case 'accepted':
+              // Status: ACCEPTED -> Show "Quote accepted" badge (no action button for admin)
+              actionBtn = `<span style="background:#d1fae5;color:#065f46;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.quote_accepted')}</span>`;
+              break;
+              
+            case 'declined':
+              // Status: DECLINED -> Show "Revise Price" button
+              actionBtn = `<button data-id="${id}" class="btn secondary revise-price">${t('button.revise_price')}</button>`;
+              break;
+              
+            case 'inprogress':
+            case 'in_progress':
+              // Status: IN_PROGRESS -> Show "In transit" badge (no action button)
+              actionBtn = `<span style="background:#dbeafe;color:#1e40af;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.in_transit')}</span>`;
+              break;
+              
+            case 'delivered':
+              // Status: DELIVERED -> Show "Delivered" badge (no action button)
+              actionBtn = `<span style="background:#e0e7ff;color:#3730a3;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.delivered')}</span>`;
+              break;
+              
+            default:
+              // Default: allow setting price
+              actionBtn = `<button data-id="${id}" class="btn set-price">${t('button.set_price')}</button>`;
           }
 
           return `
@@ -129,7 +157,7 @@
               <td style="width:200px;"><strong>${id}</strong><div class="muted" style="font-size:12px">${created}</div></td>
               <td>${client}</td>
               <td>${status}</td>
-              <td style="width:260px"><div class="actions">
+              <td style="width:280px"><div class="actions">
                 <button data-id="${id}" class="btn open-public">${t('button.details')}</button>
                 ${actionBtn}
               </div></td>
@@ -298,7 +326,7 @@
       }
 
       function attachActions() {
-        // Set price (for non-accepted deliveries)
+        // Set price (for REQUESTED deliveries)
         document.querySelectorAll('.set-price').forEach(btn => {
           btn.addEventListener('click', async (e) => {
             const id = e.currentTarget.dataset.id;
@@ -342,6 +370,55 @@
 
               // Success from admin endpoint
               alert('Price set');
+              loadDeliveries();
+            } catch (err) { alert('Network error: ' + (err && err.message ? err.message : err)); }
+          });
+        });
+
+        // Revise price (for DECLINED deliveries)
+        document.querySelectorAll('.revise-price').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const id = e.currentTarget.dataset.id;
+            const priceRaw = prompt('Enter revised price amount (e.g. 250):');
+            if (priceRaw === null) return; // cancelled
+            const priceClean = String(priceRaw).trim();
+            // normalize comma decimals to dot
+            const priceNum = Number(priceClean.replace(',', '.'));
+            if (!isFinite(priceNum) || priceNum <= 0) {
+              alert('Please enter a valid positive number for the price (e.g. 250).');
+              return;
+            }
+            try {
+              // Try admin API first
+              let res = await authFetch(ADMIN_BASE + '/deliveries/' + encodeURIComponent(id) + '/price', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ price: priceNum })
+              }).catch(() => null);
+
+              // If unauthorized, force re-auth and redirect
+              if (res && (res.status === 401 || res.status === 403)) {
+                localStorage.removeItem('ihb_admin_token');
+                alert('Authentication required. Please log in again.');
+                window.location.href = 'admin.html';
+                return;
+              }
+
+              // If admin endpoint failed, try a public/fallback API POST
+              if (!res || !res.ok) {
+                const fallback = await authPostApi('/deliveries/' + encodeURIComponent(id) + '/price', { price: priceNum }).catch(() => null);
+                if (fallback && fallback.ok) { alert('Price revised'); loadDeliveries(); return; }
+
+                // Extract any response text for debugging
+                let debugText = 'No response';
+                try {
+                  if (res) debugText = await res.text().catch(() => String(res.status));
+                  else if (fallback) debugText = await fallback.text().catch(() => String(fallback.status));
+                } catch (e) { debugText = String(e); }
+                alert('Failed to revise price: ' + debugText);
+                return;
+              }
+
+              // Success from admin endpoint
+              alert('Price revised');
               loadDeliveries();
             } catch (err) { alert('Network error: ' + (err && err.message ? err.message : err)); }
           });
@@ -447,8 +524,8 @@
         }
 
         const resources = {
-          en: { translation: { 'admin.title':'Admin Dashboard','admin.subtitle':'Manage deliveries','button.refresh':'Refresh','button.logout':'Logout','table.delivery':'Delivery','table.client':'Client','table.status':'Status','table.actions':'Actions','button.details':'Details','button.start':'Start Delivery','button.set_price':'Set Price','button.mark_done':'Mark as done','loading':'Loading…' } },
-          da: { translation: { 'admin.title':'Administrator Panel','admin.subtitle':'Administrer leverancer','button.refresh':'Opdater','button.logout':'Log ud','table.delivery':'Levering','table.client':'Kunde','table.status':'Status','table.actions':'Handlinger','button.details':'Detaljer','button.start':'Start levering','button.set_price':'Sæt pris','button.mark_done':'Marker som færdig','loading':'Indlæser…' } }
+          en: { translation: { 'admin.title':'Admin Dashboard','admin.subtitle':'Manage deliveries','button.refresh':'Refresh','button.logout':'Logout','table.delivery':'Delivery','table.client':'Client','table.status':'Status','table.actions':'Actions','button.details':'Details','button.start':'Start Delivery','button.set_price':'Set Price','button.revise_price':'Revise Price','button.mark_done':'Mark as done','badge.awaiting_response':'Awaiting response','badge.quote_accepted':'Quote accepted','badge.in_transit':'In transit','badge.delivered':'Delivered','loading':'Loading…' } },
+          da: { translation: { 'admin.title':'Administrator Panel','admin.subtitle':'Administrer leverancer','button.refresh':'Opdater','button.logout':'Log ud','table.delivery':'Levering','table.client':'Kunde','table.status':'Status','table.actions':'Handlinger','button.details':'Detaljer','button.start':'Start levering','button.set_price':'Sæt pris','button.revise_price':'Revider pris','button.mark_done':'Marker som færdig','badge.awaiting_response':'Afventer svar','badge.quote_accepted':'Tilbud accepteret','badge.in_transit':'Under transport','badge.delivered':'Leveret','loading':'Indlæser…' } }
         };
 
         function applyLocal(i18n) {
@@ -462,6 +539,7 @@
             });
             document.querySelectorAll('.open-public').forEach(b => b.textContent = i18n.t('button.details'));
             document.querySelectorAll('.set-price').forEach(b => b.textContent = i18n.t('button.set_price'));
+            document.querySelectorAll('.revise-price').forEach(b => b.textContent = i18n.t('button.revise_price'));
             document.querySelectorAll('.start-delivery').forEach(b => b.textContent = i18n.t('button.start'));
             document.querySelectorAll('.mark-done').forEach(b => b.textContent = i18n.t('button.mark_done'));
           } catch (e) { console.warn('i18n apply failed', e); }
