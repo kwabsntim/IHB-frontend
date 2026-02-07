@@ -206,7 +206,7 @@
         const t = window.i18next ? window.i18next.t.bind(window.i18next) : (k) => k;
         container.innerHTML = t('admin.deliveries.loading');
         try {
-          const res = await authFetch(API_BASE + '/instant-quotes');
+          const res = await authFetch(ADMIN_BASE + '/instant-quotes');
           if (!res.ok) {
             if (res.status === 401 || res.status === 403) { localStorage.removeItem('ihb_admin_token'); window.location.href = 'admin.html'; return; }
             const txt = await res.text(); container.innerHTML = '<div class="error">Failed to load quotes: ' + (txt||res.status) + '</div>'; return;
