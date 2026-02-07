@@ -122,6 +122,8 @@ function initI18n() {
         'review_modal.title': 'Write Your Review',
         'review_modal.name_label': 'Your Name',
         'review_modal.name_placeholder': 'Enter your name',
+        'review_modal.image_label': 'Profile Image URL (optional)',
+        'review_modal.image_placeholder': 'https://example.com/photo.jpg',
         'review_modal.content_label': 'Your Review',
         'review_modal.content_placeholder': 'Share your experience with us...',
         'review_modal.submit': 'Send Review',
@@ -366,6 +368,8 @@ function initI18n() {
         'review_modal.title': 'Skriv din anmeldelse',
         'review_modal.name_label': 'Dit navn',
         'review_modal.name_placeholder': 'Indtast dit navn',
+        'review_modal.image_label': 'Profilbillede URL (valgfrit)',
+        'review_modal.image_placeholder': 'https://eksempel.dk/foto.jpg',
         'review_modal.content_label': 'Din anmeldelse',
         'review_modal.content_placeholder': 'Del din oplevelse med os...',
         'review_modal.submit': 'Send anmeldelse',
@@ -1357,23 +1361,56 @@ const ReviewModalHandler = {
     });
 
     // Handle form submission
-    reviewForm.addEventListener('submit', (e) => {
+    reviewForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const name = document.getElementById('reviewName').value.trim();
       const content = document.getElementById('reviewContent').value.trim();
+      const imageUrl = document.getElementById('reviewImage').value.trim();
 
       if (!name || !content) {
         alert('Please fill in all fields');
         return;
       }
 
-      // TODO: Send to backend endpoint
-      console.log('Review submitted:', { name, content });
-      
-      // For now, show success message
-      alert('Thank you for your review! We appreciate your feedback.');
-      closeModal();
+      try {
+        // Send review to backend (without image URL)
+        const response = await fetch('https://ihb-transport-dk.onrender.com/api/public/reviews', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            author_name: name,
+            content: content
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to submit review');
+        }
+
+        const result = await response.json();
+        console.log('Review submitted successfully:', result);
+        
+        // Store image URL locally if provided (for rendering purposes)
+        if (imageUrl && result.id) {
+          const localReviews = JSON.parse(localStorage.getItem('review_images') || '{}');
+          localReviews[result.id] = imageUrl;
+          localStorage.setItem('review_images', JSON.stringify(localReviews));
+        }
+        
+        alert('Thank you for your review! We appreciate your feedback.');
+        closeModal();
+        
+        // Reload reviews to show the new one
+        if (window.loadReviews) {
+          window.loadReviews();
+        }
+      } catch (error) {
+        console.error('Error submitting review:', error);
+        alert('Failed to submit review. Please try again later.');
+      }
     });
   }
 };
