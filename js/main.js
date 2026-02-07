@@ -725,6 +725,8 @@ const FormHandlers = {
         email: email
       };
       
+      console.log('Submitting quote:', formData);
+      
       // Store for potential later use
       sessionStorage.setItem('quoteData', JSON.stringify(formData));
       
@@ -751,8 +753,15 @@ const FormHandlers = {
           alert(data.message || 'Quote request received! We will send you an estimate via email shortly.');
           quoteForm.reset();
         } else {
-          const errorData = await response.json().catch(() => ({}));
-          alert(errorData.message || 'Failed to submit quote request. Please try again.');
+          const errorText = await response.text().catch(() => '');
+          let errorData = {};
+          try {
+            errorData = JSON.parse(errorText);
+          } catch (e) {
+            errorData = { message: errorText };
+          }
+          console.error('Quote error:', response.status, errorData);
+          alert(errorData.message || errorData.error || `Failed to submit quote request (${response.status}). Please try again.`);
         }
       } catch (error) {
         console.error('Quote submission error:', error);
