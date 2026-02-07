@@ -719,10 +719,10 @@ const FormHandlers = {
       }
       
       const formData = {
-        pickup_location: pickup,
-        dropoff_location: dropoff,
-        weight: weight,
-        email: email
+        PickupPoint: pickup,
+        DeliveryAddress: dropoff,
+        Weight: weight,
+        ClientEmail: email
       };
       
       console.log('Submitting quote:', formData);
