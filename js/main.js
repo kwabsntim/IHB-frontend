@@ -721,7 +721,7 @@ const FormHandlers = {
       const formData = {
         pickup_location: pickup,
         dropoff_location: dropoff,
-        weight: parseFloat(weight),
+        weight: weight,  // Send as string, not parsed as float
         email: email
       };
       
