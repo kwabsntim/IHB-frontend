@@ -425,23 +425,31 @@
         return wrap;
       }
 
-      async function showDeliveryModalById(id) {
+      async function showDeliveryModalById(id, type) {
         const modal = createDeliveryModal();
         const content = document.getElementById('deliveryModalContent');
         content.innerHTML = '<div style="padding:18px;">Loading…</div>';
         modal.style.display = 'flex';
+        
+        // Determine endpoint based on type
+        const endpoint = type === 'quote' ? 'instant-quotes' : 'deliveries';
+        const publicEndpoint = type === 'quote' ? 'instant-quotes' : 'deliveries';
+        
         try {
           // Try admin API first
-          let res = await authFetch(ADMIN_BASE + '/deliveries/' + encodeURIComponent(id));
+          let res = await authFetch(ADMIN_BASE + '/' + endpoint + '/' + encodeURIComponent(id));
           if (!res.ok) {
             // fallback to public endpoint
-            const publicBase = 'https://ihb-transport-dk.onrender.com/api/public/deliveries';
+            const publicBase = 'https://ihb-transport-dk.onrender.com/api/public/' + publicEndpoint;
             res = await fetch(publicBase + '/' + encodeURIComponent(id));
             if (!res.ok) throw new Error('Not found');
           }
           const data = await res.json();
           let obj = data;
-          if (obj && typeof obj === 'object' && Object.keys(obj).length === 1 && obj.delivery) obj = obj.delivery;
+          if (obj && typeof obj === 'object' && Object.keys(obj).length === 1) {
+            // Extract nested object (delivery or quote)
+            obj = obj.delivery || obj.quote || obj.instantQuote || obj;
+          }
           content.innerHTML = '';
           content.appendChild(renderObjectAsRows(obj));
         } catch (err) {
@@ -631,8 +639,9 @@
         document.querySelectorAll('.open-public').forEach(btn => {
           btn.addEventListener('click', (e) => {
             const id = e.currentTarget.dataset.id;
+            const type = e.currentTarget.dataset.type; // 'quote' or undefined
             if (!id) return;
-            showDeliveryModalById(id);
+            showDeliveryModalById(id, type);
           });
         });
       }
