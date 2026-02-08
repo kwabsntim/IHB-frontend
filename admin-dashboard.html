@@ -197,8 +197,10 @@
           const data = await res.json();
           // Some APIs return { deliveries: [...] }
           const items = Array.isArray(data) ? data : (data.deliveries || data.data || []);
+          cachedDeliveries = items;
           document.getElementById('deliveriesContainer').innerHTML = renderTable(items);
           attachActions();
+          if (window.i18next) applyLocal(window.i18next);
         } catch (err) {
           container.innerHTML = '<div class="error">Network error: ' + (err.message||err) + '</div>';
         }
@@ -244,8 +246,10 @@
           }
           
           console.log('Final items to render:', items, 'Count:', items.length);
+          cachedInstantQuotes = items;
           document.getElementById('instantQuotesContainer').innerHTML = renderInstantQuotesTable(items);
           attachActions();
+          if (window.i18next) applyLocal(window.i18next);
         } catch (err) {
           console.error('Network error loading instant quotes:', err);
           container.innerHTML = '<div class="empty">Unable to load instant quotes. The backend endpoint may not be ready yet.</div>';
@@ -691,16 +695,23 @@
         }
 
         const resources = {
-          en: { translation: { 'admin.title':'Admin Dashboard','admin.subtitle':'Manage deliveries','admin.deliveries.title':'Deliveries','admin.instant_quotes.title':'Instant Quotes','admin.deliveries.loading':'Loading…','admin.instant_quotes.none':'No instant quotes','admin.modal.title':'Details','button.refresh':'Refresh','button.logout':'Logout','table.delivery':'Delivery','table.quote':'Quote','table.client':'Client','table.status':'Status','table.actions':'Actions','button.details':'Details','button.start':'Start Delivery','button.set_price':'Set Price','button.revise_price':'Revise Price','button.mark_done':'Mark as done','badge.awaiting_response':'Awaiting response','badge.quote_accepted':'Quote accepted','badge.in_transit':'In transit','badge.delivered':'Delivered','loading':'Loading…' } },
-          da: { translation: { 'admin.title':'Administrator Panel','admin.subtitle':'Administrer leverancer','admin.deliveries.title':'Leverancer','admin.instant_quotes.title':'Hurtige Tilbud','admin.deliveries.loading':'Indlæser…','admin.instant_quotes.none':'Ingen hurtige tilbud','admin.modal.title':'Detaljer','button.refresh':'Opdater','button.logout':'Log ud','table.delivery':'Levering','table.quote':'Tilbud','table.client':'Kunde','table.status':'Status','table.actions':'Handlinger','button.details':'Detaljer','button.start':'Start levering','button.set_price':'Sæt pris','button.revise_price':'Revider pris','button.mark_done':'Marker som færdig','badge.awaiting_response':'Afventer svar','badge.quote_accepted':'Tilbud accepteret','badge.in_transit':'Under transport','badge.delivered':'Leveret','loading':'Indlæser…' } }
+          en: { translation: { 'admin.dashboard.title':'Admin Dashboard','admin.dashboard.subtitle':'Manage deliveries','admin.title':'Admin Dashboard','admin.subtitle':'Manage deliveries','admin.deliveries.title':'Deliveries','admin.instant_quotes.title':'Instant Quotes','admin.deliveries.loading':'Loading…','admin.delivery.none':'No deliveries','admin.instant_quotes.none':'No instant quotes','admin.modal.title':'Details','button.refresh':'Refresh','button.logout':'Logout','table.delivery':'Delivery','table.quote':'Quote','table.client':'Client','table.status':'Status','table.actions':'Actions','button.details':'Details','button.start':'Start Delivery','button.set_price':'Set Price','button.revise_price':'Revise Price','button.mark_done':'Mark as done','badge.awaiting_response':'Awaiting response','badge.quote_accepted':'Quote accepted','badge.in_transit':'In transit','badge.delivered':'Delivered','loading':'Loading…' } },
+          da: { translation: { 'admin.dashboard.title':'Administrator Panel','admin.dashboard.subtitle':'Administrer leverancer','admin.title':'Administrator Panel','admin.subtitle':'Administrer leverancer','admin.deliveries.title':'Leverancer','admin.instant_quotes.title':'Hurtige Tilbud','admin.deliveries.loading':'Indlæser…','admin.delivery.none':'Ingen leverancer','admin.instant_quotes.none':'Ingen hurtige tilbud','admin.modal.title':'Detaljer','button.refresh':'Opdater','button.logout':'Log ud','table.delivery':'Levering','table.quote':'Tilbud','table.client':'Kunde','table.status':'Status','table.actions':'Handlinger','button.details':'Detaljer','button.start':'Start levering','button.set_price':'Sæt pris','button.revise_price':'Revider pris','button.mark_done':'Marker som færdig','badge.awaiting_response':'Afventer svar','badge.quote_accepted':'Tilbud accepteret','badge.in_transit':'Under transport','badge.delivered':'Leveret','loading':'Indlæser…' } }
         };
 
         function applyLocal(i18n) {
           try {
-            const h1 = document.querySelector('.header h1'); if (h1) h1.textContent = i18n.t('admin.title');
-            const sub = document.querySelector('.header .muted'); if (sub) sub.textContent = i18n.t('admin.subtitle');
-            const refresh = document.getElementById('refreshBtn'); if (refresh) refresh.textContent = i18n.t('button.refresh');
-            const logout = document.getElementById('logoutBtn'); if (logout) logout.textContent = i18n.t('button.logout');
+            // Translate header elements
+            const h1 = document.querySelector('[data-i18n="admin.dashboard.title"]'); 
+            if (h1) h1.textContent = i18n.t('admin.dashboard.title');
+            const sub = document.querySelector('[data-i18n="admin.dashboard.subtitle"]'); 
+            if (sub) sub.textContent = i18n.t('admin.dashboard.subtitle');
+            
+            // Translate buttons
+            const refresh = document.getElementById('refreshBtn'); 
+            if (refresh) refresh.textContent = i18n.t('button.refresh');
+            const logout = document.getElementById('logoutBtn'); 
+            if (logout) logout.textContent = i18n.t('button.logout');
             
             // Translate section titles
             const deliveriesTitle = document.querySelector('[data-i18n="admin.deliveries.title"]');
@@ -708,9 +719,13 @@
             const quotesTitle = document.querySelector('[data-i18n="admin.instant_quotes.title"]');
             if (quotesTitle) quotesTitle.textContent = i18n.t('admin.instant_quotes.title');
             
+            // Translate table headers
             document.querySelectorAll('table thead th').forEach((th, idx) => {
-              const keys = ['table.delivery','table.client','table.status','table.actions']; if (keys[idx]) th.textContent = i18n.t(keys[idx]);
+              const keys = ['table.delivery','table.client','table.status','table.actions']; 
+              if (keys[idx]) th.textContent = i18n.t(keys[idx]);
             });
+            
+            // Translate dynamically added buttons
             document.querySelectorAll('.open-public').forEach(b => b.textContent = i18n.t('button.details'));
             document.querySelectorAll('.set-price').forEach(b => b.textContent = i18n.t('button.set_price'));
             document.querySelectorAll('.revise-price').forEach(b => b.textContent = i18n.t('button.revise_price'));
@@ -749,10 +764,29 @@
             const lng = e.target.value;
             localStorage.setItem('i18n_lang', lng);
             if (window.i18next && window.i18next.changeLanguage) {
-              window.i18next.changeLanguage(lng, () => applyLocal(window.i18next));
+              window.i18next.changeLanguage(lng, () => {
+                applyLocal(window.i18next);
+                // Re-render tables with new translations
+                if (cachedDeliveries.length > 0) {
+                  document.getElementById('deliveriesContainer').innerHTML = renderTable(cachedDeliveries);
+                }
+                if (cachedInstantQuotes.length > 0) {
+                  document.getElementById('instantQuotesContainer').innerHTML = renderInstantQuotesTable(cachedInstantQuotes);
+                }
+                attachActions();
+              });
             } else {
               // load and apply
-              loadI18nLocal().then(() => window.i18next.init({ lng, resources }, () => applyLocal(window.i18next)));
+              loadI18nLocal().then(() => window.i18next.init({ lng, resources }, () => {
+                applyLocal(window.i18next);
+                if (cachedDeliveries.length > 0) {
+                  document.getElementById('deliveriesContainer').innerHTML = renderTable(cachedDeliveries);
+                }
+                if (cachedInstantQuotes.length > 0) {
+                  document.getElementById('instantQuotesContainer').innerHTML = renderInstantQuotesTable(cachedInstantQuotes);
+                }
+                attachActions();
+              }));
             }
           });
         }
