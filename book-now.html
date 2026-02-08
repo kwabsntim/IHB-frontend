@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bestil nu</title>
+    <title data-i18n="page.title">Bestil nu</title>
     <link rel="stylesheet" href="css/style.css">
     <!-- Quicksand font -->
     <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700&display=swap" rel="stylesheet">
     <!-- Booking page styles -->
     <link rel="stylesheet" href="css/booking.css">
+    <!-- i18next for translations -->
+    <script src="https://unpkg.com/i18next@21.9.1/dist/umd/i18next.min.js"></script>
 </head>
 <body>
 
@@ -19,113 +21,113 @@
                 <div class="booking-logo">
                     <img src="static/newLogo.png" alt="IHB Transport Logo" class="booking-logo-img" loading="lazy">
                 </div>
-                <h1 class="booking-title">Udfyld formularen for at oprette en booking</h1>
+                <h1 class="booking-title" data-i18n="booking.title">Udfyld formularen for at oprette en booking</h1>
             </div>
             <!-- Client Details -->
-            <h2>Kundeoplysninger</h2>
+            <h2 data-i18n="booking.client_details">Kundeoplysninger</h2>
             <div class="form-group">
-                <label for="client_name">Navn</label>
+                <label for="client_name" data-i18n="booking.name">Navn</label>
                 <input class="form-input" type="text" id="client_name" name="client_name" maxlength="120" required>
             </div>
             <div class="form-group">
-                <label for="client_email">E-mail</label>
+                <label for="client_email" data-i18n="booking.email">E-mail</label>
                 <input type="email" id="client_email" name="client_email" maxlength="120" required>
             </div>
             <!-- Pickup Address Details -->
-            <h2>Adresseoplysninger</h2>
+            <h2 data-i18n="booking.address_details">Adresseoplysninger</h2>
             <div class="form-group">
-                <label for="pickup_street">Vej</label>
+                <label for="pickup_street" data-i18n="booking.street">Vej</label>
                 <input type="text" id="pickup_street" name="pickup_street" maxlength="255" required>
             </div>
             <div class="form-group">
-                <label for="pickup_city">By</label>
+                <label for="pickup_city" data-i18n="booking.city">By</label>
                 <input type="text" id="pickup_city" name="pickup_city" maxlength="100" required>
             </div>
             <div class="form-group">
-                <label for="pickup_post_code">Postnummer</label>
+                <label for="pickup_post_code" data-i18n="booking.post_code">Postnummer</label>
                 <input type="text" id="pickup_post_code" name="pickup_post_code" maxlength="20" required>
             </div>
             <div class="form-group">
-                <label for="pickup_country">Land</label>
+                <label for="pickup_country" data-i18n="booking.country">Land</label>
                 <input type="text" id="pickup_country" name="pickup_country" maxlength="100" required>
             </div>
             <!-- Service Address Details -->
-            <h2>Serviceadresse</h2>
+            <h2 data-i18n="booking.service_address">Serviceadresse</h2>
             <div class="form-group">
-                <label for="dropoff_street">Vej</label>
+                <label for="dropoff_street" data-i18n="booking.street">Vej</label>
                 <input type="text" id="dropoff_street" name="dropoff_street" maxlength="255" required>
             </div>
             <div class="form-group">
-                <label for="dropoff_city">By</label>
+                <label for="dropoff_city" data-i18n="booking.city">By</label>
                 <input type="text" id="dropoff_city" name="dropoff_city" maxlength="100" required>
             </div>
             <div class="form-group">
-                <label for="dropoff_post_code">Postnummer</label>
+                <label for="dropoff_post_code" data-i18n="booking.post_code">Postnummer</label>
                 <input type="text" id="dropoff_post_code" name="dropoff_post_code" maxlength="20" required>
             </div>
             <div class="form-group">
-                <label for="dropoff_country">Land</label>
+                <label for="dropoff_country" data-i18n="booking.country">Land</label>
                 <input type="text" id="dropoff_country" name="dropoff_country" maxlength="100" required>
             </div>
             <!-- Item Details -->
-            <h2>Vareoplysninger</h2>
+            <h2 data-i18n="booking.item_details">Vareoplysninger</h2>
             <div class="form-group">
-                <label for="item_description">Varebeskrivelse</label>
+                <label for="item_description" data-i18n="booking.item_description">Varebeskrivelse</label>
                 <input type="text" id="item_description" name="item_description" maxlength="255" required>
             </div>
             <div class="form-group">
-                <label for="items">Genstande</label>
+                <label for="items" data-i18n="booking.items">Genstande</label>
                 <textarea id="items" name="items" rows="2" required></textarea>
             </div>
             <div class="form-group">
-                <label for="weight">Vægt</label>
+                <label for="weight" data-i18n="booking.weight">Vægt</label>
                 <input type="text" id="weight" name="weight" maxlength="50" required>
             </div>
             <!-- Service Details -->
-            <h2>Servicedetaljer</h2>
+            <h2 data-i18n="booking.service_details">Servicedetaljer</h2>
             <div class="form-group">
-                <label for="pricing_option">Pris Mulighed</label>
+                <label for="pricing_option" data-i18n="booking.pricing_option">Pris Mulighed</label>
                 <select id="pricing_option" name="pricing_option" required>
-                    <option value="">Vælg en pris mulighed</option>
-                    <optgroup label="Hverdag (Man-Fre)">
-                        <option value="weekday_1man_665">Én mand & lastbil - 665 DKK/time</option>
-                        <option value="weekday_2men_965">To mænd & lastbil - 965 DKK/time</option>
-                        <option value="weekday_3men_1265">Tre mænd & lastbil - 1265 DKK/time</option>
+                    <option value="" data-i18n="booking.select_pricing">Vælg en pris mulighed</option>
+                    <optgroup label="Hverdag (Man-Fre)" data-i18n-label="booking.weekday">
+                        <option value="weekday_1man_665" data-i18n="booking.weekday_1man">Én mand & lastbil - 665 DKK/time</option>
+                        <option value="weekday_2men_965" data-i18n="booking.weekday_2men">To mænd & lastbil - 965 DKK/time</option>
+                        <option value="weekday_3men_1265" data-i18n="booking.weekday_3men">Tre mænd & lastbil - 1265 DKK/time</option>
                     </optgroup>
-                    <optgroup label="Weekend (Lør-Søn)">
-                        <option value="weekend_1man_705">Én mand & lastbil - 705 DKK/time</option>
-                        <option value="weekend_2men_1075">To mænd & lastbil - 1075 DKK/time</option>
-                        <option value="weekend_3men_1365">Tre mænd & lastbil - 1365 DKK/time</option>
+                    <optgroup label="Weekend (Lør-Søn)" data-i18n-label="booking.weekend">
+                        <option value="weekend_1man_705" data-i18n="booking.weekend_1man">Én mand & lastbil - 705 DKK/time</option>
+                        <option value="weekend_2men_1075" data-i18n="booking.weekend_2men">To mænd & lastbil - 1075 DKK/time</option>
+                        <option value="weekend_3men_1365" data-i18n="booking.weekend_3men">Tre mænd & lastbil - 1365 DKK/time</option>
                     </optgroup>
                 </select>
             </div>
             <div class="form-group">
-                <label for="service">Service type</label>
+                <label for="service" data-i18n="booking.service_type">Service type</label>
                 <select id="service" name="service" required>
-                    <option value="">Vælg en service</option>
-                    <option value="Moving Services">Flyttetjenester</option>
-                    <option value="Storage Solutions">Opbevaringsløsninger</option>
-                    <option value="Furniture & Junk Services">Møbel- og bortskaffelsesservice</option>
-                        <option value="International Shipping">International forsendelse</option>
-                        <option value="Appliance delivery & installation" data-i18n="service.appliance">Levering og installation af apparater</option>
-                        <option value="End-of-tenancy / deep cleaning" data-i18n="service.end_of_tenancy">Fraflytnings- / dybderengøring</option>
-                        <option value="Handyman / minor repairs" data-i18n="service.handyman">Håndværker / mindre reparationer</option>
-                        <option value="Garden waste removal" data-i18n="service.garden_waste">Bortskaffelse af haveaffald</option>
-                        <option value="Snow removal (seasonal)" data-i18n="service.snow_removal">Snerydning (sæsonbestemt)</option>
-                        <option value="Office moves & office clearing" data-i18n="service.office_moves">Kontorflytning & kontoroprydning</option>
-                        <option value="Retail & warehouse deliveries" data-i18n="service.retail_warehouse">Detail- og lagerleverancer</option>
-                        <option value="Eco-friendly recycling service" data-i18n="service.eco_recycling">Miljøvenlig genbrugsservice</option>
-                        <option value="Pickup + storage + redelivery" data-i18n="service.pickup_storage_redelivery">Afhentning + opbevaring + genlevering</option>
-                        <option value="Packing & unpacking services" data-i18n="service.packing_unpacking">Pakke- og udpakkeservice</option>
-                        <option value="Donation pickup" data-i18n="service.donation_pickup">Afhentning af donationer</option>
+                    <option value="" data-i18n="booking.select_service">Vælg en service</option>
+                    <option value="Moving Services" data-i18n="service.moving">Flyttetjenester</option>
+                    <option value="Storage Solutions" data-i18n="service.storage">Opbevaringsløsninger</option>
+                    <option value="Furniture & Junk Services" data-i18n="service.furniture">Møbel- og bortskaffelsesservice</option>
+                    <option value="International Shipping" data-i18n="service.international">International forsendelse</option>
+                    <option value="Appliance delivery & installation" data-i18n="service.appliance">Levering og installation af apparater</option>
+                    <option value="End-of-tenancy / deep cleaning" data-i18n="service.end_of_tenancy">Fraflytnings- / dybderengøring</option>
+                    <option value="Handyman / minor repairs" data-i18n="service.handyman">Håndværker / mindre reparationer</option>
+                    <option value="Garden waste removal" data-i18n="service.garden_waste">Bortskaffelse af haveaffald</option>
+                    <option value="Snow removal (seasonal)" data-i18n="service.snow_removal">Snerydning (sæsonbestemt)</option>
+                    <option value="Office moves & office clearing" data-i18n="service.office_moves">Kontorflytning & kontoroprydning</option>
+                    <option value="Retail & warehouse deliveries" data-i18n="service.retail_warehouse">Detail- og lagerleverancer</option>
+                    <option value="Eco-friendly recycling service" data-i18n="service.eco_recycling">Miljøvenlig genbrugsservice</option>
+                    <option value="Pickup + storage + redelivery" data-i18n="service.pickup_storage_redelivery">Afhentning + opbevaring + genlevering</option>
+                    <option value="Packing & unpacking services" data-i18n="service.packing_unpacking">Pakke- og udpakkeservice</option>
+                    <option value="Donation pickup" data-i18n="service.donation_pickup">Afhentning af donationer</option>
                 </select>
             </div>
             <div class="form-group">
-                <label for="service_date">Service dato</label>
+                <label for="service_date" data-i18n="booking.service_date">Service dato</label>
                 <input type="date" id="service_date" name="service_date" required>
             </div>
             <!-- Submit Button -->
-            <button type="submit" class="btn-primary">Send bestilling</button>
+            <button type="submit" class="btn-primary" data-i18n="booking.submit">Send bestilling</button>
         </form>
         </div>
     </main>
@@ -134,7 +136,153 @@
     <!-- Include site JS so form handlers (booking submit) run on this page -->
         <script src="js/main.js"></script>
         <script>
+            // Initialize i18next for booking page
+            const bookingResources = {
+                en: {
+                    translation: {
+                        'page.title': 'Book Now',
+                        'booking.title': 'Fill out the form to create a booking',
+                        'booking.client_details': 'Client Information',
+                        'booking.name': 'Name',
+                        'booking.email': 'Email',
+                        'booking.address_details': 'Address Information',
+                        'booking.street': 'Street',
+                        'booking.city': 'City',
+                        'booking.post_code': 'Post Code',
+                        'booking.country': 'Country',
+                        'booking.service_address': 'Service Address',
+                        'booking.item_details': 'Item Information',
+                        'booking.item_description': 'Item Description',
+                        'booking.items': 'Items',
+                        'booking.weight': 'Weight',
+                        'booking.service_details': 'Service Details',
+                        'booking.pricing_option': 'Pricing Option',
+                        'booking.select_pricing': 'Select a pricing option',
+                        'booking.weekday': 'Weekday (Mon-Fri)',
+                        'booking.weekday_1man': 'One man & truck - 665 DKK/hour',
+                        'booking.weekday_2men': 'Two men & truck - 965 DKK/hour',
+                        'booking.weekday_3men': 'Three men & truck - 1265 DKK/hour',
+                        'booking.weekend': 'Weekend (Sat-Sun)',
+                        'booking.weekend_1man': 'One man & truck - 705 DKK/hour',
+                        'booking.weekend_2men': 'Two men & truck - 1075 DKK/hour',
+                        'booking.weekend_3men': 'Three men & truck - 1365 DKK/hour',
+                        'booking.service_type': 'Service Type',
+                        'booking.select_service': 'Select a service',
+                        'service.moving': 'Moving Services',
+                        'service.storage': 'Storage Solutions',
+                        'service.furniture': 'Furniture & Junk Services',
+                        'service.international': 'International Shipping',
+                        'service.appliance': 'Appliance delivery & installation',
+                        'service.end_of_tenancy': 'End-of-tenancy / deep cleaning',
+                        'service.handyman': 'Handyman / minor repairs',
+                        'service.garden_waste': 'Garden waste removal',
+                        'service.snow_removal': 'Snow removal (seasonal)',
+                        'service.office_moves': 'Office moves & office clearing',
+                        'service.retail_warehouse': 'Retail & warehouse deliveries',
+                        'service.eco_recycling': 'Eco-friendly recycling service',
+                        'service.pickup_storage_redelivery': 'Pickup + storage + redelivery',
+                        'service.packing_unpacking': 'Packing & unpacking services',
+                        'service.donation_pickup': 'Donation pickup',
+                        'booking.service_date': 'Service Date',
+                        'booking.submit': 'Submit Booking'
+                    }
+                },
+                da: {
+                    translation: {
+                        'page.title': 'Bestil nu',
+                        'booking.title': 'Udfyld formularen for at oprette en booking',
+                        'booking.client_details': 'Kundeoplysninger',
+                        'booking.name': 'Navn',
+                        'booking.email': 'E-mail',
+                        'booking.address_details': 'Adresseoplysninger',
+                        'booking.street': 'Vej',
+                        'booking.city': 'By',
+                        'booking.post_code': 'Postnummer',
+                        'booking.country': 'Land',
+                        'booking.service_address': 'Serviceadresse',
+                        'booking.item_details': 'Vareoplysninger',
+                        'booking.item_description': 'Varebeskrivelse',
+                        'booking.items': 'Genstande',
+                        'booking.weight': 'Vægt',
+                        'booking.service_details': 'Servicedetaljer',
+                        'booking.pricing_option': 'Pris Mulighed',
+                        'booking.select_pricing': 'Vælg en pris mulighed',
+                        'booking.weekday': 'Hverdag (Man-Fre)',
+                        'booking.weekday_1man': 'Én mand & lastbil - 665 DKK/time',
+                        'booking.weekday_2men': 'To mænd & lastbil - 965 DKK/time',
+                        'booking.weekday_3men': 'Tre mænd & lastbil - 1265 DKK/time',
+                        'booking.weekend': 'Weekend (Lør-Søn)',
+                        'booking.weekend_1man': 'Én mand & lastbil - 705 DKK/time',
+                        'booking.weekend_2men': 'To mænd & lastbil - 1075 DKK/time',
+                        'booking.weekend_3men': 'Tre mænd & lastbil - 1365 DKK/time',
+                        'booking.service_type': 'Service type',
+                        'booking.select_service': 'Vælg en service',
+                        'service.moving': 'Flyttetjenester',
+                        'service.storage': 'Opbevaringsløsninger',
+                        'service.furniture': 'Møbel- og bortskaffelsesservice',
+                        'service.international': 'International forsendelse',
+                        'service.appliance': 'Levering og installation af apparater',
+                        'service.end_of_tenancy': 'Fraflytnings- / dybderengøring',
+                        'service.handyman': 'Håndværker / mindre reparationer',
+                        'service.garden_waste': 'Bortskaffelse af haveaffald',
+                        'service.snow_removal': 'Snerydning (sæsonbestemt)',
+                        'service.office_moves': 'Kontorflytning & kontoroprydning',
+                        'service.retail_warehouse': 'Detail- og lagerleverancer',
+                        'service.eco_recycling': 'Miljøvenlig genbrugsservice',
+                        'service.pickup_storage_redelivery': 'Afhentning + opbevaring + genlevering',
+                        'service.packing_unpacking': 'Pakke- og udpakkeservice',
+                        'service.donation_pickup': 'Afhentning af donationer',
+                        'booking.service_date': 'Service dato',
+                        'booking.submit': 'Send bestilling'
+                    }
+                }
+            };
+
+            function applyBookingTranslations() {
+                const i18n = window.i18next;
+                if (!i18n) return;
+                
+                // Translate all elements with data-i18n attribute
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    if (key) {
+                        el.textContent = i18n.t(key);
+                    }
+                });
+                
+                // Translate optgroup labels
+                document.querySelectorAll('optgroup[data-i18n-label]').forEach(optgroup => {
+                    const key = optgroup.getAttribute('data-i18n-label');
+                    if (key) {
+                        optgroup.label = i18n.t(key);
+                    }
+                });
+                
+                // Update page title
+                const titleKey = document.querySelector('title').getAttribute('data-i18n');
+                if (titleKey) {
+                    document.title = i18n.t(titleKey);
+                }
+                
+                // Update html lang attribute
+                document.documentElement.lang = i18n.language;
+            }
+
             document.addEventListener('DOMContentLoaded', function() {
+                // Initialize i18next
+                if (window.i18next) {
+                    const savedLang = localStorage.getItem('i18n_lang') || 'da';
+                    i18next.init({
+                        lng: savedLang,
+                        fallbackLng: 'da',
+                        resources: bookingResources
+                    }, function(err, t) {
+                        if (err) console.error('i18next init error:', err);
+                        applyBookingTranslations();
+                    });
+                }
+                
+                // Initialize main.js
                 Main.init();
             });
         </script>
