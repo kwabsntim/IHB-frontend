@@ -766,26 +766,16 @@
             if (window.i18next && window.i18next.changeLanguage) {
               window.i18next.changeLanguage(lng, () => {
                 applyLocal(window.i18next);
-                // Re-render tables with new translations
-                if (cachedDeliveries.length > 0) {
-                  document.getElementById('deliveriesContainer').innerHTML = renderTable(cachedDeliveries);
-                }
-                if (cachedInstantQuotes.length > 0) {
-                  document.getElementById('instantQuotesContainer').innerHTML = renderInstantQuotesTable(cachedInstantQuotes);
-                }
-                attachActions();
+                // Re-render tables with new translations by reloading data
+                loadDeliveries();
+                loadInstantQuotes();
               });
             } else {
               // load and apply
               loadI18nLocal().then(() => window.i18next.init({ lng, resources }, () => {
                 applyLocal(window.i18next);
-                if (cachedDeliveries.length > 0) {
-                  document.getElementById('deliveriesContainer').innerHTML = renderTable(cachedDeliveries);
-                }
-                if (cachedInstantQuotes.length > 0) {
-                  document.getElementById('instantQuotesContainer').innerHTML = renderInstantQuotesTable(cachedInstantQuotes);
-                }
-                attachActions();
+                loadDeliveries();
+                loadInstantQuotes();
               }));
             }
           });
