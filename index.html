@@ -654,57 +654,22 @@
         <main class="testimonials" aria-labelledby="testimonial-heading">
             <h2 id="testimonial-heading" data-i18n="testimonials.title">What our customers say</h2>
 
+            <!-- Carousel Controls -->
+            <div class="carousel-controls">
+                <button class="carousel-btn carousel-prev" aria-label="Previous testimonials">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-btn carousel-next" aria-label="Next testimonials">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
             <section class="cards" id="testimonials" aria-label="Testimonials list">
-                <!-- Card 1 -->
-                <article class="testimonial-card" data-idx="0" data-static="true">
-                    <div class="testimonial-image">
-                        <img src="static/customer.jpeg" alt="Josh Kastel" loading="lazy"/>
-                    </div>
-                    <div class="testimonial-content">
-                        <blockquote class="quote" data-i18n="testimonial1.quote">
-                            "IHB Transport gjorde vores internationale flytning problemfri. Professionelt team, rettidig levering og god kommunikation hele vejen."
-                        </blockquote>
-                        <div class="author-meta">
-                            <div class="name" data-i18n="testimonial1.name">Julie Ingebrigtsen</div>
-                            <div class="title" data-i18n="testimonial1.title">Arbejder her: Kultur- og Fritidsforvaltningen, Københavns Kommune</div>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Card 2 -->
-                <article class="testimonial-card" data-idx="1" data-static="true">
-                    <div class="testimonial-image">
-                        <!-- Placeholder until a customer image is supplied -->
-                        <img src="static/customer.jpeg" alt="Aisha Khan" loading="lazy"/>
-                    </div>
-                    <div class="testimonial-content">
-                        <blockquote class="quote" data-i18n="testimonial2.quote">
-                            "Fremragende service til vores kontorflytning. Flyttemændene var omhyggelige med vores udstyr, og alt ankom til tiden."
-                        </blockquote>
-                        <div class="author-meta">
-                            <div class="name" data-i18n="testimonial2.name">Aisha Khan</div>
-                            <div class="title" data-i18n="testimonial2.title">Vækstchef · Acme</div>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Card 3 -->
-                <article class="testimonial-card" data-idx="2" data-static="true">
-                    <div class="testimonial-image">
-                        <!-- Placeholder until a customer image is supplied -->
-                        <img src="static/customer.jpeg" alt="Noah Reed" loading="lazy"/>
-                    </div>
-                    <div class="testimonial-content">
-                        <blockquote class="quote" data-i18n="testimonial3.quote">
-                            "Hurtig, pålidelig og overkommelig. IHB Transport håndterede vores møbelmontering og bortskaffelse perfekt."
-                        </blockquote>
-                        <div class="author-meta">
-                            <div class="name" data-i18n="testimonial3.name">Noah Reed</div>
-                            <div class="title" data-i18n="testimonial3.title">Produktdesigner · Nimbus</div>
-                        </div>
-                    </div>
-                </article>
+                <!-- Reviews will be loaded dynamically from the API -->
             </section>
+
+            <!-- Carousel Indicators -->
+            <div class="carousel-indicators" id="carouselIndicators"></div>
 
             <!-- Write Review Button -->
             <div class="testimonials-cta">

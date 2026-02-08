@@ -1427,28 +1427,34 @@ async function loadReviews() {
     const reviews = await response.json();
     const reviewsContainer = document.getElementById('testimonials');
     
-    if (!reviewsContainer || !reviews || reviews.length === 0) {
+    if (!reviewsContainer) {
+      return;
+    }
+
+    // Filter only visible reviews
+    const visibleReviews = Array.isArray(reviews) 
+      ? reviews.filter(review => review.is_visible !== false)
+      : [];
+
+    // Clear existing reviews
+    reviewsContainer.innerHTML = '';
+
+    if (visibleReviews.length === 0) {
+      reviewsContainer.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 2rem;">No reviews yet. Be the first to share your experience!</p>';
       return;
     }
 
     // Get locally stored image URLs
     const localImages = JSON.parse(localStorage.getItem('review_images') || '{}');
     
-    // Clear existing dynamic reviews (keep static ones)
-    const existingCards = reviewsContainer.querySelectorAll('.testimonial-card');
-    existingCards.forEach(card => {
-      if (!card.dataset.static) {
-        card.remove();
-      }
-    });
-
-    // Render each review
-    reviews.forEach(review => {
+    // Render each visible review
+    visibleReviews.forEach((review, index) => {
       const card = document.createElement('article');
       card.className = 'testimonial-card';
+      card.dataset.idx = index;
       
-      // Get image URL from localStorage or use default avatar
-      const imageUrl = localImages[review.id] || null;
+      // Get image URL from review or localStorage or use default avatar
+      const imageUrl = review.image_url || localImages[review.id] || null;
       const imageHTML = imageUrl 
         ? `<img src="${imageUrl}" alt="${review.author_name}" loading="lazy" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';" />
            <div class="avatar-fallback" style="display:none;">
@@ -1475,6 +1481,11 @@ async function loadReviews() {
       
       reviewsContainer.appendChild(card);
     });
+
+    // Initialize carousel
+    if (window.TestimonialsCarousel) {
+      window.TestimonialsCarousel.init();
+    }
   } catch (error) {
     console.error('Error loading reviews:', error);
   }
@@ -1482,6 +1493,124 @@ async function loadReviews() {
 
 // Make loadReviews available globally
 window.loadReviews = loadReviews;
+
+// ==================== TESTIMONIALS CAROUSEL ====================
+const TestimonialsCarousel = {
+  currentIndex: 0,
+  cardsPerView: 3,
+  autoPlayInterval: null,
+
+  init() {
+    const cards = document.querySelectorAll('.testimonial-card');
+    const prevBtn = document.querySelector('.carousel-prev');
+    const nextBtn = document.querySelector('.carousel-next');
+    const indicatorsContainer = document.getElementById('carouselIndicators');
+
+    if (!cards.length || !prevBtn || !nextBtn || !indicatorsContainer) return;
+
+    // Determine cards per view based on screen size
+    this.updateCardsPerView();
+    window.addEventListener('resize', () => this.updateCardsPerView());
+
+    // Calculate total slides
+    const totalSlides = Math.ceil(cards.length / this.cardsPerView);
+
+    // Create indicators
+    this.createIndicators(totalSlides, indicatorsContainer);
+
+    // Show initial cards
+    this.showCards(cards, this.currentIndex);
+
+    // Event listeners
+    prevBtn.addEventListener('click', () => {
+      this.currentIndex = (this.currentIndex - 1 + totalSlides) % totalSlides;
+      this.showCards(cards, this.currentIndex);
+      this.updateIndicators();
+      this.resetAutoPlay();
+    });
+
+    nextBtn.addEventListener('click', () => {
+      this.currentIndex = (this.currentIndex + 1) % totalSlides;
+      this.showCards(cards, this.currentIndex);
+      this.updateIndicators();
+      this.resetAutoPlay();
+    });
+
+    // Auto-play (optional)
+    this.startAutoPlay(cards, totalSlides);
+  },
+
+  updateCardsPerView() {
+    if (window.innerWidth <= 768) {
+      this.cardsPerView = 1;
+    } else if (window.innerWidth <= 1024) {
+      this.cardsPerView = 2;
+    } else {
+      this.cardsPerView = 3;
+    }
+  },
+
+  createIndicators(totalSlides, container) {
+    container.innerHTML = '';
+    for (let i = 0; i < totalSlides; i++) {
+      const dot = document.createElement('button');
+      dot.className = 'carousel-indicator' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+      dot.addEventListener('click', () => {
+        this.currentIndex = i;
+        this.showCards(document.querySelectorAll('.testimonial-card'), i);
+        this.updateIndicators();
+        this.resetAutoPlay();
+      });
+      container.appendChild(dot);
+    }
+  },
+
+  showCards(cards, slideIndex) {
+    cards.forEach((card, index) => {
+      const startIdx = slideIndex * this.cardsPerView;
+      const endIdx = startIdx + this.cardsPerView;
+      if (index >= startIdx && index < endIdx) {
+        card.style.display = 'flex';
+        card.classList.add('in-view');
+      } else {
+        card.style.display = 'none';
+        card.classList.remove('in-view');
+      }
+    });
+  },
+
+  updateIndicators() {
+    const indicators = document.querySelectorAll('.carousel-indicator');
+    indicators.forEach((indicator, index) => {
+      if (index === this.currentIndex) {
+        indicator.classList.add('active');
+      } else {
+        indicator.classList.remove('active');
+      }
+    });
+  },
+
+  startAutoPlay(cards, totalSlides) {
+    this.autoPlayInterval = setInterval(() => {
+      this.currentIndex = (this.currentIndex + 1) % totalSlides;
+      this.showCards(cards, this.currentIndex);
+      this.updateIndicators();
+    }, 5000); // Auto-advance every 5 seconds
+  },
+
+  resetAutoPlay() {
+    if (this.autoPlayInterval) {
+      clearInterval(this.autoPlayInterval);
+      const cards = document.querySelectorAll('.testimonial-card');
+      const totalSlides = Math.ceil(cards.length / this.cardsPerView);
+      this.startAutoPlay(cards, totalSlides);
+    }
+  }
+};
+
+// Make carousel available globally
+window.TestimonialsCarousel = TestimonialsCarousel;
 
 // ==================== HOW IT WORKS SECTION ====================
 const HowItWorksHandler = {
