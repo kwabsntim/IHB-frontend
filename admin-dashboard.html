@@ -82,6 +82,10 @@
       const ADMIN_BASE = 'https://ihb-transport-dk.onrender.com/api/admin';
       const API_BASE = 'https://ihb-transport-dk.onrender.com';
       const token = localStorage.getItem('ihb_admin_token');
+      
+      // Store loaded data globally
+      let cachedDeliveries = [];
+      let cachedInstantQuotes = [];
 
       function ensureAuth() {
         if (!token) {
@@ -446,9 +450,13 @@
           console.log('Admin response status:', res.status);
           
           if (!res.ok) {
-            // fallback to public endpoint
-            const publicBase = 'https://ihb-transport-dk.onrender.com/api/public/' + publicEndpoint;
-            const publicUrl = publicBase + '/' + encodeURIComponent(id);
+            // fallback to public endpoint - use correct path for instant quotes
+            let publicUrl;
+            if (type === 'quote') {
+              publicUrl = 'https://ihb-transport-dk.onrender.com/instant-quotes/' + encodeURIComponent(id);
+            } else {
+              publicUrl = 'https://ihb-transport-dk.onrender.com/api/public/deliveries/' + encodeURIComponent(id);
+            }
             console.log('Admin failed, trying public URL:', publicUrl);
             res = await fetch(publicUrl);
             console.log('Public response status:', res.status);
