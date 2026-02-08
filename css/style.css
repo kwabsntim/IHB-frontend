@@ -2541,6 +2541,7 @@ input, button {
     padding: 6rem 2rem;
     text-align: center;
     background: white;
+    position: relative;
 }
 
 .testimonials h2 {
@@ -2548,6 +2549,76 @@ input, button {
     font-weight: 800;
     color: var(--dark-gray);
     margin-bottom: 3rem;
+}
+
+/* Carousel Controls */
+.carousel-controls {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    padding: 0 1rem;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.carousel-btn {
+    pointer-events: all;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-btn:hover {
+    background: var(--primary-red);
+    border-color: var(--primary-red);
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
+}
+
+.carousel-btn i {
+    font-size: 1.2rem;
+}
+
+/* Carousel Indicators */
+.carousel-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+.carousel-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #d1d5db;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.carousel-indicator.active {
+    background: var(--primary-red);
+    width: 32px;
+    border-radius: 6px;
+}
+
+.carousel-indicator:hover {
+    background: var(--primary-red);
+    opacity: 0.7;
 }
 
 .cards {
