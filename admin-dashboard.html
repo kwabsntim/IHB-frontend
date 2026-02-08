@@ -114,44 +114,105 @@
         try { const d = new Date(s); if (isNaN(d)) return s; return d.toLocaleString(); } catch(e){return s}
       }
 
+      function getTimeGroup(dateStr) {
+        try {
+          const date = new Date(dateStr);
+          if (isNaN(date)) return 'older';
+          
+          const now = new Date();
+          const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          const yesterday = new Date(today);
+          yesterday.setDate(yesterday.getDate() - 1);
+          const lastWeek = new Date(today);
+          lastWeek.setDate(lastWeek.getDate() - 7);
+          
+          const itemDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+          
+          if (itemDate.getTime() === today.getTime()) return 'today';
+          if (itemDate.getTime() === yesterday.getTime()) return 'yesterday';
+          if (itemDate >= lastWeek) return 'lastWeek';
+          return 'older';
+        } catch(e) {
+          return 'older';
+        }
+      }
+
+      function groupItemsByTime(items) {
+        const groups = {
+          today: [],
+          yesterday: [],
+          lastWeek: [],
+          older: []
+        };
+        
+        items.forEach(item => {
+          const dateStr = item.created_at || item.createdAt || item.created || '';
+          const group = getTimeGroup(dateStr);
+          groups[group].push(item);
+        });
+        
+        return groups;
+      }
+
       function renderTable(items) {
         const t = window.i18next ? window.i18next.t.bind(window.i18next) : (k) => k;
         if (!items || !items.length) {
           return `<div class="empty">${t('admin.delivery.none')}</div>`;
         }
 
-        const rows = items.map(it => {
-          const id = it.id || it._id || it.delivery_id || it.uuid || '';
-          const status = it.status || '-';
-          const statusLower = String(status).toLowerCase().replace(/[\s_-]/g, '');
-          const created = fmtDate(it.created_at || it.createdAt || it.created || '');
-          const client = (it.client_name || it.client || it.customer_name) || '';
-          
-          // Build actions depending on status
-          let actionBtn = '';
-          
-          if (statusLower === 'delivered') {
-            // Status: DELIVERED -> Show "Delivered" badge
-            actionBtn = `<span style="background:#e0e7ff;color:#3730a3;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.delivered')}</span>`;
-          } else {
-            // All other statuses -> Show green "Confirm" button
-            actionBtn = `<button data-id="${id}" class="btn success confirm-delivery">${t('button.confirm')}</button>`;
-          }
+        // Group items by time
+        const groups = groupItemsByTime(items);
+        const groupLabels = {
+          today: t('time.today'),
+          yesterday: t('time.yesterday'),
+          lastWeek: t('time.last_week'),
+          older: t('time.older')
+        };
 
-          return `
-            <tr>
-              <td style="width:200px;"><strong>${id}</strong><div class="muted" style="font-size:12px">${created}</div></td>
-              <td>${client}</td>
-              <td>${status}</td>
-              <td style="width:280px"><div class="actions">
-                <button data-id="${id}" class="btn open-public">${t('button.details')}</button>
-                ${actionBtn}
-              </div></td>
-            </tr>
-          `;
-        }).join('');
+        let html = '';
+        
+        ['today', 'yesterday', 'lastWeek', 'older'].forEach(groupKey => {
+          const groupItems = groups[groupKey];
+          if (groupItems.length === 0) return;
+          
+          html += `<div style="margin-bottom:24px;">
+            <h3 style="font-size:14px;font-weight:600;color:#374151;margin:0 0 12px 0;padding:8px 12px;background:#f3f4f6;border-radius:6px;">${groupLabels[groupKey]} (${groupItems.length})</h3>`;
+          
+          const rows = groupItems.map(it => {
+            const id = it.id || it._id || it.delivery_id || it.uuid || '';
+            const status = it.status || '-';
+            const statusLower = String(status).toLowerCase().replace(/[\s_-]/g, '');
+            const created = fmtDate(it.created_at || it.createdAt || it.created || '');
+            const client = (it.client_name || it.client || it.customer_name) || '';
+            
+            // Build actions depending on status
+            let actionBtn = '';
+            
+            if (statusLower === 'delivered') {
+              // Status: DELIVERED -> Show "Delivered" badge
+              actionBtn = `<span style="background:#e0e7ff;color:#3730a3;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.delivered')}</span>`;
+            } else {
+              // All other statuses -> Show green "Confirm" button
+              actionBtn = `<button data-id="${id}" class="btn success confirm-delivery">${t('button.confirm')}</button>`;
+            }
 
-        return `<table><thead><tr><th>${t('table.delivery')}</th><th>${t('table.client')}</th><th>${t('table.status')}</th><th>${t('table.actions')}</th></tr></thead><tbody>${rows}</tbody></table>`;
+            return `
+              <tr>
+                <td style="width:200px;"><strong>${id}</strong><div class="muted" style="font-size:12px">${created}</div></td>
+                <td>${client}</td>
+                <td>${status}</td>
+                <td style="width:280px"><div class="actions">
+                  <button data-id="${id}" class="btn open-public">${t('button.details')}</button>
+                  ${actionBtn}
+                </div></td>
+              </tr>
+            `;
+          }).join('');
+
+          html += `<table><thead><tr><th>${t('table.delivery')}</th><th>${t('table.client')}</th><th>${t('table.status')}</th><th>${t('table.actions')}</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+        });
+
+        return html;
       }
 
       async function loadDeliveries() {
@@ -237,63 +298,84 @@
           return `<div class="empty">${t('admin.instant_quotes.none')}</div>`;
         }
 
-        const rows = items.map(it => {
-          const id = it.id || it._id || it.quote_id || it.uuid || '';
-          const status = it.status || 'REQUESTED';
-          const statusLower = String(status).toLowerCase().replace(/[\s_-]/g, '');
-          const created = fmtDate(it.created_at || it.createdAt || it.created || '');
-          const email = it.client_email || it.email || '';
-          const pickup = it.pickup_point || '-';
-          const delivery = it.delivery_address || '-';
-          const weight = it.weight || '-';
-          
-          // Build actions depending on status (same as deliveries)
-          let actionBtn = '';
-          
-          switch(statusLower) {
-            case 'requested':
-              actionBtn = `<button data-id="${id}" data-type="quote" class="btn set-price">${t('button.set_price')}</button>`;
-              break;
-              
-            case 'priced':
-              actionBtn = `<span style="background:#fef3c7;color:#92400e;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.awaiting_response')}</span>`;
-              break;
-              
-            case 'accepted':
-              actionBtn = `<span style="background:#d1fae5;color:#065f46;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.quote_accepted')}</span>`;
-              break;
-              
-            case 'declined':
-              actionBtn = `<button data-id="${id}" data-type="quote" class="btn secondary revise-price">${t('button.revise_price')}</button>`;
-              break;
-              
-            case 'inprogress':
-            case 'in_progress':
-              actionBtn = `<span style="background:#dbeafe;color:#1e40af;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.in_transit')}</span>`;
-              break;
-              
-            case 'delivered':
-              actionBtn = `<span style="background:#e0e7ff;color:#3730a3;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.delivered')}</span>`;
-              break;
-              
-            default:
-              actionBtn = `<button data-id="${id}" data-type="quote" class="btn set-price">${t('button.set_price')}</button>`;
-          }
+        // Group items by time
+        const groups = groupItemsByTime(items);
+        const groupLabels = {
+          today: t('time.today'),
+          yesterday: t('time.yesterday'),
+          lastWeek: t('time.last_week'),
+          older: t('time.older')
+        };
 
-          return `
-            <tr>
-              <td style="width:200px;"><strong>${id}</strong><div class="muted" style="font-size:12px">${created}</div></td>
-              <td>${email}<div class="muted" style="font-size:12px">${pickup} → ${delivery}</div><div class="muted" style="font-size:12px">Weight: ${weight}</div></td>
-              <td>${status}</td>
-              <td style="width:280px"><div class="actions">
-                <button data-id="${id}" data-type="quote" class="btn open-public">${t('button.details')}</button>
-                ${actionBtn}
-              </div></td>
-            </tr>
-          `;
-        }).join('');
+        let html = '';
+        
+        ['today', 'yesterday', 'lastWeek', 'older'].forEach(groupKey => {
+          const groupItems = groups[groupKey];
+          if (groupItems.length === 0) return;
+          
+          html += `<div style="margin-bottom:24px;">
+            <h3 style="font-size:14px;font-weight:600;color:#374151;margin:0 0 12px 0;padding:8px 12px;background:#f3f4f6;border-radius:6px;">${groupLabels[groupKey]} (${groupItems.length})</h3>`;
 
-        return `<table><thead><tr><th>${t('table.quote')}</th><th>${t('table.client')}</th><th>${t('table.status')}</th><th>${t('table.actions')}</th></tr></thead><tbody>${rows}</tbody></table>`;
+          const rows = groupItems.map(it => {
+            const id = it.id || it._id || it.quote_id || it.uuid || '';
+            const status = it.status || 'REQUESTED';
+            const statusLower = String(status).toLowerCase().replace(/[\s_-]/g, '');
+            const created = fmtDate(it.created_at || it.createdAt || it.created || '');
+            const email = it.client_email || it.email || '';
+            const pickup = it.pickup_point || '-';
+            const delivery = it.delivery_address || '-';
+            const weight = it.weight || '-';
+            
+            // Build actions depending on status (same as deliveries)
+            let actionBtn = '';
+            
+            switch(statusLower) {
+              case 'requested':
+                actionBtn = `<button data-id="${id}" data-type="quote" class="btn set-price">${t('button.set_price')}</button>`;
+                break;
+                
+              case 'priced':
+                actionBtn = `<span style="background:#fef3c7;color:#92400e;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.awaiting_response')}</span>`;
+                break;
+                
+              case 'accepted':
+                actionBtn = `<span style="background:#d1fae5;color:#065f46;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.quote_accepted')}</span>`;
+                break;
+                
+              case 'declined':
+                actionBtn = `<button data-id="${id}" data-type="quote" class="btn secondary revise-price">${t('button.revise_price')}</button>`;
+                break;
+                
+              case 'inprogress':
+              case 'in_progress':
+                actionBtn = `<span style="background:#dbeafe;color:#1e40af;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.in_transit')}</span>`;
+                break;
+                
+              case 'delivered':
+                actionBtn = `<span style="background:#e0e7ff;color:#3730a3;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.delivered')}</span>`;
+                break;
+                
+              default:
+                actionBtn = `<button data-id="${id}" data-type="quote" class="btn set-price">${t('button.set_price')}</button>`;
+            }
+
+            return `
+              <tr>
+                <td style="width:200px;"><strong>${id}</strong><div class="muted" style="font-size:12px">${created}</div></td>
+                <td>${email}<div class="muted" style="font-size:12px">${pickup} → ${delivery}</div><div class="muted" style="font-size:12px">Weight: ${weight}</div></td>
+                <td>${status}</td>
+                <td style="width:280px"><div class="actions">
+                  <button data-id="${id}" data-type="quote" class="btn open-public">${t('button.details')}</button>
+                  ${actionBtn}
+                </div></td>
+              </tr>
+            `;
+          }).join('');
+
+          html += `<table><thead><tr><th>${t('table.quote')}</th><th>${t('table.client')}</th><th>${t('table.status')}</th><th>${t('table.actions')}</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+        });
+
+        return html;
       }
 
       /* Modal builder and renderer for delivery details (styled like track.html) */
@@ -712,8 +794,8 @@
         }
 
         const resources = {
-          en: { translation: { 'admin.dashboard.title':'Admin Dashboard','admin.dashboard.subtitle':'Manage deliveries','admin.title':'Admin Dashboard','admin.subtitle':'Manage deliveries','admin.deliveries.title':'Deliveries','admin.instant_quotes.title':'Instant Quotes','admin.deliveries.loading':'Loading…','admin.delivery.none':'No deliveries','admin.instant_quotes.none':'No instant quotes','admin.modal.title':'Details','button.refresh':'Refresh','button.logout':'Logout','button.confirm':'Confirm','table.delivery':'Delivery','table.quote':'Quote','table.client':'Client','table.status':'Status','table.actions':'Actions','button.details':'Details','button.start':'Start Delivery','button.set_price':'Set Price','button.revise_price':'Revise Price','button.mark_done':'Mark as done','badge.awaiting_response':'Awaiting response','badge.quote_accepted':'Quote accepted','badge.in_transit':'In transit','badge.delivered':'Delivered','loading':'Loading…' } },
-          da: { translation: { 'admin.dashboard.title':'Administrator Panel','admin.dashboard.subtitle':'Administrer leverancer','admin.title':'Administrator Panel','admin.subtitle':'Administrer leverancer','admin.deliveries.title':'Leverancer','admin.instant_quotes.title':'Hurtige Tilbud','admin.deliveries.loading':'Indlæser…','admin.delivery.none':'Ingen leverancer','admin.instant_quotes.none':'Ingen hurtige tilbud','admin.modal.title':'Detaljer','button.refresh':'Opdater','button.logout':'Log ud','button.confirm':'Bekræft','table.delivery':'Levering','table.quote':'Tilbud','table.client':'Kunde','table.status':'Status','table.actions':'Handlinger','button.details':'Detaljer','button.start':'Start levering','button.set_price':'Sæt pris','button.revise_price':'Revider pris','button.mark_done':'Marker som færdig','badge.awaiting_response':'Afventer svar','badge.quote_accepted':'Tilbud accepteret','badge.in_transit':'Under transport','badge.delivered':'Leveret','loading':'Indlæser…' } }
+          en: { translation: { 'admin.dashboard.title':'Admin Dashboard','admin.dashboard.subtitle':'Manage deliveries','admin.title':'Admin Dashboard','admin.subtitle':'Manage deliveries','admin.deliveries.title':'Deliveries','admin.instant_quotes.title':'Instant Quotes','admin.deliveries.loading':'Loading…','admin.delivery.none':'No deliveries','admin.instant_quotes.none':'No instant quotes','admin.modal.title':'Details','button.refresh':'Refresh','button.logout':'Logout','button.confirm':'Confirm','table.delivery':'Delivery','table.quote':'Quote','table.client':'Client','table.status':'Status','table.actions':'Actions','button.details':'Details','button.start':'Start Delivery','button.set_price':'Set Price','button.revise_price':'Revise Price','button.mark_done':'Mark as done','badge.awaiting_response':'Awaiting response','badge.quote_accepted':'Quote accepted','badge.in_transit':'In transit','badge.delivered':'Delivered','loading':'Loading…','time.today':'Today','time.yesterday':'Yesterday','time.last_week':'Last Week','time.older':'Older' } },
+          da: { translation: { 'admin.dashboard.title':'Administrator Panel','admin.dashboard.subtitle':'Administrer leverancer','admin.title':'Administrator Panel','admin.subtitle':'Administrer leverancer','admin.deliveries.title':'Leverancer','admin.instant_quotes.title':'Hurtige Tilbud','admin.deliveries.loading':'Indlæser…','admin.delivery.none':'Ingen leverancer','admin.instant_quotes.none':'Ingen hurtige tilbud','admin.modal.title':'Detaljer','button.refresh':'Opdater','button.logout':'Log ud','button.confirm':'Bekræft','table.delivery':'Levering','table.quote':'Tilbud','table.client':'Kunde','table.status':'Status','table.actions':'Handlinger','button.details':'Detaljer','button.start':'Start levering','button.set_price':'Sæt pris','button.revise_price':'Revider pris','button.mark_done':'Marker som færdig','badge.awaiting_response':'Afventer svar','badge.quote_accepted':'Tilbud accepteret','badge.in_transit':'Under transport','badge.delivered':'Leveret','loading':'Indlæser…','time.today':'I dag','time.yesterday':'I går','time.last_week':'Sidste uge','time.older':'Ældre' } }
         };
 
         // Make applyLocal available globally so loadDeliveries/loadInstantQuotes can call it
