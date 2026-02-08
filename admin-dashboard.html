@@ -439,15 +439,10 @@
         const endpoint = type === 'quote' ? 'instant-quotes' : 'deliveries';
         const publicEndpoint = type === 'quote' ? 'instant-quotes' : 'deliveries';
         
-        console.log('Loading details for:', { id, type, endpoint });
-        
         try {
           // Try admin API first
           const adminUrl = ADMIN_BASE + '/' + endpoint + '/' + encodeURIComponent(id);
-          console.log('Trying admin URL:', adminUrl);
           let res = await authFetch(adminUrl);
-          
-          console.log('Admin response status:', res.status);
           
           if (!res.ok) {
             // fallback to public endpoint - use correct path for instant quotes
@@ -457,18 +452,14 @@
             } else {
               publicUrl = 'https://ihb-transport-dk.onrender.com/api/public/deliveries/' + encodeURIComponent(id);
             }
-            console.log('Admin failed, trying public URL:', publicUrl);
             res = await authFetch(publicUrl);
-            console.log('Public response status:', res.status);
             if (!res.ok) {
               const errorText = await res.text();
-              console.error('Public endpoint failed:', errorText);
               throw new Error('Not found: ' + errorText);
             }
           }
           
           const data = await res.json();
-          console.log('Received data:', data);
           
           let obj = data;
           if (obj && typeof obj === 'object' && Object.keys(obj).length === 1) {
@@ -476,7 +467,6 @@
             obj = obj.delivery || obj.quote || obj.instantQuote || obj.instant_quote || obj;
           }
           
-          console.log('Rendering object:', obj);
           content.innerHTML = '';
           content.appendChild(renderObjectAsRows(obj));
         } catch (err) {
@@ -698,8 +688,8 @@
         }
 
         const resources = {
-          en: { translation: { 'admin.title':'Admin Dashboard','admin.subtitle':'Manage deliveries','admin.deliveries.title':'Deliveries','admin.instant_quotes.title':'Instant Quotes','admin.deliveries.loading':'Loading…','admin.instant_quotes.none':'No instant quotes','button.refresh':'Refresh','button.logout':'Logout','table.delivery':'Delivery','table.quote':'Quote','table.client':'Client','table.status':'Status','table.actions':'Actions','button.details':'Details','button.start':'Start Delivery','button.set_price':'Set Price','button.revise_price':'Revise Price','button.mark_done':'Mark as done','badge.awaiting_response':'Awaiting response','badge.quote_accepted':'Quote accepted','badge.in_transit':'In transit','badge.delivered':'Delivered','loading':'Loading…' } },
-          da: { translation: { 'admin.title':'Administrator Panel','admin.subtitle':'Administrer leverancer','admin.deliveries.title':'Leverancer','admin.instant_quotes.title':'Hurtige Tilbud','admin.deliveries.loading':'Indlæser…','admin.instant_quotes.none':'Ingen hurtige tilbud','button.refresh':'Opdater','button.logout':'Log ud','table.delivery':'Levering','table.quote':'Tilbud','table.client':'Kunde','table.status':'Status','table.actions':'Handlinger','button.details':'Detaljer','button.start':'Start levering','button.set_price':'Sæt pris','button.revise_price':'Revider pris','button.mark_done':'Marker som færdig','badge.awaiting_response':'Afventer svar','badge.quote_accepted':'Tilbud accepteret','badge.in_transit':'Under transport','badge.delivered':'Leveret','loading':'Indlæser…' } }
+          en: { translation: { 'admin.title':'Admin Dashboard','admin.subtitle':'Manage deliveries','admin.deliveries.title':'Deliveries','admin.instant_quotes.title':'Instant Quotes','admin.deliveries.loading':'Loading…','admin.instant_quotes.none':'No instant quotes','admin.modal.title':'Details','button.refresh':'Refresh','button.logout':'Logout','table.delivery':'Delivery','table.quote':'Quote','table.client':'Client','table.status':'Status','table.actions':'Actions','button.details':'Details','button.start':'Start Delivery','button.set_price':'Set Price','button.revise_price':'Revise Price','button.mark_done':'Mark as done','badge.awaiting_response':'Awaiting response','badge.quote_accepted':'Quote accepted','badge.in_transit':'In transit','badge.delivered':'Delivered','loading':'Loading…' } },
+          da: { translation: { 'admin.title':'Administrator Panel','admin.subtitle':'Administrer leverancer','admin.deliveries.title':'Leverancer','admin.instant_quotes.title':'Hurtige Tilbud','admin.deliveries.loading':'Indlæser…','admin.instant_quotes.none':'Ingen hurtige tilbud','admin.modal.title':'Detaljer','button.refresh':'Opdater','button.logout':'Log ud','table.delivery':'Levering','table.quote':'Tilbud','table.client':'Kunde','table.status':'Status','table.actions':'Handlinger','button.details':'Detaljer','button.start':'Start levering','button.set_price':'Sæt pris','button.revise_price':'Revider pris','button.mark_done':'Marker som færdig','badge.awaiting_response':'Afventer svar','badge.quote_accepted':'Tilbud accepteret','badge.in_transit':'Under transport','badge.delivered':'Leveret','loading':'Indlæser…' } }
         };
 
         function applyLocal(i18n) {
