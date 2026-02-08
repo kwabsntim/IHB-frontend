@@ -1421,23 +1421,42 @@ const ReviewModalHandler = {
 // ==================== LOAD REVIEWS FROM BACKEND ====================
 async function loadReviews() {
   try {
-    const response = await fetch('https://ihb-transport-dk.onrender.com/api/public/reviews');
+    const response = await fetch('https://ihb-transport-dk.onrender.com/api/public/reviews/all');
+    
+    // If endpoint doesn't exist (404), just use static reviews
+    if (response.status === 404) {
+      console.log('Reviews endpoint not yet implemented - using static reviews only');
+      const reviewsContainer = document.getElementById('testimonials');
+      if (reviewsContainer && window.TestimonialsCarousel) {
+        window.TestimonialsCarousel.init();
+      }
+      return;
+    }
+    
     if (!response.ok) {
-      console.error('Failed to load reviews');
+      console.error('Failed to load reviews:', response.status);
       return;
     }
 
-    const reviews = await response.json();
+    const data = await response.json();
     const reviewsContainer = document.getElementById('testimonials');
     
     if (!reviewsContainer) {
       return;
     }
 
+    // Handle different response structures
+    let reviews = [];
+    if (Array.isArray(data)) {
+      reviews = data;
+    } else if (data.reviews && Array.isArray(data.reviews)) {
+      reviews = data.reviews;
+    } else if (data.data && Array.isArray(data.data)) {
+      reviews = data.data;
+    }
+
     // Filter only visible reviews
-    const visibleReviews = Array.isArray(reviews) 
-      ? reviews.filter(review => review.is_visible !== false)
-      : [];
+    const visibleReviews = reviews.filter(review => review.is_visible !== false);
 
     // Clear only dynamic reviews (keep static ones)
     const dynamicCards = reviewsContainer.querySelectorAll('.testimonial-card:not([data-static])');

@@ -355,7 +355,7 @@
         container.innerHTML = t('admin.reviews.loading');
         
         try {
-          const res = await fetch(API_BASE + '/api/public/reviews');
+          const res = await fetch(API_BASE + '/api/public/reviews/all');
           
           if (!res.ok) {
             console.error('Failed to load reviews:', res.status);
