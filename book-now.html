@@ -84,6 +84,22 @@
             <!-- Service Details -->
             <h2>Servicedetaljer</h2>
             <div class="form-group">
+                <label for="pricing_option">Pris Mulighed</label>
+                <select id="pricing_option" name="pricing_option" required>
+                    <option value="">Vælg en pris mulighed</option>
+                    <optgroup label="Hverdag (Man-Fre)">
+                        <option value="weekday_1man_665">Én mand & lastbil - 665 DKK/time</option>
+                        <option value="weekday_2men_965">To mænd & lastbil - 965 DKK/time</option>
+                        <option value="weekday_3men_1265">Tre mænd & lastbil - 1265 DKK/time</option>
+                    </optgroup>
+                    <optgroup label="Weekend (Lør-Søn)">
+                        <option value="weekend_1man_705">Én mand & lastbil - 705 DKK/time</option>
+                        <option value="weekend_2men_1075">To mænd & lastbil - 1075 DKK/time</option>
+                        <option value="weekend_3men_1365">Tre mænd & lastbil - 1365 DKK/time</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="form-group">
                 <label for="service">Service type</label>
                 <select id="service" name="service" required>
                     <option value="">Vælg en service</option>
