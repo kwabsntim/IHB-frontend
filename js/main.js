@@ -1455,8 +1455,14 @@ async function loadReviews() {
       reviews = data.data;
     }
 
-    // Filter only visible reviews
-    const visibleReviews = reviews.filter(review => review.is_visible !== false);
+    // Get hidden reviews from localStorage
+    const hiddenReviews = JSON.parse(localStorage.getItem('hidden_reviews') || '[]');
+
+    // Filter out hidden reviews
+    const visibleReviews = reviews.filter(review => {
+      const id = review.id || review._id;
+      return !hiddenReviews.includes(id);
+    });
 
     // Clear only dynamic reviews (keep static ones)
     const dynamicCards = reviewsContainer.querySelectorAll('.testimonial-card:not([data-static])');

@@ -315,13 +315,16 @@
         const t = window.i18next ? window.i18next.t.bind(window.i18next) : (k) => k;
         if (!items || items.length === 0) return `<div class="empty">${t('admin.reviews.none')}</div>`;
 
+        // Get hidden reviews from localStorage
+        const hiddenReviews = JSON.parse(localStorage.getItem('hidden_reviews') || '[]');
+
         let html = '<table><thead><tr><th>' + t('table.author') + '</th><th>' + t('table.review') + '</th><th>' + t('table.visible') + '</th><th>' + t('table.actions') + '</th></tr></thead><tbody>';
         
         items.forEach(review => {
           const id = review.id || review._id;
           const authorName = review.client_name || review.author_name || 'Unknown';
           const content = review.content || '';
-          const isVisible = review.is_visible !== false; // default to true if not specified
+          const isVisible = !hiddenReviews.includes(id); // Check if review is hidden in localStorage
           const visibleBadge = isVisible 
             ? '<span style="background:#d1fae5;color:#065f46;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:600;">Visible</span>'
             : '<span style="background:#fee2e2;color:#991b1b;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:600;">Hidden</span>';
@@ -382,32 +385,31 @@
             const id = e.target.dataset.id;
             const isCurrentlyHidden = e.target.textContent.trim().toLowerCase().includes('show') || 
                                      e.target.textContent.trim().toLowerCase().includes('vis');
-            const newVisibility = isCurrentlyHidden; // if button says "show", we want to set visible to true
             
-            try {
-              const res = await fetch(API_BASE + `/api/public/reviews/${id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ is_visible: newVisibility })
-              });
-              
-              if (!res.ok) {
-                const errorText = await res.text();
-                console.error('Failed to update review visibility:', errorText);
-                alert('Failed to update review visibility: ' + (errorText || res.status));
-                return;
+            // Store hidden reviews in localStorage
+            const hiddenReviews = JSON.parse(localStorage.getItem('hidden_reviews') || '[]');
+            
+            if (isCurrentlyHidden) {
+              // Show the review - remove from hidden list
+              const index = hiddenReviews.indexOf(id);
+              if (index > -1) {
+                hiddenReviews.splice(index, 1);
               }
-              
-              // Reload reviews to show updated state
-              loadReviews();
-              
-              // Also reload reviews on the main page
-              if (window.loadReviews) {
-                window.loadReviews();
+            } else {
+              // Hide the review - add to hidden list
+              if (!hiddenReviews.includes(id)) {
+                hiddenReviews.push(id);
               }
-            } catch (err) {
-              console.error('Error toggling review visibility:', err);
-              alert('Network error: ' + (err.message || 'Please try again.'));
+            }
+            
+            localStorage.setItem('hidden_reviews', JSON.stringify(hiddenReviews));
+            
+            // Reload reviews to show updated state
+            loadReviews();
+            
+            // Also reload reviews on the main page
+            if (window.loadReviews) {
+              window.loadReviews();
             }
           });
         });
