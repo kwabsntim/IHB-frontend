@@ -690,7 +690,12 @@
               
               if (!res.ok) {
                 const text = await res.text().catch(() => res.status);
-                alert('Failed to confirm delivery: ' + text);
+                let errorMsg = 'Failed to confirm delivery: ' + text;
+                try {
+                  const json = JSON.parse(text);
+                  if (json.error) errorMsg = 'Failed to confirm delivery: ' + json.error;
+                } catch (e) {}
+                alert(errorMsg);
                 el.disabled = false;
                 el.textContent = originalText;
                 return;
