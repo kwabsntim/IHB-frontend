@@ -23,6 +23,22 @@
     {
       "source": "/deliveries/:id/quote",
       "destination": "/delivery-action.html"
+    },
+    {
+      "source": "/api/public/instant-quotes/:id/accept",
+      "destination": "/instant-quotes/action.html"
+    },
+    {
+      "source": "/api/public/instant-quotes/:id/decline",
+      "destination": "/instant-quotes/action.html"
+    },
+    {
+      "source": "/instant-quotes/:id/accept",
+      "destination": "/instant-quotes/action.html"
+    },
+    {
+      "source": "/instant-quotes/:id/decline",
+      "destination": "/instant-quotes/action.html"
     }
   ]
 }

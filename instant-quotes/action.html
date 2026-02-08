@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Processing Delivery Action...</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Processing Quote Action...</title>
+    <link rel="stylesheet" href="../css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -15,7 +15,7 @@
             min-height: 100vh;
         }
         
-        .delivery-action-container {
+        .quote-action-container {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -23,7 +23,7 @@
             padding: 24px;
         }
         
-        .delivery-action-card {
+        .quote-action-card {
             max-width: 600px;
             width: 100%;
             background: #fff;
@@ -42,14 +42,14 @@
             max-width: 200px;
         }
         
-        .delivery-action-card h1 {
+        .quote-action-card h1 {
             font-size: 28px;
             font-weight: 700;
             color: #1F2937;
             margin: 0 0 16px;
         }
         
-        .delivery-action-card p {
+        .quote-action-card p {
             font-size: 16px;
             color: #6B7280;
             margin: 0 0 32px;
@@ -162,10 +162,10 @@
     </style>
 </head>
 <body>
-    <div class="delivery-action-container">
-        <div class="delivery-action-card">
+    <div class="quote-action-container">
+        <div class="quote-action-card">
             <div class="logo-container">
-                <img src="/static/logo2.png" alt="IHB Transport Logo" loading="lazy">
+                <img src="../static/logo2.png" alt="IHB Transport Logo" loading="lazy">
             </div>
             
             <h1 id="pageTitle">Processing Request...</h1>
@@ -180,8 +180,7 @@
             <div id="messageBox" class="message-box hidden"></div>
             
             <div id="actionButtons" class="action-buttons hidden">
-                <a href="/track.html" id="trackBtn" class="btn btn-primary hidden">View Tracking</a>
-                <a href="/" class="btn btn-secondary">Back to Home</a>
+                <a href="../index.html" class="btn btn-secondary">Back to Home</a>
             </div>
         </div>
     </div>
@@ -190,17 +189,27 @@
         (async function() {
             const API_BASE = 'https://ihb-transport-dk.onrender.com';
             
-            // Parse URL to get instant quote ID and action
-            const path = window.location.pathname || '';
-            const match = path.match(/^(?:\/api\/public)?\/instant-quotes\/([^\/]+)\/(accept|decline)\/?$/i);
+            // Parse URL to get instant quote ID and action from query parameters or path
+            const urlParams = new URLSearchParams(window.location.search);
+            let quoteId = urlParams.get('id');
+            let action = urlParams.get('action');
             
-            if (!match) {
-                showError('Invalid URL format. Please check the link from your email.');
-                return;
+            // If not in query params, try to parse from path
+            if (!quoteId || !action) {
+                const path = window.location.pathname || '';
+                const match = path.match(/\/instant-quotes\/([^\/]+)\/(accept|decline)/i);
+                if (match) {
+                    quoteId = decodeURIComponent(match[1]);
+                    action = match[2].toLowerCase();
+                }
             }
             
-            const quoteId = decodeURIComponent(match[1]);
-            const action = match[2].toLowerCase();
+            if (!quoteId || !action) {
+                showError('Invalid URL format. Please check the link from your email.');
+                document.getElementById('spinner').classList.add('hidden');
+                document.getElementById('actionButtons').classList.remove('hidden');
+                return;
+            }
             
             // Update UI based on action
             const titles = {
