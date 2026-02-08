@@ -52,6 +52,7 @@
           </div>
         </div>
       <div style="display:flex; align-items:center; gap:8px;">
+        <button id="archiveBtn" class="btn secondary" style="background:#6b7280;" data-i18n="button.archive">Archive</button>
         <select id="langSelect" style="border-radius:8px; padding:6px 8px; font-weight:600;">
           <option value="da">🇩🇰 Dansk</option>
           <option value="en">🇬🇧 English</option>
@@ -86,6 +87,7 @@
       // Store loaded data globally
       let cachedDeliveries = [];
       let cachedInstantQuotes = [];
+      let showingArchive = false;
 
       function ensureAuth() {
         if (!token) {
@@ -125,12 +127,15 @@
           yesterday.setDate(yesterday.getDate() - 1);
           const lastWeek = new Date(today);
           lastWeek.setDate(lastWeek.getDate() - 7);
+          const oneMonthAgo = new Date(today);
+          oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
           
           const itemDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
           
           if (itemDate.getTime() === today.getTime()) return 'today';
           if (itemDate.getTime() === yesterday.getTime()) return 'yesterday';
           if (itemDate >= lastWeek) return 'lastWeek';
+          if (itemDate < oneMonthAgo) return 'archived';
           return 'older';
         } catch(e) {
           return 'older';
@@ -142,7 +147,8 @@
           today: [],
           yesterday: [],
           lastWeek: [],
-          older: []
+          older: [],
+          archived: []
         };
         
         items.forEach(item => {
@@ -154,7 +160,7 @@
         return groups;
       }
 
-      function renderTable(items) {
+      function renderTable(items, showArchived = false) {
         const t = window.i18next ? window.i18next.t.bind(window.i18next) : (k) => k;
         if (!items || !items.length) {
           return `<div class="empty">${t('admin.delivery.none')}</div>`;
@@ -166,12 +172,16 @@
           today: t('time.today'),
           yesterday: t('time.yesterday'),
           lastWeek: t('time.last_week'),
-          older: t('time.older')
+          older: t('time.older'),
+          archived: t('time.archived')
         };
 
         let html = '';
         
-        ['today', 'yesterday', 'lastWeek', 'older'].forEach(groupKey => {
+        // Show only archived items if in archive view, otherwise show all except archived
+        const groupsToShow = showArchived ? ['archived'] : ['today', 'yesterday', 'lastWeek', 'older'];
+        
+        groupsToShow.forEach(groupKey => {
           const groupItems = groups[groupKey];
           if (groupItems.length === 0) return;
           
@@ -230,7 +240,7 @@
           // Some APIs return { deliveries: [...] }
           const items = Array.isArray(data) ? data : (data.deliveries || data.data || []);
           cachedDeliveries = items;
-          document.getElementById('deliveriesContainer').innerHTML = renderTable(items);
+          document.getElementById('deliveriesContainer').innerHTML = renderTable(items, showingArchive);
           attachActions();
           if (window.i18next && typeof window.applyAdminTranslations === 'function') {
             window.applyAdminTranslations(window.i18next);
@@ -281,7 +291,7 @@
           
           console.log('Final items to render:', items, 'Count:', items.length);
           cachedInstantQuotes = items;
-          document.getElementById('instantQuotesContainer').innerHTML = renderInstantQuotesTable(items);
+          document.getElementById('instantQuotesContainer').innerHTML = renderInstantQuotesTable(items, showingArchive);
           attachActions();
           if (window.i18next && typeof window.applyAdminTranslations === 'function') {
             window.applyAdminTranslations(window.i18next);
@@ -292,7 +302,7 @@
         }
       }
 
-      function renderInstantQuotesTable(items) {
+      function renderInstantQuotesTable(items, showArchived = false) {
         const t = window.i18next ? window.i18next.t.bind(window.i18next) : (k) => k;
         if (!items || !items.length) {
           return `<div class="empty">${t('admin.instant_quotes.none')}</div>`;
@@ -304,12 +314,16 @@
           today: t('time.today'),
           yesterday: t('time.yesterday'),
           lastWeek: t('time.last_week'),
-          older: t('time.older')
+          older: t('time.older'),
+          archived: t('time.archived')
         };
 
         let html = '';
         
-        ['today', 'yesterday', 'lastWeek', 'older'].forEach(groupKey => {
+        // Show only archived items if in archive view, otherwise show all except archived
+        const groupsToShow = showArchived ? ['archived'] : ['today', 'yesterday', 'lastWeek', 'older'];
+        
+        groupsToShow.forEach(groupKey => {
           const groupItems = groups[groupKey];
           if (groupItems.length === 0) return;
           
@@ -771,9 +785,43 @@
       }
 
       document.getElementById('logoutBtn').addEventListener('click', function(){ localStorage.removeItem('ihb_admin_token'); window.location.href = 'admin.html'; });
+      
       document.getElementById('refreshBtn').addEventListener('click', () => {
         loadDeliveries();
         loadInstantQuotes();
+      });
+
+      // Archive button toggle
+      document.getElementById('archiveBtn').addEventListener('click', () => {
+        const t = window.i18next ? window.i18next.t.bind(window.i18next) : (k) => k;
+        showingArchive = !showingArchive;
+        
+        // Update button text and style
+        const archiveBtn = document.getElementById('archiveBtn');
+        if (showingArchive) {
+          archiveBtn.textContent = t('button.back_to_current');
+          archiveBtn.style.background = '#059669';
+          
+          // Update section titles
+          document.querySelector('[data-i18n="admin.deliveries.title"]').textContent = t('admin.deliveries.archived');
+          document.querySelector('[data-i18n="admin.instant_quotes.title"]').textContent = t('admin.instant_quotes.archived');
+        } else {
+          archiveBtn.textContent = t('button.archive');
+          archiveBtn.style.background = '#6b7280';
+          
+          // Restore section titles
+          document.querySelector('[data-i18n="admin.deliveries.title"]').textContent = t('admin.deliveries.title');
+          document.querySelector('[data-i18n="admin.instant_quotes.title"]').textContent = t('admin.instant_quotes.title');
+        }
+        
+        // Re-render tables with new filter
+        if (cachedDeliveries.length > 0) {
+          document.getElementById('deliveriesContainer').innerHTML = renderTable(cachedDeliveries, showingArchive);
+        }
+        if (cachedInstantQuotes.length > 0) {
+          document.getElementById('instantQuotesContainer').innerHTML = renderInstantQuotesTable(cachedInstantQuotes, showingArchive);
+        }
+        attachActions();
       });
 
       // initial load
@@ -794,8 +842,8 @@
         }
 
         const resources = {
-          en: { translation: { 'admin.dashboard.title':'Admin Dashboard','admin.dashboard.subtitle':'Manage deliveries','admin.title':'Admin Dashboard','admin.subtitle':'Manage deliveries','admin.deliveries.title':'Deliveries','admin.instant_quotes.title':'Instant Quotes','admin.deliveries.loading':'Loading…','admin.delivery.none':'No deliveries','admin.instant_quotes.none':'No instant quotes','admin.modal.title':'Details','button.refresh':'Refresh','button.logout':'Logout','button.confirm':'Confirm','table.delivery':'Delivery','table.quote':'Quote','table.client':'Client','table.status':'Status','table.actions':'Actions','button.details':'Details','button.start':'Start Delivery','button.set_price':'Set Price','button.revise_price':'Revise Price','button.mark_done':'Mark as done','badge.awaiting_response':'Awaiting response','badge.quote_accepted':'Quote accepted','badge.in_transit':'In transit','badge.delivered':'Delivered','loading':'Loading…','time.today':'Today','time.yesterday':'Yesterday','time.last_week':'Last Week','time.older':'Older' } },
-          da: { translation: { 'admin.dashboard.title':'Administrator Panel','admin.dashboard.subtitle':'Administrer leverancer','admin.title':'Administrator Panel','admin.subtitle':'Administrer leverancer','admin.deliveries.title':'Leverancer','admin.instant_quotes.title':'Hurtige Tilbud','admin.deliveries.loading':'Indlæser…','admin.delivery.none':'Ingen leverancer','admin.instant_quotes.none':'Ingen hurtige tilbud','admin.modal.title':'Detaljer','button.refresh':'Opdater','button.logout':'Log ud','button.confirm':'Bekræft','table.delivery':'Levering','table.quote':'Tilbud','table.client':'Kunde','table.status':'Status','table.actions':'Handlinger','button.details':'Detaljer','button.start':'Start levering','button.set_price':'Sæt pris','button.revise_price':'Revider pris','button.mark_done':'Marker som færdig','badge.awaiting_response':'Afventer svar','badge.quote_accepted':'Tilbud accepteret','badge.in_transit':'Under transport','badge.delivered':'Leveret','loading':'Indlæser…','time.today':'I dag','time.yesterday':'I går','time.last_week':'Sidste uge','time.older':'Ældre' } }
+          en: { translation: { 'admin.dashboard.title':'Admin Dashboard','admin.dashboard.subtitle':'Manage deliveries','admin.title':'Admin Dashboard','admin.subtitle':'Manage deliveries','admin.deliveries.title':'Deliveries','admin.deliveries.archived':'Archived Deliveries','admin.instant_quotes.title':'Instant Quotes','admin.instant_quotes.archived':'Archived Instant Quotes','admin.deliveries.loading':'Loading…','admin.delivery.none':'No deliveries','admin.instant_quotes.none':'No instant quotes','admin.modal.title':'Details','button.refresh':'Refresh','button.logout':'Logout','button.confirm':'Confirm','button.archive':'Archive','button.back_to_current':'Back to Current','table.delivery':'Delivery','table.quote':'Quote','table.client':'Client','table.status':'Status','table.actions':'Actions','button.details':'Details','button.start':'Start Delivery','button.set_price':'Set Price','button.revise_price':'Revise Price','button.mark_done':'Mark as done','badge.awaiting_response':'Awaiting response','badge.quote_accepted':'Quote accepted','badge.in_transit':'In transit','badge.delivered':'Delivered','loading':'Loading…','time.today':'Today','time.yesterday':'Yesterday','time.last_week':'Last Week','time.older':'Older','time.archived':'Archived (30+ days)' } },
+          da: { translation: { 'admin.dashboard.title':'Administrator Panel','admin.dashboard.subtitle':'Administrer leverancer','admin.title':'Administrator Panel','admin.subtitle':'Administrer leverancer','admin.deliveries.title':'Leverancer','admin.deliveries.archived':'Arkiverede Leverancer','admin.instant_quotes.title':'Hurtige Tilbud','admin.instant_quotes.archived':'Arkiverede Hurtige Tilbud','admin.deliveries.loading':'Indlæser…','admin.delivery.none':'Ingen leverancer','admin.instant_quotes.none':'Ingen hurtige tilbud','admin.modal.title':'Detaljer','button.refresh':'Opdater','button.logout':'Log ud','button.confirm':'Bekræft','button.archive':'Arkiv','button.back_to_current':'Tilbage til aktuelle','table.delivery':'Levering','table.quote':'Tilbud','table.client':'Kunde','table.status':'Status','table.actions':'Handlinger','button.details':'Detaljer','button.start':'Start levering','button.set_price':'Sæt pris','button.revise_price':'Revider pris','button.mark_done':'Marker som færdig','badge.awaiting_response':'Afventer svar','badge.quote_accepted':'Tilbud accepteret','badge.in_transit':'Under transport','badge.delivered':'Leveret','loading':'Indlæser…','time.today':'I dag','time.yesterday':'I går','time.last_week':'Sidste uge','time.older':'Ældre','time.archived':'Arkiveret (30+ dage)' } }
         };
 
         // Make applyLocal available globally so loadDeliveries/loadInstantQuotes can call it
@@ -812,12 +860,16 @@
             if (refresh) refresh.textContent = i18n.t('button.refresh');
             const logout = document.getElementById('logoutBtn'); 
             if (logout) logout.textContent = i18n.t('button.logout');
+            const archiveBtn = document.getElementById('archiveBtn');
+            if (archiveBtn) {
+              archiveBtn.textContent = showingArchive ? i18n.t('button.back_to_current') : i18n.t('button.archive');
+            }
             
             // Translate section titles
             const deliveriesTitle = document.querySelector('[data-i18n="admin.deliveries.title"]');
-            if (deliveriesTitle) deliveriesTitle.textContent = i18n.t('admin.deliveries.title');
+            if (deliveriesTitle) deliveriesTitle.textContent = showingArchive ? i18n.t('admin.deliveries.archived') : i18n.t('admin.deliveries.title');
             const quotesTitle = document.querySelector('[data-i18n="admin.instant_quotes.title"]');
-            if (quotesTitle) quotesTitle.textContent = i18n.t('admin.instant_quotes.title');
+            if (quotesTitle) quotesTitle.textContent = showingArchive ? i18n.t('admin.instant_quotes.archived') : i18n.t('admin.instant_quotes.title');
             
             // Translate table headers
             document.querySelectorAll('table thead th').forEach((th, idx) => {
