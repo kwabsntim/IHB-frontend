@@ -221,6 +221,19 @@
 
         <script>
             (function(){
+                // Check if already logged in and redirect to dashboard
+                const token = localStorage.getItem('ihb_admin_token');
+                if (token) {
+                    window.location.replace('admin-dashboard.html');
+                    return;
+                }
+
+                // Prevent back button after logout by replacing history
+                history.pushState(null, null, location.href);
+                window.addEventListener('popstate', function() {
+                    history.pushState(null, null, location.href);
+                });
+
                 // Language selector
                 const langSelect = document.getElementById('langSelect');
                 if (langSelect) {
@@ -302,8 +315,8 @@
                         }
 
                         localStorage.setItem('ihb_admin_token', token);
-                        // Redirect to dashboard
-                        window.location.href = 'admin-dashboard.html';
+                        // Redirect to dashboard using replace to prevent back button
+                        window.location.replace('admin-dashboard.html');
                     } catch (err) {
                         if (errorEl) { errorEl.textContent = t('admin.login.error_network'); errorEl.style.display = 'block'; }
                     } finally {

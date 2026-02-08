@@ -105,7 +105,7 @@
 
       function ensureAuth() {
         if (!token) {
-          window.location.href = 'admin.html';
+          window.location.replace('admin.html');
           return false;
         }
         return true;
@@ -114,7 +114,7 @@
       // Validate token on page load
       async function validateSession() {
         if (!token) {
-          window.location.href = 'admin.html';
+          window.location.replace('admin.html');
           return false;
         }
         
@@ -123,7 +123,7 @@
           if (!res.ok) {
             if (res.status === 401 || res.status === 403) {
               localStorage.removeItem('ihb_admin_token');
-              window.location.href = 'admin.html';
+              window.location.replace('admin.html');
               return false;
             }
           }
@@ -131,10 +131,19 @@
         } catch (err) {
           console.error('Session validation failed:', err);
           localStorage.removeItem('ihb_admin_token');
-          window.location.href = 'admin.html';
+          window.location.replace('admin.html');
           return false;
         }
       }
+
+      // Prevent back button after logout
+      history.pushState(null, null, location.href);
+      window.addEventListener('popstate', function() {
+        if (!localStorage.getItem('ihb_admin_token')) {
+          history.pushState(null, null, location.href);
+          window.location.replace('admin.html');
+        }
+      });
 
       function authFetch(path, opts = {}) {
         opts.headers = opts.headers || {};
@@ -275,7 +284,7 @@
         try {
           const res = await authFetch(ADMIN_BASE + '/deliveries');
           if (!res.ok) {
-            if (res.status === 401 || res.status === 403) { localStorage.removeItem('ihb_admin_token'); window.location.href = 'admin.html'; return; }
+            if (res.status === 401 || res.status === 403) { localStorage.removeItem('ihb_admin_token'); window.location.replace('admin.html'); return; }
             const txt = await res.text(); container.innerHTML = '<div class="error">Failed to load: ' + (txt||res.status) + '</div>'; return;
           }
           const data = await res.json();
@@ -303,7 +312,7 @@
           if (!res.ok) {
             if (res.status === 401 || res.status === 403) { 
               localStorage.removeItem('ihb_admin_token'); 
-              window.location.href = 'admin.html'; 
+              window.location.replace('admin.html'); 
               return; 
             }
             // Show friendly message if endpoint not implemented yet
@@ -719,7 +728,7 @@
               if (res.status === 401 || res.status === 403) {
                 localStorage.removeItem('ihb_admin_token');
                 alert('Authentication required. Please log in again.');
-                window.location.href = 'admin.html';
+                window.location.replace('admin.html');
                 return;
               }
               
@@ -773,7 +782,7 @@
               if (res && (res.status === 401 || res.status === 403)) {
                 localStorage.removeItem('ihb_admin_token');
                 alert('Authentication required. Please log in again.');
-                window.location.href = 'admin.html';
+                window.location.replace('admin.html');
                 return;
               }
 
@@ -830,7 +839,7 @@
               if (res && (res.status === 401 || res.status === 403)) {
                 localStorage.removeItem('ihb_admin_token');
                 alert('Authentication required. Please log in again.');
-                window.location.href = 'admin.html';
+                window.location.replace('admin.html');
                 return;
               }
 
@@ -945,7 +954,7 @@
         });
       }
 
-      document.getElementById('logoutBtn').addEventListener('click', function(){ localStorage.removeItem('ihb_admin_token'); window.location.href = 'admin.html'; });
+      document.getElementById('logoutBtn').addEventListener('click', function(){ localStorage.removeItem('ihb_admin_token'); window.location.replace('admin.html'); });
       
       document.getElementById('refreshBtn').addEventListener('click', () => {
         loadDeliveries();
