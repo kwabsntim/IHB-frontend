@@ -1500,7 +1500,6 @@ async function loadReviews() {
           </blockquote>
           <div class="author-meta">
             <div class="name">${clientName}</div>
-            ${review.created_at ? `<div class="title">${new Date(review.created_at).toLocaleDateString()}</div>` : ''}
           </div>
         </div>
       `;
