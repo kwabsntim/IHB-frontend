@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /admin-dashboard.html
+Disallow: /instant-quotes/
+
+Sitemap: https://ihbtransportaps.dk/sitemap.xml
