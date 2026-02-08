@@ -1464,8 +1464,9 @@ async function loadReviews() {
       
       // Get image URL from review or localStorage or use default avatar
       const imageUrl = review.image_url || localImages[review.id] || null;
+      const clientName = review.client_name || review.author_name || 'Anonymous';
       const imageHTML = imageUrl 
-        ? `<img src="${imageUrl}" alt="${review.author_name}" loading="lazy" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        ? `<img src="${imageUrl}" alt="${clientName}" loading="lazy" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';" />
            <div class="avatar-fallback" style="display:none;">
              <i class="fas fa-user"></i>
            </div>`
@@ -1482,7 +1483,7 @@ async function loadReviews() {
             "${review.content}"
           </blockquote>
           <div class="author-meta">
-            <div class="name">${review.author_name}</div>
+            <div class="name">${clientName}</div>
             <div class="title">${new Date(review.created_at).toLocaleDateString()}</div>
           </div>
         </div>

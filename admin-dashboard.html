@@ -319,7 +319,7 @@
         
         items.forEach(review => {
           const id = review.id || review._id;
-          const authorName = review.author_name || 'Unknown';
+          const authorName = review.client_name || review.author_name || 'Unknown';
           const content = review.content || '';
           const createdAt = review.created_at ? new Date(review.created_at).toLocaleDateString() : 'N/A';
           const isVisible = review.is_visible !== false; // default to true if not specified
