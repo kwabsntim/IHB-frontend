@@ -315,7 +315,7 @@
         const t = window.i18next ? window.i18next.t.bind(window.i18next) : (k) => k;
         if (!items || items.length === 0) return `<div class="empty">${t('admin.reviews.none')}</div>`;
 
-        let html = '<table><thead><tr><th>' + t('table.author') + '</th><th>' + t('table.review') + '</th><th>' + t('table.actions') + '</th></tr></thead><tbody>';
+        let html = '<table><thead><tr><th>Name</th><th>Comment</th><th>Delete</th></tr></thead><tbody>';
         
         items.forEach(review => {
           const id = review.id || review._id;
