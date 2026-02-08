@@ -1482,7 +1482,7 @@ async function loadReviews() {
       const imageUrl = review.image_url || localImages[review.id] || null;
       const clientName = review.client_name || review.author_name || 'Anonymous';
       const imageHTML = imageUrl 
-        ? `<img src="${imageUrl}" alt="${clientName}" loading="lazy" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        ? `<img src="${imageUrl}" alt="${clientName}" loading="lazy" onerror="this.style.display='none'; this.parentElement.querySelector('.avatar-fallback').style.display='flex';" />
            <div class="avatar-fallback" style="display:none;">
              <i class="fas fa-user"></i>
            </div>`
