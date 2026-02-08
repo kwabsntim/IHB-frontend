@@ -171,7 +171,9 @@
           cachedDeliveries = items;
           document.getElementById('deliveriesContainer').innerHTML = renderTable(items);
           attachActions();
-          if (window.i18next) applyLocal(window.i18next);
+          if (window.i18next && typeof window.applyAdminTranslations === 'function') {
+            window.applyAdminTranslations(window.i18next);
+          }
         } catch (err) {
           container.innerHTML = '<div class="error">Network error: ' + (err.message||err) + '</div>';
         }
@@ -220,7 +222,9 @@
           cachedInstantQuotes = items;
           document.getElementById('instantQuotesContainer').innerHTML = renderInstantQuotesTable(items);
           attachActions();
-          if (window.i18next) applyLocal(window.i18next);
+          if (window.i18next && typeof window.applyAdminTranslations === 'function') {
+            window.applyAdminTranslations(window.i18next);
+          }
         } catch (err) {
           console.error('Network error loading instant quotes:', err);
           container.innerHTML = '<div class="empty">Unable to load instant quotes. The backend endpoint may not be ready yet.</div>';
@@ -712,7 +716,8 @@
           da: { translation: { 'admin.dashboard.title':'Administrator Panel','admin.dashboard.subtitle':'Administrer leverancer','admin.title':'Administrator Panel','admin.subtitle':'Administrer leverancer','admin.deliveries.title':'Leverancer','admin.instant_quotes.title':'Hurtige Tilbud','admin.deliveries.loading':'Indlæser…','admin.delivery.none':'Ingen leverancer','admin.instant_quotes.none':'Ingen hurtige tilbud','admin.modal.title':'Detaljer','button.refresh':'Opdater','button.logout':'Log ud','button.confirm':'Bekræft','table.delivery':'Levering','table.quote':'Tilbud','table.client':'Kunde','table.status':'Status','table.actions':'Handlinger','button.details':'Detaljer','button.start':'Start levering','button.set_price':'Sæt pris','button.revise_price':'Revider pris','button.mark_done':'Marker som færdig','badge.awaiting_response':'Afventer svar','badge.quote_accepted':'Tilbud accepteret','badge.in_transit':'Under transport','badge.delivered':'Leveret','loading':'Indlæser…' } }
         };
 
-        function applyLocal(i18n) {
+        // Make applyLocal available globally so loadDeliveries/loadInstantQuotes can call it
+        window.applyAdminTranslations = function(i18n) {
           try {
             // Translate header elements
             const h1 = document.querySelector('[data-i18n="admin.dashboard.title"]'); 
@@ -745,7 +750,7 @@
             document.querySelectorAll('.start-delivery').forEach(b => b.textContent = i18n.t('button.start'));
             document.querySelectorAll('.mark-done').forEach(b => b.textContent = i18n.t('button.mark_done'));
           } catch (e) { console.warn('i18n apply failed', e); }
-        }
+        };
 
         loadI18nLocal().then(() => {
           try {
@@ -758,14 +763,14 @@
                 } catch (e) { /* ignore */ }
               });
               const lng = localStorage.getItem('i18n_lang') || 'da';
-              if (window.i18next.changeLanguage) window.i18next.changeLanguage(lng, () => applyLocal(window.i18next));
-              else applyLocal(window.i18next);
+              if (window.i18next.changeLanguage) window.i18next.changeLanguage(lng, () => window.applyAdminTranslations(window.i18next));
+              else window.applyAdminTranslations(window.i18next);
               return;
             }
 
             // Otherwise initialize a local i18next instance
             if (window.i18next && window.i18next.init) {
-              window.i18next.init({ lng: localStorage.getItem('i18n_lang')||'da', resources }, () => applyLocal(window.i18next));
+              window.i18next.init({ lng: localStorage.getItem('i18n_lang')||'da', resources }, () => window.applyAdminTranslations(window.i18next));
             }
           } catch (err) { console.warn('i18n load/apply failed', err); }
         }).catch(err => console.warn('i18n load failed', err));
@@ -778,7 +783,7 @@
             localStorage.setItem('i18n_lang', lng);
             if (window.i18next && window.i18next.changeLanguage) {
               window.i18next.changeLanguage(lng, () => {
-                applyLocal(window.i18next);
+                window.applyAdminTranslations(window.i18next);
                 // Re-render tables with new translations by reloading data
                 loadDeliveries();
                 loadInstantQuotes();
@@ -786,7 +791,7 @@
             } else {
               // load and apply
               loadI18nLocal().then(() => window.i18next.init({ lng, resources }, () => {
-                applyLocal(window.i18next);
+                window.applyAdminTranslations(window.i18next);
                 loadDeliveries();
                 loadInstantQuotes();
               }));
