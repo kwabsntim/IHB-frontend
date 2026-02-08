@@ -1481,8 +1481,19 @@ async function loadReviews() {
       // Get image URL from review or localStorage or use default avatar
       const imageUrl = review.image_url || localImages[review.id] || null;
       const clientName = review.client_name || review.author_name || 'Anonymous';
-      const imageHTML = imageUrl 
-        ? `<img src="${imageUrl}" alt="${clientName}" loading="lazy" onerror="this.style.display='none'; this.parentElement.querySelector('.avatar-fallback').style.display='flex';" />
+      
+      // Check if image URL is from problematic sources (Google, Instagram, Facebook, etc.)
+      const isProblematicSource = imageUrl && (
+        imageUrl.includes('gstatic.com') || 
+        imageUrl.includes('googleusercontent.com') ||
+        imageUrl.includes('instagram.com') || 
+        imageUrl.includes('cdninstagram.com') ||
+        imageUrl.includes('fbcdn.net') ||
+        imageUrl.includes('facebook.com')
+      );
+      
+      const imageHTML = imageUrl && !isProblematicSource
+        ? `<img src="${imageUrl}" alt="${clientName}" loading="lazy" crossorigin="anonymous" onerror="this.style.display='none'; this.parentElement.querySelector('.avatar-fallback').style.display='flex';" />
            <div class="avatar-fallback" style="display:none;">
              <i class="fas fa-user"></i>
            </div>`
