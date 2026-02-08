@@ -21,6 +21,8 @@
       .header > div:last-child { flex-wrap:wrap; gap:6px; width:100%; justify-content:flex-start; }
       .btn { font-size:11px; padding:6px 8px; }
       #langSelect { font-size:12px; padding:5px 6px; }
+      .card { margin-top:12px !important; }
+      .cards-grid { gap:12px; }
     }
     table { width:100%; border-collapse:collapse; }
     th, td { text-align:left; padding:8px 12px; border-bottom:1px solid #eee; font-size:14px; }
@@ -107,6 +109,31 @@
           return false;
         }
         return true;
+      }
+
+      // Validate token on page load
+      async function validateSession() {
+        if (!token) {
+          window.location.href = 'admin.html';
+          return false;
+        }
+        
+        try {
+          const res = await authFetch(ADMIN_BASE + '/deliveries');
+          if (!res.ok) {
+            if (res.status === 401 || res.status === 403) {
+              localStorage.removeItem('ihb_admin_token');
+              window.location.href = 'admin.html';
+              return false;
+            }
+          }
+          return true;
+        } catch (err) {
+          console.error('Session validation failed:', err);
+          localStorage.removeItem('ihb_admin_token');
+          window.location.href = 'admin.html';
+          return false;
+        }
       }
 
       function authFetch(path, opts = {}) {
@@ -959,10 +986,15 @@
         attachActions();
       });
 
-      // initial load
-      loadDeliveries();
-      loadInstantQuotes();
-      loadReviews();
+      // initial load - validate session first
+      (async function() {
+        const isValid = await validateSession();
+        if (!isValid) return; // Redirected to login
+        
+        loadDeliveries();
+        loadInstantQuotes();
+        loadReviews();
+      })();
 
       // --- Local i18n for this page (loads i18next and applies translations) ---
       (function(){
@@ -1071,6 +1103,13 @@
           });
         }
       })();
+
+      // Re-validate session when page becomes visible (tab switch or window focus)
+      document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+          validateSession();
+        }
+      });
     })();
   </script>
 </body>
