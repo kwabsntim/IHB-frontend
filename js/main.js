@@ -1369,12 +1369,12 @@ const ReviewModalHandler = {
       const imageUrl = document.getElementById('reviewImage').value.trim();
 
       if (!name || !content) {
-        alert('Please fill in all fields');
+        alert('Please fill in all required fields');
         return;
       }
 
       try {
-        // Send review to backend (without image URL)
+        // Send review to backend
         const response = await fetch('https://ihb-transport-dk.onrender.com/api/public/reviews', {
           method: 'POST',
           headers: {
@@ -1382,23 +1382,26 @@ const ReviewModalHandler = {
           },
           body: JSON.stringify({
             author_name: name,
-            content: content
+            content: content,
+            image_url: imageUrl || null
           })
         });
 
         if (!response.ok) {
-          throw new Error('Failed to submit review');
+          const errorText = await response.text();
+          let errorMsg = 'Failed to submit review';
+          try {
+            const errorJson = JSON.parse(errorText);
+            errorMsg = errorJson.error || errorJson.message || errorMsg;
+          } catch (e) {
+            errorMsg = errorText || errorMsg;
+          }
+          console.error('Review submission failed:', response.status, errorMsg);
+          throw new Error(errorMsg);
         }
 
         const result = await response.json();
         console.log('Review submitted successfully:', result);
-        
-        // Store image URL locally if provided (for rendering purposes)
-        if (imageUrl && result.id) {
-          const localReviews = JSON.parse(localStorage.getItem('review_images') || '{}');
-          localReviews[result.id] = imageUrl;
-          localStorage.setItem('review_images', JSON.stringify(localReviews));
-        }
         
         alert('Thank you for your review! We appreciate your feedback.');
         closeModal();
@@ -1409,7 +1412,7 @@ const ReviewModalHandler = {
         }
       } catch (error) {
         console.error('Error submitting review:', error);
-        alert('Failed to submit review. Please try again later.');
+        alert('Failed to submit review: ' + (error.message || 'Please try again later.'));
       }
     });
   }
