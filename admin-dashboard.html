@@ -435,25 +435,45 @@
         const endpoint = type === 'quote' ? 'instant-quotes' : 'deliveries';
         const publicEndpoint = type === 'quote' ? 'instant-quotes' : 'deliveries';
         
+        console.log('Loading details for:', { id, type, endpoint });
+        
         try {
           // Try admin API first
-          let res = await authFetch(ADMIN_BASE + '/' + endpoint + '/' + encodeURIComponent(id));
+          const adminUrl = ADMIN_BASE + '/' + endpoint + '/' + encodeURIComponent(id);
+          console.log('Trying admin URL:', adminUrl);
+          let res = await authFetch(adminUrl);
+          
+          console.log('Admin response status:', res.status);
+          
           if (!res.ok) {
             // fallback to public endpoint
             const publicBase = 'https://ihb-transport-dk.onrender.com/api/public/' + publicEndpoint;
-            res = await fetch(publicBase + '/' + encodeURIComponent(id));
-            if (!res.ok) throw new Error('Not found');
+            const publicUrl = publicBase + '/' + encodeURIComponent(id);
+            console.log('Admin failed, trying public URL:', publicUrl);
+            res = await fetch(publicUrl);
+            console.log('Public response status:', res.status);
+            if (!res.ok) {
+              const errorText = await res.text();
+              console.error('Public endpoint failed:', errorText);
+              throw new Error('Not found: ' + errorText);
+            }
           }
+          
           const data = await res.json();
+          console.log('Received data:', data);
+          
           let obj = data;
           if (obj && typeof obj === 'object' && Object.keys(obj).length === 1) {
             // Extract nested object (delivery or quote)
-            obj = obj.delivery || obj.quote || obj.instantQuote || obj;
+            obj = obj.delivery || obj.quote || obj.instantQuote || obj.instant_quote || obj;
           }
+          
+          console.log('Rendering object:', obj);
           content.innerHTML = '';
           content.appendChild(renderObjectAsRows(obj));
         } catch (err) {
-          content.innerHTML = '<div style="padding:12px; color:#b91c1c">Failed to load details</div>';
+          console.error('Error loading details:', err);
+          content.innerHTML = '<div style="padding:12px; color:#b91c1c">Failed to load details: ' + (err.message || err) + '</div>';
         }
       }
 
