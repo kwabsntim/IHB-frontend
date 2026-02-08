@@ -2794,7 +2794,7 @@ input, button {
 /* Mobile: Carousel with rotations */
 @media (max-width: 768px) {
     .testimonials {
-        padding: 4rem 1.5rem;
+        padding: 4rem 1.5rem 5rem 1.5rem;
     }
 
     .testimonials h2 {
