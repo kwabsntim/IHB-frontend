@@ -453,12 +453,12 @@
             // fallback to public endpoint - use correct path for instant quotes
             let publicUrl;
             if (type === 'quote') {
-              publicUrl = 'https://ihb-transport-dk.onrender.com/instant-quotes/' + encodeURIComponent(id);
+              publicUrl = 'https://ihb-transport-dk.onrender.com/api/admin/instant-quotes/' + encodeURIComponent(id);
             } else {
               publicUrl = 'https://ihb-transport-dk.onrender.com/api/public/deliveries/' + encodeURIComponent(id);
             }
             console.log('Admin failed, trying public URL:', publicUrl);
-            res = await fetch(publicUrl);
+            res = await authFetch(publicUrl);
             console.log('Public response status:', res.status);
             if (!res.ok) {
               const errorText = await res.text();
