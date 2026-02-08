@@ -1461,6 +1461,19 @@ input, button {
     background-color: var(--dark-red);
 }
 
+/* Language selector styling */
+#langSelect,
+#langSelectMobile {
+    background-color: white;
+    transition: all 0.3s ease;
+}
+
+#langSelect:hover,
+#langSelectMobile:hover {
+    border-color: var(--primary-red);
+    box-shadow: 0 2px 8px rgba(217, 4, 41, 0.1);
+}
+
 /* Mobile Phone Button (hidden on desktop) */
 .mobile-phone-btn {
     display: none;
@@ -2039,6 +2052,12 @@ input, button {
     .nav-phone {
         display: none !important;
     }
+    
+    /* Show mobile language selector */
+    #langSelectMobile {
+        display: block !important;
+    }
+    
     .mobile-book-btn {
         padding: 0.6rem 1.2rem; /* maintain old width/padding */
     }

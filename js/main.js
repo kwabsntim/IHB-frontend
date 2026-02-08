@@ -1815,7 +1815,38 @@ const App = {
 };
 
 // ==================== EVENT LISTENERS ====================
+// ==================== LANGUAGE SELECTOR INITIALIZATION ====================
+function initLanguageSelector() {
+  const langSelect = document.getElementById('langSelect');
+  const langSelectMobile = document.getElementById('langSelectMobile');
+  const savedLang = localStorage.getItem('i18n_lang') || 'da';
+  
+  // Set initial values
+  if (langSelect) langSelect.value = savedLang;
+  if (langSelectMobile) langSelectMobile.value = savedLang;
+  
+  // Add change listeners
+  if (langSelect) {
+    langSelect.addEventListener('change', (e) => {
+      const newLang = e.target.value;
+      changeLanguage(newLang);
+      if (langSelectMobile) langSelectMobile.value = newLang;
+    });
+  }
+  
+  if (langSelectMobile) {
+    langSelectMobile.addEventListener('change', (e) => {
+      const newLang = e.target.value;
+      changeLanguage(newLang);
+      if (langSelect) langSelect.value = newLang;
+    });
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  // Initialize language selector
+  initLanguageSelector();
+  
   // If the current URL is an email action link like /deliveries/:id/accept
   // or /deliveries/:id/decline, handle it first so the user sees a focused
   // confirmation UI. If not, proceed with normal app init.
