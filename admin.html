@@ -166,6 +166,12 @@
                     <div class="booking-logo">
                         <img src="static/logo2.png" alt="IHB Transport Logo" class="booking-logo-img" loading="lazy">
                     </div>
+                    <div style="display: flex; justify-content: center; margin-bottom: 12px;">
+                        <select id="langSelect" style="border-radius:6px; padding:8px 12px; font-weight:600; border: 2px solid #e5e7eb; cursor: pointer; font-size: 14px; background: white;">
+                            <option value="da">🇩🇰 Dansk</option>
+                            <option value="en">🇬🇧 English</option>
+                        </select>
+                    </div>
                     <h1 class="booking-title" data-i18n="admin.login.title">Administrator - Log ind</h1>
                 </div>
 
@@ -215,6 +221,25 @@
 
         <script>
             (function(){
+                // Language selector
+                const langSelect = document.getElementById('langSelect');
+                if (langSelect) {
+                    const savedLang = localStorage.getItem('i18n_lang') || 'da';
+                    langSelect.value = savedLang;
+                    
+                    langSelect.addEventListener('change', function(e) {
+                        const newLang = e.target.value;
+                        localStorage.setItem('i18n_lang', newLang);
+                        if (window.i18next && window.i18next.changeLanguage) {
+                            i18next.changeLanguage(newLang, function() {
+                                location.reload();
+                            });
+                        } else {
+                            location.reload();
+                        }
+                    });
+                }
+                
                 // Resolve translations at call time so i18n can load asynchronously
                 const t = (k) => (window.i18next ? window.i18next.t(k) : k);
                 // Use explicit backend login URL as requested

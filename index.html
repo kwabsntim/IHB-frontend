@@ -24,6 +24,10 @@
     <!-- Mobile topbar (contact) - visible only on small screens -->
     <div class="mobile-topbar">
         <div class="mobile-topbar-inner">
+            <select id="langSelectMobile" style="border-radius:4px; padding:8px 10px; font-weight:600; border: 1px solid rgba(255,255,255,0.3); cursor: pointer; font-size: 13px; background: rgba(255,255,255,0.1); color: white; margin-right: auto; height: 32px;">
+                <option value="da">🇩🇰</option>
+                <option value="en">🇬🇧</option>
+            </select>
             <a href="tel:+4529923253" class="mobile-topbar-phone"><i class="fas fa-phone"></i> +45 29 92 32 53</a>
         </div>
     </div>
@@ -59,14 +63,8 @@
                 </a>
             </div>
             
-            <!-- Mobile Language & Book Now Buttons -->
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <select id="langSelectMobile" style="border-radius:6px; padding:6px 8px; font-weight:600; border: 2px solid #e5e7eb; cursor: pointer; font-size: 14px; display: none;">
-                    <option value="da">🇩🇰</option>
-                    <option value="en">🇬🇧</option>
-                </select>
-                <a href="book-now.html" class="mobile-book-btn">Bestil nu</a>
-            </div>
+            <!-- Mobile Book Now Button -->
+            <a href="book-now.html" class="mobile-book-btn">Bestil nu</a>
             
             <!-- Mobile Menu Toggle -->
             <div class="hamburger" id="hamburger">

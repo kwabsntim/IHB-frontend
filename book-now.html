@@ -21,6 +21,12 @@
                 <div class="booking-logo">
                     <img src="static/newLogo.png" alt="IHB Transport Logo" class="booking-logo-img" loading="lazy">
                 </div>
+                <div style="display: flex; justify-content: center; margin-bottom: 12px;">
+                    <select id="langSelect" style="border-radius:6px; padding:8px 12px; font-weight:600; border: 2px solid #e5e7eb; cursor: pointer; font-size: 14px;">
+                        <option value="da">🇩🇰 Dansk</option>
+                        <option value="en">🇬🇧 English</option>
+                    </select>
+                </div>
                 <h1 class="booking-title" data-i18n="booking.title">Udfyld formularen for at oprette en booking</h1>
             </div>
             <!-- Client Details -->
@@ -279,6 +285,23 @@
                     }, function(err, t) {
                         if (err) console.error('i18next init error:', err);
                         applyBookingTranslations();
+                    });
+                }
+                
+                // Language selector
+                const langSelect = document.getElementById('langSelect');
+                if (langSelect) {
+                    const savedLang = localStorage.getItem('i18n_lang') || 'da';
+                    langSelect.value = savedLang;
+                    
+                    langSelect.addEventListener('change', function(e) {
+                        const newLang = e.target.value;
+                        localStorage.setItem('i18n_lang', newLang);
+                        if (window.i18next) {
+                            i18next.changeLanguage(newLang, function() {
+                                applyBookingTranslations();
+                            });
+                        }
                     });
                 }
                 

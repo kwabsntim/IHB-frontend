@@ -120,6 +120,12 @@
 
   <div class="container">
     <img src="static/logo2.png" alt="IHB Transport" class="logo">
+    <div style="display: flex; justify-content: center; margin-bottom: 16px;">
+      <select id="langSelect" style="border-radius:6px; padding:8px 12px; font-weight:600; border: 2px solid #e5e7eb; cursor: pointer; font-size: 14px; background: white;">
+        <option value="da">🇩🇰 Dansk</option>
+        <option value="en">🇬🇧 English</option>
+      </select>
+    </div>
     <h2 data-i18n="track.page.heading">Sporingsresultat</h2>
     <div id="status" class="status" data-i18n="track.page.loading">Indlæser…</div>
     <div id="output"></div>
@@ -127,6 +133,27 @@
   <script src="js/main.js"></script>
 
   <script>
+    // Language selector
+    document.addEventListener('DOMContentLoaded', function() {
+      const langSelect = document.getElementById('langSelect');
+      if (langSelect) {
+        const savedLang = localStorage.getItem('i18n_lang') || 'da';
+        langSelect.value = savedLang;
+        
+        langSelect.addEventListener('change', function(e) {
+          const newLang = e.target.value;
+          localStorage.setItem('i18n_lang', newLang);
+          if (window.i18next && window.i18next.changeLanguage) {
+            i18next.changeLanguage(newLang, function() {
+              location.reload(); // Reload to apply translations
+            });
+          } else {
+            location.reload();
+          }
+        });
+      }
+    });
+    
     const t = (k) => (window.i18next ? window.i18next.t(k) : k);
     const API_BASE = 'https://ihb-transport-dk.onrender.com/api/public/deliveries';
 
