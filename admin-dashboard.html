@@ -130,41 +130,12 @@
           // Build actions depending on status
           let actionBtn = '';
           
-          switch(statusLower) {
-            case 'requested':
-              // Status: REQUESTED -> Show "Set Price" button
-              actionBtn = `<button data-id="${id}" class="btn set-price">${t('button.set_price')}</button>`;
-              break;
-              
-            case 'priced':
-              // Status: PRICED -> Show "Awaiting response" badge (no action button)
-              actionBtn = `<span style="background:#fef3c7;color:#92400e;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.awaiting_response')}</span>`;
-              break;
-              
-            case 'accepted':
-              // Status: ACCEPTED -> Show "Quote accepted" badge (no action button for admin)
-              actionBtn = `<span style="background:#d1fae5;color:#065f46;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.quote_accepted')}</span>`;
-              break;
-              
-            case 'declined':
-              // Status: DECLINED -> Show "Revise Price" button
-              actionBtn = `<button data-id="${id}" class="btn secondary revise-price">${t('button.revise_price')}</button>`;
-              break;
-              
-            case 'inprogress':
-            case 'in_progress':
-              // Status: IN_PROGRESS -> Show "In transit" badge (no action button)
-              actionBtn = `<span style="background:#dbeafe;color:#1e40af;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.in_transit')}</span>`;
-              break;
-              
-            case 'delivered':
-              // Status: DELIVERED -> Show "Delivered" badge (no action button)
-              actionBtn = `<span style="background:#e0e7ff;color:#3730a3;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.delivered')}</span>`;
-              break;
-              
-            default:
-              // Default: allow setting price
-              actionBtn = `<button data-id="${id}" class="btn set-price">${t('button.set_price')}</button>`;
+          if (statusLower === 'delivered') {
+            // Status: DELIVERED -> Show "Delivered" badge
+            actionBtn = `<span style="background:#e0e7ff;color:#3730a3;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;">${t('badge.delivered')}</span>`;
+          } else {
+            // All other statuses -> Show green "Confirm" button
+            actionBtn = `<button data-id="${id}" class="btn success confirm-delivery">${t('button.confirm')}</button>`;
           }
 
           return `
@@ -483,6 +454,48 @@
       }
 
       function attachActions() {
+        // Confirm delivery - calls accept endpoint to send confirmation email
+        document.querySelectorAll('.confirm-delivery').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const el = e.currentTarget;
+            const id = el.dataset.id;
+            if (!id) return;
+            if (!confirm('Confirm delivery ' + id + '? This will send a confirmation email to the client.')) return;
+            el.disabled = true;
+            const originalText = el.textContent;
+            el.textContent = 'Confirming...';
+            try {
+              const res = await authFetch(ADMIN_BASE + '/deliveries/' + encodeURIComponent(id) + '/accept', { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+              });
+              
+              if (res.status === 401 || res.status === 403) {
+                localStorage.removeItem('ihb_admin_token');
+                alert('Authentication required. Please log in again.');
+                window.location.href = 'admin.html';
+                return;
+              }
+              
+              if (!res.ok) {
+                const text = await res.text().catch(() => res.status);
+                alert('Failed to confirm delivery: ' + text);
+                el.disabled = false;
+                el.textContent = originalText;
+                return;
+              }
+              
+              alert('Delivery confirmed! Confirmation email sent.');
+              loadDeliveries();
+              loadInstantQuotes();
+            } catch (err) {
+              alert('Network error: ' + (err.message || err));
+              el.disabled = false;
+              el.textContent = originalText;
+            }
+          });
+        });
+
         // Set price (for REQUESTED deliveries/quotes)
         document.querySelectorAll('.set-price').forEach(btn => {
           btn.addEventListener('click', async (e) => {
@@ -695,8 +708,8 @@
         }
 
         const resources = {
-          en: { translation: { 'admin.dashboard.title':'Admin Dashboard','admin.dashboard.subtitle':'Manage deliveries','admin.title':'Admin Dashboard','admin.subtitle':'Manage deliveries','admin.deliveries.title':'Deliveries','admin.instant_quotes.title':'Instant Quotes','admin.deliveries.loading':'Loading…','admin.delivery.none':'No deliveries','admin.instant_quotes.none':'No instant quotes','admin.modal.title':'Details','button.refresh':'Refresh','button.logout':'Logout','table.delivery':'Delivery','table.quote':'Quote','table.client':'Client','table.status':'Status','table.actions':'Actions','button.details':'Details','button.start':'Start Delivery','button.set_price':'Set Price','button.revise_price':'Revise Price','button.mark_done':'Mark as done','badge.awaiting_response':'Awaiting response','badge.quote_accepted':'Quote accepted','badge.in_transit':'In transit','badge.delivered':'Delivered','loading':'Loading…' } },
-          da: { translation: { 'admin.dashboard.title':'Administrator Panel','admin.dashboard.subtitle':'Administrer leverancer','admin.title':'Administrator Panel','admin.subtitle':'Administrer leverancer','admin.deliveries.title':'Leverancer','admin.instant_quotes.title':'Hurtige Tilbud','admin.deliveries.loading':'Indlæser…','admin.delivery.none':'Ingen leverancer','admin.instant_quotes.none':'Ingen hurtige tilbud','admin.modal.title':'Detaljer','button.refresh':'Opdater','button.logout':'Log ud','table.delivery':'Levering','table.quote':'Tilbud','table.client':'Kunde','table.status':'Status','table.actions':'Handlinger','button.details':'Detaljer','button.start':'Start levering','button.set_price':'Sæt pris','button.revise_price':'Revider pris','button.mark_done':'Marker som færdig','badge.awaiting_response':'Afventer svar','badge.quote_accepted':'Tilbud accepteret','badge.in_transit':'Under transport','badge.delivered':'Leveret','loading':'Indlæser…' } }
+          en: { translation: { 'admin.dashboard.title':'Admin Dashboard','admin.dashboard.subtitle':'Manage deliveries','admin.title':'Admin Dashboard','admin.subtitle':'Manage deliveries','admin.deliveries.title':'Deliveries','admin.instant_quotes.title':'Instant Quotes','admin.deliveries.loading':'Loading…','admin.delivery.none':'No deliveries','admin.instant_quotes.none':'No instant quotes','admin.modal.title':'Details','button.refresh':'Refresh','button.logout':'Logout','button.confirm':'Confirm','table.delivery':'Delivery','table.quote':'Quote','table.client':'Client','table.status':'Status','table.actions':'Actions','button.details':'Details','button.start':'Start Delivery','button.set_price':'Set Price','button.revise_price':'Revise Price','button.mark_done':'Mark as done','badge.awaiting_response':'Awaiting response','badge.quote_accepted':'Quote accepted','badge.in_transit':'In transit','badge.delivered':'Delivered','loading':'Loading…' } },
+          da: { translation: { 'admin.dashboard.title':'Administrator Panel','admin.dashboard.subtitle':'Administrer leverancer','admin.title':'Administrator Panel','admin.subtitle':'Administrer leverancer','admin.deliveries.title':'Leverancer','admin.instant_quotes.title':'Hurtige Tilbud','admin.deliveries.loading':'Indlæser…','admin.delivery.none':'Ingen leverancer','admin.instant_quotes.none':'Ingen hurtige tilbud','admin.modal.title':'Detaljer','button.refresh':'Opdater','button.logout':'Log ud','button.confirm':'Bekræft','table.delivery':'Levering','table.quote':'Tilbud','table.client':'Kunde','table.status':'Status','table.actions':'Handlinger','button.details':'Detaljer','button.start':'Start levering','button.set_price':'Sæt pris','button.revise_price':'Revider pris','button.mark_done':'Marker som færdig','badge.awaiting_response':'Afventer svar','badge.quote_accepted':'Tilbud accepteret','badge.in_transit':'Under transport','badge.delivered':'Leveret','loading':'Indlæser…' } }
         };
 
         function applyLocal(i18n) {
