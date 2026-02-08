@@ -747,7 +747,12 @@
               // If admin endpoint failed, try a public/fallback API POST
               if (!res || !res.ok) {
                 const fallback = await authPostApi('/' + endpoint + '/' + encodeURIComponent(id) + '/price', { price: priceNum }).catch(() => null);
-                if (fallback && fallback.ok) { alert('Price set'); loadDeliveries(); loadInstantQuotes(); return; }
+                if (fallback && fallback.ok) { 
+                  alert('Price set successfully'); 
+                  await loadDeliveries(); 
+                  await loadInstantQuotes(); 
+                  return; 
+                }
 
                 // Extract any response text for debugging
                 let debugText = 'No response';
@@ -760,9 +765,9 @@
               }
 
               // Success from admin endpoint
-              alert('Price set');
-              loadDeliveries();
-              loadInstantQuotes();
+              alert('Price set successfully');
+              await loadDeliveries();
+              await loadInstantQuotes();
             } catch (err) { alert('Network error: ' + (err && err.message ? err.message : err)); }
           });
         });
@@ -799,7 +804,12 @@
               // If admin endpoint failed, try a public/fallback API POST
               if (!res || !res.ok) {
                 const fallback = await authPostApi('/' + endpoint + '/' + encodeURIComponent(id) + '/revise-price', { price: priceNum }).catch(() => null);
-                if (fallback && fallback.ok) { alert('Price revised'); loadDeliveries(); loadInstantQuotes(); return; }
+                if (fallback && fallback.ok) { 
+                  alert('Price revised successfully'); 
+                  await loadDeliveries(); 
+                  await loadInstantQuotes(); 
+                  return; 
+                }
 
                 // Extract any response text for debugging
                 let debugText = 'No response';
@@ -812,9 +822,9 @@
               }
 
               // Success from admin endpoint
-              alert('Price revised');
-              loadDeliveries();
-              loadInstantQuotes();
+              alert('Price revised successfully');
+              await loadDeliveries();
+              await loadInstantQuotes();
             } catch (err) { alert('Network error: ' + (err && err.message ? err.message : err)); }
           });
         });
