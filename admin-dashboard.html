@@ -73,6 +73,11 @@
         <div id="deliveriesContainer" data-i18n-loading>Loading…</div>
       </div>
     </div>
+
+    <div class="card" style="margin-top:20px;">
+      <h2 style="margin-top:0; font-size:16px;" data-i18n="admin.reviews.title">Customer Reviews</h2>
+      <div id="reviewsContainer" data-i18n-loading>Loading…</div>
+    </div>
   </div>
 
   <script src="js/main.js"></script>
@@ -303,6 +308,109 @@
           console.error('Network error loading instant quotes:', err);
           container.innerHTML = '<div class="empty">Unable to load instant quotes. The backend endpoint may not be ready yet.</div>';
         }
+      }
+
+      // ==================== REVIEWS MANAGEMENT ====================
+      function renderReviewsTable(items) {
+        const t = window.i18next ? window.i18next.t.bind(window.i18next) : (k) => k;
+        if (!items || items.length === 0) return `<div class="empty">${t('admin.reviews.none')}</div>`;
+
+        let html = '<table><thead><tr><th>' + t('table.author') + '</th><th>' + t('table.review') + '</th><th>' + t('table.date') + '</th><th>' + t('table.visible') + '</th><th>' + t('table.actions') + '</th></tr></thead><tbody>';
+        
+        items.forEach(review => {
+          const id = review.id || review._id;
+          const authorName = review.author_name || 'Unknown';
+          const content = review.content || '';
+          const createdAt = review.created_at ? new Date(review.created_at).toLocaleDateString() : 'N/A';
+          const isVisible = review.is_visible !== false; // default to true if not specified
+          const visibleBadge = isVisible 
+            ? '<span style="background:#d1fae5;color:#065f46;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:600;">Visible</span>'
+            : '<span style="background:#fee2e2;color:#991b1b;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:600;">Hidden</span>';
+          const toggleBtn = isVisible
+            ? `<button data-id="${id}" class="btn danger small toggle-review">${t('button.hide')}</button>`
+            : `<button data-id="${id}" class="btn success small toggle-review">${t('button.show')}</button>`;
+          
+          const shortContent = content.length > 100 ? content.substring(0, 100) + '...' : content;
+          
+          html += `
+            <tr>
+              <td style="font-weight:600;">${authorName}</td>
+              <td style="max-width:300px;">${shortContent}</td>
+              <td>${createdAt}</td>
+              <td>${visibleBadge}</td>
+              <td style="width:120px"><div class="actions">
+                ${toggleBtn}
+              </div></td>
+            </tr>
+          `;
+        });
+
+        html += '</tbody></table>';
+        return html;
+      }
+
+      async function loadReviews() {
+        const container = document.getElementById('reviewsContainer');
+        const t = window.i18next ? window.i18next.t.bind(window.i18next) : (k) => k;
+        container.innerHTML = t('admin.reviews.loading');
+        
+        try {
+          const res = await fetch(API_BASE + '/api/public/reviews');
+          
+          if (!res.ok) {
+            console.error('Failed to load reviews:', res.status);
+            container.innerHTML = '<div class="empty">Unable to load reviews</div>';
+            return;
+          }
+          
+          const data = await res.json();
+          const items = Array.isArray(data) ? data : (data.reviews || data.data || []);
+          
+          container.innerHTML = renderReviewsTable(items);
+          attachReviewActions();
+          
+          if (window.i18next && typeof window.applyAdminTranslations === 'function') {
+            window.applyAdminTranslations(window.i18next);
+          }
+        } catch (err) {
+          console.error('Network error loading reviews:', err);
+          container.innerHTML = '<div class="empty">Unable to load reviews</div>';
+        }
+      }
+
+      function attachReviewActions() {
+        document.querySelectorAll('.toggle-review').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const id = e.target.dataset.id;
+            const isCurrentlyHidden = e.target.textContent.trim().toLowerCase().includes('show') || 
+                                     e.target.textContent.trim().toLowerCase().includes('vis');
+            const newVisibility = isCurrentlyHidden; // if button says "show", we want to set visible to true
+            
+            try {
+              const res = await authFetch(API_BASE + `/api/public/reviews/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ is_visible: newVisibility })
+              });
+              
+              if (!res.ok) {
+                alert('Failed to update review visibility');
+                return;
+              }
+              
+              // Reload reviews to show updated state
+              loadReviews();
+              
+              // Also reload reviews on the main page if window is available
+              if (window.opener && window.opener.loadReviews) {
+                window.opener.loadReviews();
+              }
+            } catch (err) {
+              console.error('Error toggling review visibility:', err);
+              alert('Network error. Please try again.');
+            }
+          });
+        });
       }
 
       function renderInstantQuotesTable(items, showArchived = false) {
@@ -792,6 +900,7 @@
       document.getElementById('refreshBtn').addEventListener('click', () => {
         loadDeliveries();
         loadInstantQuotes();
+        loadReviews();
       });
 
       // Archive button toggle
@@ -830,6 +939,7 @@
       // initial load
       loadDeliveries();
       loadInstantQuotes();
+      loadReviews();
 
       // --- Local i18n for this page (loads i18next and applies translations) ---
       (function(){
@@ -845,8 +955,8 @@
         }
 
         const resources = {
-          en: { translation: { 'admin.dashboard.title':'Admin Dashboard','admin.dashboard.subtitle':'Manage deliveries','admin.title':'Admin Dashboard','admin.subtitle':'Manage deliveries','admin.deliveries.title':'Deliveries','admin.deliveries.archived':'Archived Deliveries','admin.instant_quotes.title':'Instant Quotes','admin.instant_quotes.archived':'Archived Instant Quotes','admin.deliveries.loading':'Loading…','admin.delivery.none':'No deliveries','admin.instant_quotes.none':'No instant quotes','admin.modal.title':'Details','button.refresh':'Refresh','button.logout':'Logout','button.confirm':'Confirm','button.archive':'Archive','button.back_to_current':'Back to Current','table.delivery':'Delivery','table.quote':'Quote','table.client':'Client','table.status':'Status','table.actions':'Actions','button.details':'Details','button.start':'Start Delivery','button.set_price':'Set Price','button.revise_price':'Revise Price','button.mark_done':'Mark as done','badge.awaiting_response':'Awaiting response','badge.quote_accepted':'Quote accepted','badge.in_transit':'In transit','badge.delivered':'Delivered','badge.delivery_confirmed':'Delivery Confirmed','loading':'Loading…','time.today':'Today','time.yesterday':'Yesterday','time.last_week':'Last Week','time.older':'Older','time.archived':'Archived (30+ days)' } },
-          da: { translation: { 'admin.dashboard.title':'Administrator Panel','admin.dashboard.subtitle':'Administrer leverancer','admin.title':'Administrator Panel','admin.subtitle':'Administrer leverancer','admin.deliveries.title':'Leverancer','admin.deliveries.archived':'Arkiverede Leverancer','admin.instant_quotes.title':'Hurtige Tilbud','admin.instant_quotes.archived':'Arkiverede Hurtige Tilbud','admin.deliveries.loading':'Indlæser…','admin.delivery.none':'Ingen leverancer','admin.instant_quotes.none':'Ingen hurtige tilbud','admin.modal.title':'Detaljer','button.refresh':'Opdater','button.logout':'Log ud','button.confirm':'Bekræft','button.archive':'Arkiv','button.back_to_current':'Tilbage til aktuelle','table.delivery':'Levering','table.quote':'Tilbud','table.client':'Kunde','table.status':'Status','table.actions':'Handlinger','button.details':'Detaljer','button.start':'Start levering','button.set_price':'Sæt pris','button.revise_price':'Revider pris','button.mark_done':'Marker som færdig','badge.awaiting_response':'Afventer svar','badge.quote_accepted':'Tilbud accepteret','badge.in_transit':'Under transport','badge.delivered':'Leveret','badge.delivery_confirmed':'Levering Bekræftet','loading':'Indlæser…','time.today':'I dag','time.yesterday':'I går','time.last_week':'Sidste uge','time.older':'Ældre','time.archived':'Arkiveret (30+ dage)' } }
+          en: { translation: { 'admin.dashboard.title':'Admin Dashboard','admin.dashboard.subtitle':'Manage deliveries','admin.title':'Admin Dashboard','admin.subtitle':'Manage deliveries','admin.deliveries.title':'Deliveries','admin.deliveries.archived':'Archived Deliveries','admin.instant_quotes.title':'Instant Quotes','admin.instant_quotes.archived':'Archived Instant Quotes','admin.reviews.title':'Customer Reviews','admin.reviews.none':'No reviews','admin.reviews.loading':'Loading…','admin.deliveries.loading':'Loading…','admin.delivery.none':'No deliveries','admin.instant_quotes.none':'No instant quotes','admin.modal.title':'Details','button.refresh':'Refresh','button.logout':'Logout','button.confirm':'Confirm','button.archive':'Archive','button.back_to_current':'Back to Current','button.hide':'Hide','button.show':'Show','table.delivery':'Delivery','table.quote':'Quote','table.client':'Client','table.author':'Author','table.review':'Review','table.date':'Date','table.visible':'Visible','table.status':'Status','table.actions':'Actions','button.details':'Details','button.start':'Start Delivery','button.set_price':'Set Price','button.revise_price':'Revise Price','button.mark_done':'Mark as done','badge.awaiting_response':'Awaiting response','badge.quote_accepted':'Quote accepted','badge.in_transit':'In transit','badge.delivered':'Delivered','badge.delivery_confirmed':'Delivery Confirmed','loading':'Loading…','time.today':'Today','time.yesterday':'Yesterday','time.last_week':'Last Week','time.older':'Older','time.archived':'Archived (30+ days)' } },
+          da: { translation: { 'admin.dashboard.title':'Administrator Panel','admin.dashboard.subtitle':'Administrer leverancer','admin.title':'Administrator Panel','admin.subtitle':'Administrer leverancer','admin.deliveries.title':'Leverancer','admin.deliveries.archived':'Arkiverede Leverancer','admin.instant_quotes.title':'Hurtige Tilbud','admin.instant_quotes.archived':'Arkiverede Hurtige Tilbud','admin.reviews.title':'Kundeanmeldelser','admin.reviews.none':'Ingen anmeldelser','admin.reviews.loading':'Indlæser…','admin.deliveries.loading':'Indlæser…','admin.delivery.none':'Ingen leverancer','admin.instant_quotes.none':'Ingen hurtige tilbud','admin.modal.title':'Detaljer','button.refresh':'Opdater','button.logout':'Log ud','button.confirm':'Bekræft','button.archive':'Arkiv','button.back_to_current':'Tilbage til aktuelle','button.hide':'Skjul','button.show':'Vis','table.delivery':'Levering','table.quote':'Tilbud','table.client':'Kunde','table.author':'Forfatter','table.review':'Anmeldelse','table.date':'Dato','table.visible':'Synlig','table.status':'Status','table.actions':'Handlinger','button.details':'Detaljer','button.start':'Start levering','button.set_price':'Sæt pris','button.revise_price':'Revider pris','button.mark_done':'Marker som færdig','badge.awaiting_response':'Afventer svar','badge.quote_accepted':'Tilbud accepteret','badge.in_transit':'Under transport','badge.delivered':'Leveret','badge.delivery_confirmed':'Levering Bekræftet','loading':'Indlæser…','time.today':'I dag','time.yesterday':'I går','time.last_week':'Sidste uge','time.older':'Ældre','time.archived':'Arkiveret (30+ dage)' } }
         };
 
         // Make applyLocal available globally so loadDeliveries/loadInstantQuotes can call it
@@ -924,6 +1034,7 @@
                 // Re-render tables with new translations by reloading data
                 loadDeliveries();
                 loadInstantQuotes();
+                loadReviews();
               });
             } else {
               // load and apply
@@ -931,6 +1042,7 @@
                 window.applyAdminTranslations(window.i18next);
                 loadDeliveries();
                 loadInstantQuotes();
+                loadReviews();
               }));
             }
           });

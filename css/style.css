@@ -2767,6 +2767,10 @@ input, button {
         margin-bottom: 2rem;
     }
 
+    .carousel-controls {
+        display: none; /* Hide arrows on mobile, use swipe instead */
+    }
+
     .cards {
         display: flex;
         overflow-x: auto;
@@ -2774,6 +2778,7 @@ input, button {
         gap: 1rem;
         padding-bottom: 1rem;
         -webkit-overflow-scrolling: touch;
+        grid-template-columns: none;
     }
 
     .testimonial-card {
@@ -2785,20 +2790,8 @@ input, button {
         transform: translateY(0);
     }
 
-    .testimonial-card:nth-child(1) {
-        transform: rotate(-5deg);
-    }
-
-    .testimonial-card:nth-child(2) {
-        transform: rotate(5deg);
-    }
-
-    .testimonial-card:nth-child(3) {
-        transform: rotate(-3deg);
-    }
-
     .testimonial-card:hover {
-        transform: rotate(0deg) translateY(-5px);
+        transform: translateY(-5px);
     }
 
     .testimonial-content {
@@ -2808,6 +2801,10 @@ input, button {
     .quote::before {
         left: -20px;
         transform: none;
+    }
+
+    .carousel-indicators {
+        margin-top: 1.5rem;
     }
 }
 
