@@ -165,7 +165,7 @@
     <div class="quote-action-container">
         <div class="quote-action-card">
             <div class="logo-container">
-                <img src="../static/logo2.png" alt="IHB Transport Logo" loading="lazy">
+                <img src="/static/logo2.png" alt="IHB Transport Logo" loading="lazy">
             </div>
             
             <h1 id="pageTitle">Processing Request...</h1>
@@ -241,8 +241,9 @@
                     body: body
                 });
                 
-                // Hide spinner
+                // Hide spinner and description
                 document.getElementById('spinner').classList.add('hidden');
+                document.getElementById('pageDescription').classList.add('hidden');
                 
                 let data = null;
                 try {
@@ -259,11 +260,18 @@
                         decline: data?.message || 'Quote declined. We have been notified. Thank you for your response.'
                     };
                     
+                    const successTitles = {
+                        accept: 'Quote Accepted',
+                        decline: 'Quote Declined'
+                    };
+                    
+                    document.getElementById('pageTitle').textContent = successTitles[action] || 'Success';
                     showSuccess(successMessages[action] || 'Action completed successfully!');
                     
                     document.getElementById('actionButtons').classList.remove('hidden');
                 } else {
                     // Error
+                    document.getElementById('pageTitle').textContent = 'Action Failed';
                     const errorMessage = data?.message || data?.error || `Failed with status ${response.status}`;
                     showError(errorMessage);
                     document.getElementById('actionButtons').classList.remove('hidden');
@@ -272,6 +280,8 @@
             } catch (error) {
                 // Network error
                 document.getElementById('spinner').classList.add('hidden');
+                document.getElementById('pageDescription').classList.add('hidden');
+                document.getElementById('pageTitle').textContent = 'Connection Error';
                 showError(`Network error: ${error.message}. Please check your connection and try again.`);
                 document.getElementById('actionButtons').classList.remove('hidden');
             }

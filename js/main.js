@@ -1455,21 +1455,12 @@ async function loadReviews() {
       reviews = data.data;
     }
 
-    // Get hidden reviews from localStorage
-    const hiddenReviews = JSON.parse(localStorage.getItem('hidden_reviews') || '[]');
-
-    // Filter out hidden reviews
-    const visibleReviews = reviews.filter(review => {
-      const id = review.id || review._id;
-      return !hiddenReviews.includes(id);
-    });
-
     // Clear only dynamic reviews (keep static ones)
     const dynamicCards = reviewsContainer.querySelectorAll('.testimonial-card:not([data-static])');
     dynamicCards.forEach(card => card.remove());
 
     // If no reviews from API, that's fine - we still have the static card
-    if (visibleReviews.length === 0) {
+    if (reviews.length === 0) {
       // Don't show "no reviews" message since we have static card
       // Just initialize carousel with existing static cards
       if (window.TestimonialsCarousel) {
@@ -1481,8 +1472,8 @@ async function loadReviews() {
     // Get locally stored image URLs
     const localImages = JSON.parse(localStorage.getItem('review_images') || '{}');
     
-    // Render each visible review
-    visibleReviews.forEach((review, index) => {
+    // Render each review
+    reviews.forEach((review, index) => {
       const card = document.createElement('article');
       card.className = 'testimonial-card';
       card.dataset.idx = index;
