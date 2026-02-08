@@ -665,7 +665,22 @@
             </div>
 
             <section class="cards" id="testimonials" aria-label="Testimonials list">
-                <!-- Reviews will be loaded dynamically from the API -->
+                <!-- First static card -->
+                <article class="testimonial-card" data-idx="0" data-static="true">
+                    <div class="testimonial-image">
+                        <img src="static/customer.jpeg" alt="Julie Ingebrigtsen" loading="lazy"/>
+                    </div>
+                    <div class="testimonial-content">
+                        <blockquote class="quote" data-i18n="testimonial1.quote">
+                            "IHB Transport gjorde vores internationale flytning problemfri. Professionelt team, rettidig levering og god kommunikation hele vejen."
+                        </blockquote>
+                        <div class="author-meta">
+                            <div class="name" data-i18n="testimonial1.name">Julie Ingebrigtsen</div>
+                            <div class="title" data-i18n="testimonial1.title">Arbejder her: Kultur- og Fritidsforvaltningen, Københavns Kommune</div>
+                        </div>
+                    </div>
+                </article>
+                <!-- Dynamic reviews will be loaded from the API -->
             </section>
 
             <!-- Carousel Indicators -->

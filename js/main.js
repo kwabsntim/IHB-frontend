@@ -1381,7 +1381,7 @@ const ReviewModalHandler = {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            author_name: name,
+            client_name: name,
             content: content,
             image_url: imageUrl || null
           })
@@ -1439,11 +1439,17 @@ async function loadReviews() {
       ? reviews.filter(review => review.is_visible !== false)
       : [];
 
-    // Clear existing reviews
-    reviewsContainer.innerHTML = '';
+    // Clear only dynamic reviews (keep static ones)
+    const dynamicCards = reviewsContainer.querySelectorAll('.testimonial-card:not([data-static])');
+    dynamicCards.forEach(card => card.remove());
 
+    // If no reviews from API, that's fine - we still have the static card
     if (visibleReviews.length === 0) {
-      reviewsContainer.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 2rem;">No reviews yet. Be the first to share your experience!</p>';
+      // Don't show "no reviews" message since we have static card
+      // Just initialize carousel with existing static cards
+      if (window.TestimonialsCarousel) {
+        window.TestimonialsCarousel.init();
+      }
       return;
     }
 
