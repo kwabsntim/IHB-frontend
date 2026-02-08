@@ -190,51 +190,46 @@
         (async function() {
             const API_BASE = 'https://ihb-transport-dk.onrender.com';
             
-            // Parse URL to get delivery ID and action
+            // Parse URL to get instant quote ID and action
             const path = window.location.pathname || '';
-            const match = path.match(/^(?:\/api\/public)?\/deliveries\/([^\/]+)\/(accept|decline|quote)\/?$/i);
+            const match = path.match(/^(?:\/api\/public)?\/instant-quotes\/([^\/]+)\/(accept|decline)\/?$/i);
             
             if (!match) {
                 showError('Invalid URL format. Please check the link from your email.');
                 return;
             }
             
-            const deliveryId = decodeURIComponent(match[1]);
+            const quoteId = decodeURIComponent(match[1]);
             const action = match[2].toLowerCase();
             
             // Update UI based on action
             const titles = {
-                accept: 'Accepting Delivery',
-                decline: 'Declining Delivery',
-                quote: 'Loading Quote'
+                accept: 'Accepting Quote',
+                decline: 'Declining Quote'
             };
             
             const descriptions = {
                 accept: 'We are processing your acceptance...',
-                decline: 'We are processing your decline...',
-                quote: 'Retrieving your delivery quote...'
+                decline: 'We are processing your decline...'
             };
             
             document.getElementById('pageTitle').textContent = titles[action] || 'Processing...';
             document.getElementById('pageDescription').textContent = descriptions[action] || 'Please wait...';
             document.title = titles[action] || 'Processing...';
             
-            // Handle quote action - redirect to track page
-            if (action === 'quote') {
-                window.location.href = `/track.html?id=${encodeURIComponent(deliveryId)}`;
-                return;
-            }
-            
             // Call backend API for accept/decline
             try {
-                const endpoint = `${API_BASE}/api/public/deliveries/${encodeURIComponent(deliveryId)}/${action}`;
+                const endpoint = `${API_BASE}/api/public/instant-quotes/${encodeURIComponent(quoteId)}/${action}`;
+                
+                const body = action === 'decline' ? JSON.stringify({ reason: 'Client declined' }) : undefined;
                 
                 const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    body: body
                 });
                 
                 // Hide spinner
@@ -251,18 +246,11 @@
                 if (response.ok) {
                     // Success
                     const successMessages = {
-                        accept: data?.message || 'Delivery accepted successfully! Thank you for confirming.',
-                        decline: data?.message || 'Delivery declined. We have been notified.'
+                        accept: data?.message || 'Quote accepted successfully! We will contact you shortly to arrange the delivery.',
+                        decline: data?.message || 'Quote declined. We have been notified. Thank you for your response.'
                     };
                     
                     showSuccess(successMessages[action] || 'Action completed successfully!');
-                    
-                    // Show tracking button for accepted deliveries
-                    if (action === 'accept') {
-                        const trackBtn = document.getElementById('trackBtn');
-                        trackBtn.href = `/track.html?id=${encodeURIComponent(deliveryId)}`;
-                        trackBtn.classList.remove('hidden');
-                    }
                     
                     document.getElementById('actionButtons').classList.remove('hidden');
                 } else {
