@@ -8,7 +8,9 @@
   <link rel="apple-touch-icon" href="/static/logo2.png">
   <link rel="stylesheet" href="css/style.css">
   <style>
-    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin:0; padding:0; background:#f7fafc; }
+    * { box-sizing:border-box; }
+    html { -webkit-text-size-adjust:100%; }
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin:0; padding:0; background:#f7fafc; overflow-x:hidden; }
     .logo-small { height:42px; }
     .card { background:#fff; border-radius:8px; padding:16px; box-shadow:0 6px 18px rgba(0,0,0,0.06); margin-top:18px; }
     .card:first-child { margin-top:0; }
@@ -60,16 +62,31 @@
 
     @media (max-width: 880px) {
       .dashboard-layout { flex-direction:column; }
-      .sidebar { width:100%; height:auto; position:static; flex-direction:column; gap:12px; padding:16px; }
-      .sidebar-nav { flex-direction:row; overflow-x:auto; gap:6px; }
-      .nav-item { white-space:nowrap; }
+      .sidebar { width:100%; height:auto; position:static; flex-direction:column; gap:12px; padding:12px 16px; }
+      .sidebar-header { gap:10px; }
+      .logo-small { height:34px; }
+      .sidebar-nav { flex-direction:row; overflow-x:auto; -webkit-overflow-scrolling:touch; gap:6px; padding-bottom:2px; }
+      .nav-item { white-space:nowrap; min-height:44px; }
       .sidebar-footer { flex-direction:row; flex-wrap:wrap; }
       .sidebar-footer select,
-      .sidebar-footer .btn { width:auto; flex:1; min-width:100px; }
+      .sidebar-footer .btn { width:auto; flex:1; min-width:120px; }
       .main-content { padding:12px; }
-      .btn { font-size:11px; padding:6px 8px; }
-      .card { margin-top:12px !important; width:100%; box-sizing:border-box; }
+      .card { margin-top:12px !important; padding:14px; width:100%; }
     }
+
+    @media (max-width: 480px) {
+      .sidebar-header h1 { font-size:14px; }
+      .sidebar-header .muted { font-size:11px; }
+      .card h2 { font-size:15px !important; }
+      th, td { padding:10px; font-size:13px; }
+    }
+
+    .sidebar-footer select { min-height:38px; }
+
+    /* ---- Tables: horizontal scroll container instead of blowing out the page ---- */
+    .table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; margin:0 -2px; padding:0 2px; }
+    .table-scroll table { min-width:620px; }
+    td { word-break:break-word; }
     table { width:100%; border-collapse:collapse; }
     th, td { text-align:left; padding:8px 12px; border-bottom:1px solid #eee; font-size:14px; }
     th { background:#fafafa; font-weight:600; }
@@ -81,18 +98,19 @@
     th, td { padding:12px 14px; }
     tbody tr { transition: background .12s ease; }
     tbody tr:hover { background: #f9fafb; }
-    .actions { display:flex; gap:6px; align-items:center; flex-wrap:nowrap; }
+    .actions { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
 
     /* ---- Professional flat/outlined buttons ---- */
     .btn {
       padding:7px 14px; border-radius:6px; font-size:13px; font-weight:600;
-      cursor:pointer; white-space:nowrap; min-width:fit-content; text-decoration:none; display:inline-block;
+      cursor:pointer; white-space:nowrap; min-width:fit-content; text-decoration:none;
+      display:inline-flex; align-items:center; justify-content:center; min-height:38px;
       background:#111827; color:#fff; border:1px solid #111827;
       transition: background .12s ease, border-color .12s ease, color .12s ease;
     }
     .btn:hover { background:#1f2937; border-color:#1f2937; }
     .btn:active { background:#111827; }
-    .btn.small { padding:6px 10px; font-size:12px; }
+    .btn.small { padding:6px 10px; font-size:12px; min-height:34px; }
     .btn.secondary { background:#fff; color:#374151; border-color:#d1d5db; }
     .btn.secondary:hover { background:#f9fafb; border-color:#9ca3af; }
     .btn.secondary.is-active { background:#ecfdf5; color:#047857; border-color:#a7f3d0; }
@@ -101,6 +119,29 @@
     .btn.success:hover { background:#ecfdf5; }
     .btn.danger { background:#DC2626; color:#fff; border-color:#DC2626; }
     .btn.danger:hover { background:#b91c1c; border-color:#b91c1c; }
+
+    /* ---- Touch targets: grow on touch/mobile instead of shrinking ---- */
+    @media (max-width: 880px) {
+      .btn { min-height:44px; font-size:14px; padding:10px 16px; }
+      .btn.small { min-height:40px; font-size:13px; }
+      .sidebar-footer select { min-height:44px; font-size:14px; }
+    }
+
+    /* ---- Modal ---- */
+    .modal-overlay { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.35); z-index:10000; padding:20px; }
+    .modal-overlay.open { display:flex; }
+    .modal-card { background:#fff; border-radius:10px; max-width:760px; width:100%; max-height:85vh; overflow:auto; padding:20px; box-shadow:0 20px 60px rgba(0,0,0,0.25); position:relative; }
+    .modal-close { position:absolute; top:12px; right:12px; width:40px; height:40px; border-radius:8px; border:1px solid #d1d5db; background:#fff; font-size:20px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .modal-close:hover { background:#f3f4f6; }
+    .modal-title { margin:0 44px 16px 0; font-size:18px; }
+    .modal-row { display:grid; grid-template-columns:180px 1fr; gap:12px; padding:10px 0; border-bottom:1px solid #eee; }
+    .modal-row-key { color:#6b7280; font-size:13px; }
+    .modal-row-value { color:#111827; font-weight:500; word-break:break-word; }
+    @media (max-width: 560px) {
+      .modal-overlay { padding:0; align-items:flex-end; }
+      .modal-card { max-width:100%; max-height:92vh; border-radius:16px 16px 0 0; padding:16px; }
+      .modal-row { grid-template-columns:1fr; gap:2px; padding:8px 0; }
+    }
   </style>
 </head>
 <body>
@@ -342,7 +383,7 @@
             `;
           }).join('');
 
-          html += `<table><thead><tr><th>${t('table.delivery')}</th><th>${t('table.client')}</th><th>${t('table.status')}</th><th>${t('table.actions')}</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+          html += `<div class="table-scroll"><table><thead><tr><th>${t('table.delivery')}</th><th>${t('table.client')}</th><th>${t('table.status')}</th><th>${t('table.actions')}</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
         });
 
         return html;
@@ -430,7 +471,7 @@
         const t = window.i18next ? window.i18next.t.bind(window.i18next) : (k) => k;
         if (!items || items.length === 0) return `<div class="empty">${t('admin.reviews.none')}</div>`;
 
-        let html = '<table><thead><tr><th>Name</th><th>Comment</th><th>Delete</th></tr></thead><tbody>';
+        let html = '<div class="table-scroll"><table><thead><tr><th>Name</th><th>Comment</th><th>Delete</th></tr></thead><tbody>';
         
         items.forEach(review => {
           const id = review.id || review._id;
@@ -443,7 +484,7 @@
               <td style="font-weight:600;">${authorName}</td>
               <td style="max-width:300px;">${shortContent}</td>
               <td style="width:80px"><div class="actions">
-                <button data-id="${id}" class="btn delete-review" style="background:#dc2626;color:#fff;padding:8px 12px;border:none;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:14px;transition:background 0.2s;" onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'" title="Delete review">
+                <button data-id="${id}" class="btn delete-review" style="background:#dc2626;color:#fff;padding:10px 14px;min-height:40px;border:none;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:14px;transition:background 0.2s;" onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'" title="Delete review">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -456,7 +497,7 @@
           `;
         });
 
-        html += '</tbody></table>';
+        html += '</tbody></table></div>';
         return html;
       }
 
@@ -613,45 +654,38 @@
             `;
           }).join('');
 
-          html += `<table><thead><tr><th>${t('table.quote')}</th><th>${t('table.client')}</th><th>${t('table.status')}</th><th>${t('table.actions')}</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+          html += `<div class="table-scroll"><table><thead><tr><th>${t('table.quote')}</th><th>${t('table.client')}</th><th>${t('table.status')}</th><th>${t('table.actions')}</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
         });
 
         return html;
       }
 
       /* Modal builder and renderer for delivery details (styled like track.html) */
+      function closeDeliveryModal() {
+        const modal = document.getElementById('deliveryModal');
+        if (modal) modal.classList.remove('open');
+      }
+
       function createDeliveryModal() {
         if (document.getElementById('deliveryModal')) return document.getElementById('deliveryModal');
         const modal = document.createElement('div');
         modal.id = 'deliveryModal';
-        modal.style.position = 'fixed';
-        modal.style.inset = '0';
-        modal.style.display = 'none';
-        modal.style.alignItems = 'center';
-        modal.style.justifyContent = 'center';
-        modal.style.background = 'rgba(0,0,0,0.35)';
-        modal.style.zIndex = '10000';
+        modal.className = 'modal-overlay';
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeDeliveryModal(); });
 
         const card = document.createElement('div');
-        card.className = 'card';
-        card.style.maxWidth = '760px';
-        card.style.width = 'calc(100% - 40px)';
-        card.style.maxHeight = '80vh';
-        card.style.overflow = 'auto';
+        card.className = 'modal-card';
 
         const closeBtn = document.createElement('button');
         const t = window.i18next ? window.i18next.t.bind(window.i18next) : (k) => k;
         closeBtn.innerHTML = '&times;';
-        closeBtn.className = 'btn';
-        closeBtn.style.float = 'right';
-        closeBtn.style.fontSize = '24px';
-        closeBtn.style.lineHeight = '1';
-        closeBtn.style.padding = '4px 12px';
-        closeBtn.addEventListener('click', () => { modal.style.display = 'none'; });
+        closeBtn.className = 'modal-close';
+        closeBtn.setAttribute('aria-label', 'Close');
+        closeBtn.addEventListener('click', closeDeliveryModal);
 
         const title = document.createElement('h2');
+        title.className = 'modal-title';
         title.textContent = t('admin.modal.title');
-        title.style.marginTop = '0';
 
         const content = document.createElement('div');
         content.id = 'deliveryModalContent';
@@ -694,23 +728,17 @@
 
       function renderObjectAsRows(obj) {
         const wrap = document.createElement('div');
-        wrap.style.display = 'block';
         Object.entries(obj).forEach(([key, value]) => {
           if (omitKey(key)) return;
           const row = document.createElement('div');
-          row.style.display = 'grid';
-          row.style.gridTemplateColumns = '180px 1fr';
-          row.style.gap = '12px';
-          row.style.padding = '8px 0';
-          row.style.borderBottom = '1px solid #eee';
+          row.className = 'modal-row';
 
           const keyEl = document.createElement('div');
-          keyEl.style.color = '#666';
+          keyEl.className = 'modal-row-key';
           keyEl.textContent = key.replace(/_/g,' ');
 
           const valueEl = document.createElement('div');
-          valueEl.style.color = '#111';
-          valueEl.style.fontWeight = '500';
+          valueEl.className = 'modal-row-value';
 
           if (Array.isArray(value)) {
             valueEl.textContent = value.join(', ');
@@ -738,7 +766,7 @@
         const modal = createDeliveryModal();
         const content = document.getElementById('deliveryModalContent');
         content.innerHTML = '<div style="padding:18px;">Loading…</div>';
-        modal.style.display = 'flex';
+        modal.classList.add('open');
         
         // Determine endpoint based on type
         const endpoint = type === 'quote' ? 'instant-quotes' : 'deliveries';
@@ -1217,6 +1245,11 @@
         if (!document.hidden) {
           validateSession();
         }
+      });
+
+      // Close the details modal on Escape
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeDeliveryModal();
       });
     })();
   </script>
