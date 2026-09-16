@@ -19,8 +19,9 @@
     .sidebar {
       width:260px;
       flex-shrink:0;
-      background:#111827;
-      color:#e5e7eb;
+      background:#ffffff;
+      color:#374151;
+      border-right:1px solid #e5e7eb;
       display:flex;
       flex-direction:column;
       padding:20px 16px;
@@ -33,25 +34,26 @@
     }
 
     .sidebar-header { display:flex; align-items:center; gap:12px; }
-    .sidebar-header h1 { margin:0; font-size:16px; color:#fff; }
-    .sidebar-header .muted { font-size:12px; color:#9ca3af; }
+    .sidebar-header h1 { margin:0; font-size:16px; color:#111827; }
+    .sidebar-header .muted { font-size:12px; }
 
-    .sidebar-nav { display:flex; flex-direction:column; gap:4px; flex:1; }
+    .sidebar-nav { display:flex; flex-direction:column; gap:2px; flex:1; }
     .nav-item {
       display:flex; align-items:center; gap:10px;
-      background:none; border:none; color:#cbd5e1;
-      padding:10px 12px; border-radius:8px; font-size:14px; font-weight:600;
+      background:none; border:none; border-left:3px solid transparent; color:#4b5563;
+      padding:10px 12px; border-radius:6px; font-size:14px; font-weight:500;
       cursor:pointer; text-align:left; width:100%;
-      transition: background .12s ease, color .12s ease;
+      transition: background .12s ease, color .12s ease, border-color .12s ease;
     }
-    .nav-item:hover { background:rgba(255,255,255,0.06); color:#fff; }
-    .nav-item.active { background:#DC2626; color:#fff; }
-    .nav-icon { font-size:16px; line-height:1; }
+    .nav-item:hover { background:#f3f4f6; color:#111827; }
+    .nav-item.active { background:#f3f4f6; color:#111827; font-weight:700; border-left-color:#111827; }
+    .nav-icon { display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .nav-icon svg { width:18px; height:18px; }
 
     .sidebar-footer { display:flex; flex-direction:column; gap:8px; }
     .sidebar-footer select,
     .sidebar-footer .btn { width:100%; box-sizing:border-box; }
-    .sidebar-footer select { border-radius:8px; padding:8px; font-weight:600; border:1px solid #374151; background:#1f2937; color:#fff; }
+    .sidebar-footer select { border-radius:6px; padding:8px; font-weight:500; font-size:13px; border:1px solid #d1d5db; background:#fff; color:#374151; }
 
     .main-content { flex:1; padding:24px; min-width:0; }
     .tab-panel[hidden] { display:none; }
@@ -71,27 +73,34 @@
     table { width:100%; border-collapse:collapse; }
     th, td { text-align:left; padding:8px 12px; border-bottom:1px solid #eee; font-size:14px; }
     th { background:#fafafa; font-weight:600; }
-    .actions { display:flex; gap:8px; }
-    .btn { padding:8px 12px; border-radius:6px; background:#111827; color:#fff; text-decoration:none; display:inline-block; }
-    .success { background:#16a34a; }
-    .danger { background:#b91c1c; }
     .muted { color:#6b7280; }
     .empty { text-align:center; padding:36px; color:#6b7280; }
     /* Enhanced UI styles for dashboard */
-    .card { border-radius:12px; padding:20px; box-shadow:0 8px 28px rgba(17,24,39,0.06); border:1px solid rgba(15,23,42,0.04); }
-    table { border-radius:8px; overflow:hidden; background:linear-gradient(180deg,#fff,#fbfdff); }
+    .card { border-radius:10px; padding:20px; box-shadow:0 1px 2px rgba(17,24,39,0.04); border:1px solid #e5e7eb; }
+    table { border-radius:8px; overflow:hidden; background:#fff; }
     th, td { padding:12px 14px; }
-    tbody tr { transition: background .12s ease, transform .06s ease; }
-    tbody tr:hover { background: #fbfdff; transform: translateY(-1px); }
+    tbody tr { transition: background .12s ease; }
+    tbody tr:hover { background: #f9fafb; }
     .actions { display:flex; gap:6px; align-items:center; flex-wrap:nowrap; }
-    .btn { padding:6px 10px; border-radius:8px; background:#111827; color:#fff; border:none; box-shadow:0 4px 10px rgba(17,24,39,0.08); cursor:pointer; transition:transform .08s ease, box-shadow .12s ease, opacity .08s ease; font-weight:600; white-space:nowrap; font-size:12px; min-width:fit-content; }
-    .btn:hover { transform: translateY(-2px); box-shadow:0 10px 22px rgba(17,24,39,0.12); opacity:0.98; }
-    .btn:active { transform: translateY(0); box-shadow:0 6px 12px rgba(17,24,39,0.08); }
-    .btn.small { padding:6px 10px; font-size:13px; }
-    .btn.success { background: linear-gradient(180deg,#22c55e,#15803d); }
-    .btn.danger { background: linear-gradient(180deg,#ef4444,#b91c1c); }
-    .btn.secondary { background: linear-gradient(180deg,#64748b,#374151); }
-    .muted { color:#6b7280; }
+
+    /* ---- Professional flat/outlined buttons ---- */
+    .btn {
+      padding:7px 14px; border-radius:6px; font-size:13px; font-weight:600;
+      cursor:pointer; white-space:nowrap; min-width:fit-content; text-decoration:none; display:inline-block;
+      background:#111827; color:#fff; border:1px solid #111827;
+      transition: background .12s ease, border-color .12s ease, color .12s ease;
+    }
+    .btn:hover { background:#1f2937; border-color:#1f2937; }
+    .btn:active { background:#111827; }
+    .btn.small { padding:6px 10px; font-size:12px; }
+    .btn.secondary { background:#fff; color:#374151; border-color:#d1d5db; }
+    .btn.secondary:hover { background:#f9fafb; border-color:#9ca3af; }
+    .btn.secondary.is-active { background:#ecfdf5; color:#047857; border-color:#a7f3d0; }
+    .btn.secondary.is-active:hover { background:#d1fae5; }
+    .btn.success { background:#fff; color:#047857; border-color:#a7f3d0; }
+    .btn.success:hover { background:#ecfdf5; }
+    .btn.danger { background:#fff; color:#b91c1c; border-color:#fecaca; }
+    .btn.danger:hover { background:#fef2f2; }
   </style>
 </head>
 <body>
@@ -107,13 +116,13 @@
 
       <nav class="sidebar-nav" id="sidebarNav">
         <button type="button" class="nav-item active" data-tab="instantQuotes">
-          <span class="nav-icon" aria-hidden="true">⚡</span><span id="navLabelInstantQuotes">Instant Quotes</span>
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg></span><span id="navLabelInstantQuotes">Instant Quotes</span>
         </button>
         <button type="button" class="nav-item" data-tab="deliveries">
-          <span class="nav-icon" aria-hidden="true">🚚</span><span id="navLabelDeliveries">Deliveries</span>
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8Z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span><span id="navLabelDeliveries">Deliveries</span>
         </button>
         <button type="button" class="nav-item" data-tab="reviews">
-          <span class="nav-icon" aria-hidden="true">⭐</span><span id="navLabelReviews">Customer Reviews</span>
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span><span id="navLabelReviews">Customer Reviews</span>
         </button>
       </nav>
 
@@ -122,7 +131,7 @@
           <option value="da">🇩🇰 Dansk</option>
           <option value="en">🇬🇧 English</option>
         </select>
-        <button id="archiveBtn" class="btn secondary" style="background:#6b7280;" data-i18n="button.archive">Archive</button>
+        <button id="archiveBtn" class="btn secondary" data-i18n="button.archive">Archive</button>
         <button id="refreshBtn" class="btn">Refresh</button>
         <button id="logoutBtn" class="btn danger">Logout</button>
       </div>
@@ -1049,8 +1058,8 @@
         const archiveBtn = document.getElementById('archiveBtn');
         if (showingArchive) {
           archiveBtn.textContent = t('button.back_to_current');
-          archiveBtn.style.background = '#059669';
-          
+          archiveBtn.classList.add('is-active');
+
           // Update section titles
           document.querySelector('[data-i18n="admin.deliveries.title"]').textContent = t('admin.deliveries.archived');
           document.querySelector('[data-i18n="admin.instant_quotes.title"]').textContent = t('admin.instant_quotes.archived');
@@ -1058,7 +1067,7 @@
           document.getElementById('navLabelInstantQuotes').textContent = t('admin.instant_quotes.archived');
         } else {
           archiveBtn.textContent = t('button.archive');
-          archiveBtn.style.background = '#6b7280';
+          archiveBtn.classList.remove('is-active');
 
           // Restore section titles
           document.querySelector('[data-i18n="admin.deliveries.title"]').textContent = t('admin.deliveries.title');
