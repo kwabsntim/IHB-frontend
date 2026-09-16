@@ -5,6 +5,7 @@ const CONFIG = {
   TYPING_SPEED: 100,
   TYPING_TEXT: "🚚 Interesseret i vores service? Klik på 'Bestil nu' øverst!",
   MOBILE_BREAKPOINT: 768,
+  //api endpoint for the code
   API_ENDPOINT: 'https://ihb-transport-1.onrender.com/api/public/deliveries'
 };
 
