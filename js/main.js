@@ -746,7 +746,7 @@ const FormHandlers = {
           submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
         }
         
-        const response = await fetch('https://ihb-transport-dk.onrender.com/api/public/instant-quote', {
+        const response = await fetch('https://ihb-transport-1.onrender.com/api/public/instant-quote', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -1376,7 +1376,7 @@ const ReviewModalHandler = {
 
       try {
         // Send review to backend
-        const response = await fetch('https://ihb-transport-dk.onrender.com/api/public/reviews', {
+        const response = await fetch('https://ihb-transport-1.onrender.com/api/public/reviews', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -1422,7 +1422,7 @@ const ReviewModalHandler = {
 // ==================== LOAD REVIEWS FROM BACKEND ====================
 async function loadReviews() {
   try {
-    const response = await fetch('https://ihb-transport-dk.onrender.com/api/public/reviews/all');
+    const response = await fetch('https://ihb-transport-1.onrender.com/api/public/reviews/all');
     
     // If endpoint doesn't exist (404), just use static reviews
     if (response.status === 404) {
